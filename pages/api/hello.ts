@@ -16,9 +16,7 @@ export default function whichBtn(
     req: NextApiRequest,
     res: NextApiResponse<Data>
 ) {
-    console.log(req,"\n ---------------------- \n", req.body)
     const body = req.body.name
-    console.log(body)
 
     if (body === 'btn1') {
         res.status(200).json({ name: 'soul of btn1' })

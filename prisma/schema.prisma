@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model track {
+  id        Int      @id @default(autoincrement())
+  title     String
+  artist    String
+  url       String @unique
+  secondsDuration  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  platform  String
+  tags      tag[]
+  presets   preset[]
+}
+
+model tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tracks    track[]
+}
+
+model preset {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tracks    track[]
+}
