@@ -15,7 +15,7 @@ function Viewer() {
     // send the filter with the request in the body
     const callbackRequest = async () => {
         const response = await fetch('/api/list', {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },

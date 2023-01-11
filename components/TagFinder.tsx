@@ -16,7 +16,7 @@ function TagFinder(props: { filterState: any, setFilterState: any }) {
 
         // apend the filterState to the request body
         const response = await fetch('/api/tagsRetry', {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
