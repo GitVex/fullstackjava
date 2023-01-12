@@ -1,19 +1,25 @@
 import React from 'react'
 import { useQuery } from 'react-query'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import ViewerContainer from './ViewerContainer'
 import TagFinder from '../TagFinder'
+import { FilterStateProvider, useFilterState } from '../contexts/FilterStateProvider'
+import { useFetchSignal } from '../contexts/FetchSignalProvider'
 
 function Viewer() {
 
-    const [filterState, setFilterState] = useState([])
+    const filterState = useFilterState()
+    const refetchSignal = useFetchSignal()
 
     useEffect(() => {
-        callbackRequest()
-    }, [filterState])
+        refetch()
+    }, [refetchSignal])
 
     // send the filter with the request in the body
     const callbackRequest = async () => {
+
+        console.log('refetching in Viewer with: ', filterState)
+
         const response = await fetch('/api/list', {
             method: 'POST',
             headers: {
@@ -21,33 +27,39 @@ function Viewer() {
             },
             body: JSON.stringify({ filter: filterState })
         })
-        const data = await response.json()
-        return data
+        const res = await response.json()
+        console.log('response: ', res)
+        return res
     }
 
-    const { isLoading, error, data } = useQuery('tracks', callbackRequest, { refetchInterval: 15000 })
+    const { isLoading, error, data, refetch } = useQuery('tracks', callbackRequest, { refetchInterval: 15000, enabled: true })
+
+    useEffect(() => {
+        console.log('data: ', data)
+    }, [data])
 
     return (
-        <div>
-
-            <TagFinder filterState={filterState} setFilterState={setFilterState} />
-
+        <>
+            
             <h1>Viewer</h1>
-            {isLoading ? (
-                <div>Loading...</div>
-            ) : error ? (
-                //@ts-ignore 
-                <div>Error: {error.message}</div>
-            ) : (
-                <div className='flex flex-col gap-2 items-start'>
-                    {data.map((track: any) => (
-                        <div key={track.id}>
-                            <ViewerContainer id={track.id} title={track.title} artist={track.artist} url={track.url} tags={track.tags} />
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+            {
+                isLoading ? (
+                    <div>Loading...</div>
+                ) : error ? (
+                    //@ts-ignore 
+                    <div>Error: {error.message}</div>
+                ) : (
+                    <div className='flex flex-col gap-2 items-start'>
+                        {data.map((track: any) => (
+                            <div key={track.id}>
+                                <ViewerContainer id={track.id} title={track.title} artist={track.artist} url={track.url} tags={track.tags} />
+                            </div>
+                        ))}
+                    </div>
+                )
+            }
+        </>
+
     )
 }
 

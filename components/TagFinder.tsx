@@ -1,16 +1,21 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 import { useState, useEffect } from 'react'
+import { useFilterState, useFilterStateUpdate } from './contexts/FilterStateProvider'
+import { useFetchSignal, useFetchSignalUpdate } from './contexts/FetchSignalProvider'
 
-function TagFinder(props: { filterState: any, setFilterState: any }) {
+function TagFinder() {
 
-    const { filterState, setFilterState } = props
-    const [availableTags, setAvailableTags] = useState([])
+    const filterState = useFilterState()
+    const setFilterState = useFilterStateUpdate()
+    const refetchSignal = useFetchSignal()
+    const pingRefetchSignal = useFetchSignalUpdate()
     const [search, setSearch] = useState('')
 
     useEffect(() => {
-        console.log(search)
-    }, [search])
+        console.log('refetching with filter: ', filterState)
+        refetch()
+    }, [refetchSignal])
 
     const callbackRequest = async () => {
 
@@ -24,16 +29,13 @@ function TagFinder(props: { filterState: any, setFilterState: any }) {
         })
 
         const data = await response.json()
-        // update the available tags if the response is not the same as the current state
-        if (JSON.stringify(data) !== JSON.stringify(availableTags)) {
-            setAvailableTags(data)
-        }
         return data
     }
 
-    const { isLoading, error, data } = useQuery('tags', callbackRequest, { refetchInterval: 15000 })
+    const { isLoading, error, data, refetch } = useQuery('tags', callbackRequest, { refetchInterval: 15000, enabled: true })
 
     const updateFilter = async (e: any) => {
+
         const { name } = e.target
         if (!filterState.includes(name)) {
             const temp = [...filterState, name]
@@ -43,7 +45,10 @@ function TagFinder(props: { filterState: any, setFilterState: any }) {
             setFilterState(temp)
         }
 
-        await callbackRequest()
+        console.log('filter updated to: ', filterState)
+
+        /* @ts-ignore */
+        pingRefetchSignal()
     }
 
     return (
@@ -65,7 +70,7 @@ function TagFinder(props: { filterState: any, setFilterState: any }) {
             <div className='w-1 h-auto border-l-2 border-gray-800/50'></div>
             <div className="flex flex-col gap-2 h-full w-[78%]">
                 <div className='w-auto h-1/6'>
-                    <input type="text" className='p-2 w-full h-full rounded bg-gray-800/50' placeholder="Search..." onChange={ (e) => { setSearch(e.target.value) } }/>
+                    <input type="text" className='p-2 w-full h-full rounded bg-gray-800/50' placeholder="Search..." onChange={(e) => { setSearch(e.target.value) }} />
                 </div>
                 <div className='flex flex-col gap-2 items-start flex-wrap h-5/6 w-full overflow-x-scroll' onChange={updateFilter}>
                     {isLoading ? (
@@ -75,12 +80,12 @@ function TagFinder(props: { filterState: any, setFilterState: any }) {
                         <div>Error: {error.message}</div>
                     ) : (
                         <>
-                            {availableTags.map((tag: any) => (
+                            {data.map((tag: any) => (
                                 tag.name.includes(search) ? <div key={tag.name} className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
                                     <input type='checkbox' name={tag.name} id={tag.name + "Box"} />
                                     <label htmlFor={tag.name + "Box"} className='w-1/6'>{tag.name}</label>
                                 </div>
-                            : null) )}
+                                    : null))}
                         </>
                     )}
                 </div>
