@@ -31,7 +31,7 @@ function TagFinder(props: { filterState: any, setFilterState: any }) {
         return data
     }
 
-    const { isLoading, error, data } = useQuery('tags', callbackRequest, { refetchInterval: 1000 })
+    const { isLoading, error, data } = useQuery('tags', callbackRequest, { refetchInterval: 15000 })
 
     const updateFilter = async (e: any) => {
         const { name } = e.target

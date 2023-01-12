@@ -2,7 +2,7 @@ import { platform } from 'os'
 import React from 'react'
 import { useState } from 'react'
 
-function Creator(props: any) {
+function Creator() {
 
     const [tags, setTags] = useState([])
     const [title, setTitle] = useState('')
@@ -15,6 +15,9 @@ function Creator(props: any) {
             },
             body: JSON.stringify(data)
         })
+
+        const res = await response.json()
+        console.log(res)
     }
 
     const callbackRequestTagRecommendation = async (data: any) => {
