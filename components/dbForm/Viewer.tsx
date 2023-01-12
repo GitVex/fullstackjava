@@ -25,7 +25,7 @@ function Viewer() {
         return data
     }
 
-    const { isLoading, error, data } = useQuery('tracks', callbackRequest, { refetchInterval: 100 })
+    const { isLoading, error, data } = useQuery('tracks', callbackRequest, { refetchInterval: 15000 })
 
     return (
         <div>
