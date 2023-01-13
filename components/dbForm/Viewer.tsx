@@ -47,7 +47,7 @@ function Viewer() {
                 ) : error ? (
                     //@ts-ignore 
                     <div>Error: {error.message}</div>
-                ) : (
+                ) : data ? (
                     <div className='flex flex-col gap-2 items-start'>
                         {data.map((track: any) => (
                             <div key={track.id}>
@@ -55,7 +55,7 @@ function Viewer() {
                             </div>
                         ))}
                     </div>
-                )
+                ) : null
             }
         </>
 

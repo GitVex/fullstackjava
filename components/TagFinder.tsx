@@ -38,7 +38,7 @@ function TagFinder() {
 
         const { name } = e.target
         if (!filterState.includes(name)) {
-            const temp = [...filterState, name]
+            const temp = filterState.concat([name])
             setFilterState(temp)
         } else {
             const temp = filterState.filter((tag: any) => tag !== name)
@@ -73,21 +73,23 @@ function TagFinder() {
                     <input type="text" className='p-2 w-full h-full rounded bg-gray-800/50' placeholder="Search..." onChange={(e) => { setSearch(e.target.value) }} />
                 </div>
                 <div className='flex flex-col gap-2 items-start flex-wrap h-5/6 w-full overflow-x-scroll' onChange={updateFilter}>
-                    {isLoading ? (
-                        <div>Loading...</div>
-                    ) : error ? (
-                        //@ts-ignore
-                        <div>Error: {error.message}</div>
-                    ) : (
-                        <>
-                            {data.map((tag: any) => (
-                                tag.name.includes(search) ? <div key={tag.name} className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
-                                    <input type='checkbox' name={tag.name} id={tag.name + "Box"} />
-                                    <label htmlFor={tag.name + "Box"} className='w-1/6'>{tag.name}</label>
-                                </div>
-                                    : null))}
-                        </>
-                    )}
+                    {
+                        isLoading ? (
+                            <div>Loading...</div>
+                        ) : error ? (
+                            //@ts-ignore
+                            <div>Error: {error.message}</div>
+                        ) : data ? (
+                            <>
+                                {data.map((tag: any) => (
+                                    tag.name.includes(search) ? <div key={tag.name} className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
+                                        <input type='checkbox' name={tag.name} id={tag.name + "Box"} />
+                                        <label htmlFor={tag.name + "Box"} className='w-1/6'>{tag.name}</label>
+                                    </div>
+                                        : null))}
+                            </>
+                        ) : null
+                    }
                 </div>
             </div>
         </form>
