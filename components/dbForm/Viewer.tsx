@@ -2,8 +2,7 @@ import React from 'react'
 import { useQuery } from 'react-query'
 import { useEffect } from 'react'
 import ViewerContainer from './ViewerContainer'
-import TagFinder from '../TagFinder'
-import { FilterStateProvider, useFilterState } from '../contexts/FilterStateProvider'
+import { useFilterState } from '../contexts/FilterStateProvider'
 import { useFetchSignal } from '../contexts/FetchSignalProvider'
 
 function Viewer() {
@@ -32,7 +31,7 @@ function Viewer() {
         return res
     }
 
-    const { isLoading, error, data, refetch } = useQuery('tracks', callbackRequest, { refetchInterval: 15000, enabled: true })
+    const { isLoading, error, data, refetch } = useQuery('tracks', callbackRequest, { refetchInterval: 15000, enabled: false })
 
     useEffect(() => {
         console.log('data: ', data)

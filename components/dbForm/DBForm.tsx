@@ -1,14 +1,10 @@
 import React from 'react'
 import Creator from './Creator'
 import Viewer from './Viewer'
-import { useState } from 'react'
 import { FetchSignalProvider } from '../contexts/FetchSignalProvider'
 import { FilterStateProvider } from '../contexts/FilterStateProvider'
 
 function DBForm() {
-
-    const [refetchSignal, setRefetchSignal] = useState(false)
-
     return (
         <FilterStateProvider>
             <FetchSignalProvider>

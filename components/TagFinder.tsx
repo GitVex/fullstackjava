@@ -32,7 +32,7 @@ function TagFinder() {
         return data
     }
 
-    const { isLoading, error, data, refetch } = useQuery('tags', callbackRequest, { refetchInterval: 15000, enabled: true })
+    const { isLoading, error, data, refetch } = useQuery('tags', callbackRequest, { refetchInterval: 15000, enabled: false })
 
     const updateFilter = async (e: any) => {
 
