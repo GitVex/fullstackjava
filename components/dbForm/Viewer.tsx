@@ -2,17 +2,17 @@ import React from 'react'
 import { useQuery } from 'react-query'
 import { useEffect } from 'react'
 import ViewerContainer from './ViewerContainer'
-import { useFilterState } from '../contexts/FilterStateProvider'
-import { useFetchSignal } from '../contexts/FetchSignalProvider'
+import { useFilterState, usePingRefetch } from '../contexts/FilterStateProvider'
+
 
 function Viewer() {
 
     const filterState = useFilterState()
-    const refetchSignal = useFetchSignal()
+    const ping = usePingRefetch()
 
     useEffect(() => {
         refetch()
-    }, [refetchSignal])
+    }, [ping])
 
     // send the filter with the request in the body
     const callbackRequest = async () => {
@@ -27,7 +27,6 @@ function Viewer() {
             body: JSON.stringify({ filter: filterState })
         })
         const res = await response.json()
-        console.log('response: ', res)
         return res
     }
 

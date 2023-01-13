@@ -1,13 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
-import { useFetchSignalUpdate } from '../contexts/FetchSignalProvider'
-import { useFilterState } from '../contexts/FilterStateProvider'
 import TagFinder from '../TagFinder'
 
 function Creator() {
 
-    const filterState = useFilterState()
-    const pingRefetch = useFetchSignalUpdate()
     const [tags, setTags] = useState([])
     const [title, setTitle] = useState('')
 
@@ -21,9 +17,6 @@ function Creator() {
         })
 
         const res = await response.json()
-
-        /* @ts-ignore */
-        pingRefetch()
     }
 
     const callbackSubmit = async (event: any) => {
@@ -107,7 +100,6 @@ function Creator() {
             </form>
             <h1>Filters</h1>
             <TagFinder />
-            <p>{filterState.length > 0 ? filterState : 'no filters applied'}</p>
         </div>
     )
 }
