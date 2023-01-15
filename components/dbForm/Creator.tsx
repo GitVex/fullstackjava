@@ -1,11 +1,13 @@
 import React from 'react'
 import { useState } from 'react'
 import TagFinder from '../TagFinder'
+import Affirmator from '../utils/Affirmator'
 
 function Creator() {
 
     const [tags, setTags] = useState([])
     const [title, setTitle] = useState('')
+    const [affirmState, setAffirmState] = useState(false)
 
     const callbackRequest = async (data: any) => {
         const response = await fetch('/api/create', {
@@ -16,7 +18,13 @@ function Creator() {
             body: JSON.stringify(data)
         })
 
-        const res = await response.json()
+        if (response.ok) {
+            console.log('success')
+            setAffirmState(true)
+        } else {
+            console.log('failed')
+        }
+
     }
 
     const callbackSubmit = async (event: any) => {
@@ -82,9 +90,10 @@ function Creator() {
             <h1>Creator</h1>
             <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-[37rem]'>
                 <p>You are looking at {title ? `"${title}"` : '...nothing!'}</p>
-                <div className='flex flex-row gap-2'>
+                <div className=' flex flex-row gap-2'>
                     <label htmlFor='url' className='w-1/6'>URL</label>
-                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='grow p-1 rounded bg-gray-800/50' />
+                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='relative grow p-1 rounded bg-gray-800/50' />
+                    <Affirmator affirmState={affirmState} setAffirmState={setAffirmState} />
                 </div>
                 <div className='flex flex-row gap-2'>
                     <label htmlFor='tags' className='w-1/6'>Tags</label>
@@ -96,7 +105,7 @@ function Creator() {
                         <p key={tag} className='font-mono bg-gray-800/50 p-1 px-2 rounded-full text-center font-extralight text-gray-200/80'> {tag} </p>
                     ))}
                 </div>
-                <input type='submit' value='Submit' hidden />    
+                <input type='submit' value='Submit' hidden />
             </form>
             <h1>Filters</h1>
             <TagFinder />

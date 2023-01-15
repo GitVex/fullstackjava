@@ -2,6 +2,7 @@ import React from 'react'
 import { useQuery } from 'react-query'
 import { useState, useEffect } from 'react'
 import { useFilterState, useFilterStateUpdate, usePingRefetch } from './contexts/FilterStateProvider'
+import { motion } from 'framer-motion'
 
 function TagFinder() {
 
@@ -53,6 +54,7 @@ function TagFinder() {
         <>
             <form className='flex flex-row flex-wrap gap-2 w-[40rem] h-64 bg-gray-700/20 p-2 rounded' >
                 <div className='flex flex-col gap-2 items-start' onChange={updateFilter}>
+                    <div className='h-1/6' />
                     <div key="ambience" className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
                         <input type='checkbox' name="ambience" id="AmbienceBox" />
                         <label htmlFor="AmbienceBox" className='w-1/6'>Ambience</label>
@@ -91,15 +93,16 @@ function TagFinder() {
                         }
                     </div>
                 </div>
-
-
             </form>
             <p>current filter:
                 {
                     filterState.map((tag: any) => (
-                        <span key={tag} className='px-2 py-1 m-1 rounded bg-gray-800/50'>{tag}</span>
+                        <span key={tag} className='px-2 py-1 m-1 rounded bg-gray-800/50'>
+                            {tag}
+                        </span>
                     ))
-                } </p>
+                }
+            </p>
         </>
     )
 }
