@@ -38,7 +38,7 @@ function Viewer() {
 
     return (
         <>
-            
+
             <h1>Viewer</h1>
             {
                 isLoading ? (
@@ -47,11 +47,9 @@ function Viewer() {
                     //@ts-ignore 
                     <div>Error: {error.message}</div>
                 ) : data ? (
-                    <div className='flex flex-col gap-2 items-start'>
+                    <div className='flex flex-col gap-2 items-center w-full'>
                         {data.map((track: any) => (
-                            <div key={track.id}>
-                                <ViewerContainer id={track.id} title={track.title} artist={track.artist} url={track.url} tags={track.tags} />
-                            </div>
+                            <ViewerContainer key={track.id} id={track.id} title={track.title} artist={track.artist} url={track.url} tags={track.tags} />
                         ))}
                     </div>
                 ) : null

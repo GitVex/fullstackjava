@@ -86,26 +86,29 @@ function Creator() {
     }
 
     return (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 md:w-fit w-full'>
             <h1>Creator</h1>
-            <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-[37rem]'>
+            <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-full'>
                 <p>You are looking at {title ? `"${title}"` : '...nothing!'}</p>
-                <div className=' flex flex-row gap-2'>
+                <div className=' flex flex-row gap-2 w-auto'>
                     <label htmlFor='url' className='w-1/6'>URL</label>
-                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='relative grow p-1 rounded bg-gray-800/50' />
-                    <Affirmator affirmState={affirmState} setAffirmState={setAffirmState} />
+                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='p-1 rounded bg-gray-800/50 w-3/4' />
+
                 </div>
                 <div className='flex flex-row gap-2'>
                     <label htmlFor='tags' className='w-1/6'>Tags</label>
-                    <input type='text' name='tags' id='tags' className='grow p-1 rounded bg-gray-800/50' />
+                    <input type='text' name='tags' id='tags' className='p-1 rounded bg-gray-800/50 w-3/4' />
                 </div>
-                <div className='flex flex-row gap-2 content-center'>
+                <div className='flex flex-row flex-wrap gap-2 content-center'>
                     <p> Recommended Tags: </p>
                     {tags.map((tag: any) => (
                         <p key={tag} className='font-mono bg-gray-800/50 p-1 px-2 rounded-full text-center font-extralight text-gray-200/80'> {tag} </p>
                     ))}
                 </div>
-                <input type='submit' value='Submit' hidden />
+                <div className='flex flex-row gap-2 align-middle'>
+                    <button type='submit' className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Submit</button>
+                    <Affirmator affirmState={affirmState} setAffirmState={setAffirmState} />
+                </div>
             </form>
             <h1>Filters</h1>
             <TagFinder />
