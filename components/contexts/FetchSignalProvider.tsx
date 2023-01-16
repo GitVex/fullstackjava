@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 
 const FetchSignalContext = React.createContext({})
 const FetchSignalUpdateContext = React.createContext({})

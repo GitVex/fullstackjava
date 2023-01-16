@@ -2,7 +2,6 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 
-
 function TrackTotal() {
 
     const callbackRequest = async () => {
@@ -24,7 +23,7 @@ function TrackTotal() {
                     <div>Error: {error.message}</div>
                 ) : data ? (
                     <div className='flex flex-col gap-2 items-center w-full'>
-                        <h1>Total Tracks: {data}</h1>
+                        <p>Total Tracks: {data}</p>
                     </div>
                 ) : null
             }
