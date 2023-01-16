@@ -18,10 +18,6 @@ export function FetchSignalProvider({ children }: any) {
         setRefetchSignal(refetchSignal => !refetchSignal)
     }
 
-    useEffect(() => {
-        console.log('[Global] refetchSignal pinged')
-    }, [refetchSignal])
-
     return (
         <FetchSignalContext.Provider value={refetchSignal}>
             <FetchSignalUpdateContext.Provider value={pingRefetch}>

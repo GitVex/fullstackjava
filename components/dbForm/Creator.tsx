@@ -19,10 +19,8 @@ function Creator() {
         })
 
         if (response.ok) {
-            console.log('success')
             setAffirmState(true)
         } else {
-            console.log('failed')
         }
 
     }
@@ -86,18 +84,17 @@ function Creator() {
     }
 
     return (
-        <div className='flex flex-col gap-2 md:w-fit w-full'>
+        <div className='flex flex-col gap-2 w-full items-center'>
             <h1>Creator</h1>
-            <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-full'>
+            <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-11/12'>
                 <p>You are looking at {title ? `"${title}"` : '...nothing!'}</p>
                 <div className=' flex flex-row gap-2 w-auto'>
                     <label htmlFor='url' className='w-1/6'>URL</label>
-                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='p-1 rounded bg-gray-800/50 w-3/4' />
-
+                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='p-1 rounded bg-gray-800/50 grow' />
                 </div>
                 <div className='flex flex-row gap-2'>
                     <label htmlFor='tags' className='w-1/6'>Tags</label>
-                    <input type='text' name='tags' id='tags' className='p-1 rounded bg-gray-800/50 w-3/4' />
+                    <input type='text' name='tags' id='tags' className='p-1 rounded bg-gray-800/50 grow' />
                 </div>
                 <div className='flex flex-row flex-wrap gap-2 content-center'>
                     <p> Recommended Tags: </p>
