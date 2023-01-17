@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 
 const FetchSignalContext = React.createContext({})
 const FetchSignalUpdateContext = React.createContext({})
@@ -17,10 +17,6 @@ export function FetchSignalProvider({ children }: any) {
     function pingRefetch() {
         setRefetchSignal(refetchSignal => !refetchSignal)
     }
-
-    useEffect(() => {
-        console.log('[Global] refetchSignal pinged')
-    }, [refetchSignal])
 
     return (
         <FetchSignalContext.Provider value={refetchSignal}>

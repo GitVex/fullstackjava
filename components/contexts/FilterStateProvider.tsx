@@ -30,7 +30,6 @@ export function FilterStateProvider({ children }: any) {
     }
 
     useEffect(() => {
-        console.log('[Global] filterState updated to: ', filterState, ' - ping refetchSignal')
         pingRefetch()
     }, [filterState])
 

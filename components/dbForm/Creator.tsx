@@ -8,6 +8,7 @@ function Creator() {
     const [tags, setTags] = useState([])
     const [title, setTitle] = useState('')
     const [affirmState, setAffirmState] = useState(false)
+    const [isPresent, setIsPresent] = useState(false)
 
     const callbackRequest = async (data: any) => {
         const response = await fetch('/api/create', {
@@ -19,10 +20,8 @@ function Creator() {
         })
 
         if (response.ok) {
-            console.log('success')
             setAffirmState(true)
         } else {
-            console.log('failed')
         }
 
     }
@@ -57,10 +56,10 @@ function Creator() {
         return tags
     }
 
-    const callbackTagRecommendations = async (event: any) => {
+    const callbackOnBlur = async (event: any) => {
         event.preventDefault()
         const rURL = event.target.value
-        if (rURL === '') { setTitle(''); setTags([]); return }
+        if (rURL === '') { setTitle(''); setTags([]); setIsPresent(false); return }
 
         const urlStripped = rURL.split('&')[0]
         const qURL = `https://www.youtube.com/oembed?url=${urlStripped}&format=json`
@@ -82,22 +81,31 @@ function Creator() {
         }
         )
 
+        // check if the track is already in the database
+        const responseCheck = await fetch('/api/presenceCheck', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url: urlStripped })
+        })
 
+        const resCheck = await responseCheck.json()
+        setIsPresent(resCheck.status)
     }
 
     return (
-        <div className='flex flex-col gap-2 md:w-fit w-full'>
+        <div className='flex flex-col gap-2 w-full items-center'>
             <h1>Creator</h1>
-            <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-full'>
-                <p>You are looking at {title ? `"${title}"` : '...nothing!'}</p>
+            <form autoComplete='off' onSubmit={callbackSubmit} className='flex flex-col gap-4 w-11/12'>
+                <p>You are looking at {title ? `"${title}"` : '...nothing!'}{isPresent ? <em className='text-red-800'>, its already in here!</em> : ''}</p>
                 <div className=' flex flex-row gap-2 w-auto'>
                     <label htmlFor='url' className='w-1/6'>URL</label>
-                    <input onBlur={callbackTagRecommendations} type='text' name='url' id='url' className='p-1 rounded bg-gray-800/50 w-3/4' />
-
+                    <input onBlur={callbackOnBlur} type='text' name='url' id='url' className='p-1 rounded bg-gray-800/50 grow' />
                 </div>
                 <div className='flex flex-row gap-2'>
                     <label htmlFor='tags' className='w-1/6'>Tags</label>
-                    <input type='text' name='tags' id='tags' className='p-1 rounded bg-gray-800/50 w-3/4' />
+                    <input type='text' name='tags' id='tags' className='p-1 rounded bg-gray-800/50 grow' />
                 </div>
                 <div className='flex flex-row flex-wrap gap-2 content-center'>
                     <p> Recommended Tags: </p>
@@ -105,7 +113,7 @@ function Creator() {
                         <p key={tag} className='font-mono bg-gray-800/50 p-1 px-2 rounded-full text-center font-extralight text-gray-200/80'> {tag} </p>
                     ))}
                 </div>
-                <div className='flex flex-row gap-2 align-middle'>
+                <div className='flex flex-row gap-2 place-items-center'>
                     <button type='submit' className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Submit</button>
                     <Affirmator affirmState={affirmState} setAffirmState={setAffirmState} />
                 </div>

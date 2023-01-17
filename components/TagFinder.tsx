@@ -16,9 +16,6 @@ function TagFinder() {
     }, [ping])
 
     const callbackRequest = async () => {
-
-        console.log('refetching with filter: ', filterState)
-
         // apend the filterState to the request body
         const response = await fetch('/api/tagsRetry', {
             method: 'POST',
@@ -37,14 +34,10 @@ function TagFinder() {
     const updateFilter = async (e: any) => {
         const { name } = e.target
 
-        console.log('tag: ', name)
-
         if (!(filterState.includes(name))) {
-            console.log('adding tag: ', name)
             const temp = filterState.concat([name])
             setFilterState(temp)
         } else {
-            console.log('removing tag: ', name)
             const temp = filterState.filter((tag: any) => tag !== name)
             setFilterState(temp)
         }
@@ -52,7 +45,7 @@ function TagFinder() {
 
     return (
         <>
-            <form className='flex flex-row gap-2 w-full h-64 bg-gray-700/20 p-2 rounded' >
+            <form className='flex flex-row gap-2 w-11/12 h-64 bg-gray-700/20 p-2 rounded' >
                 <div className='flex flex-col gap-2 items-start' onChange={updateFilter}>
                     {/* <div className='h-1/6' /> */}
                     <div key="ambience" className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
@@ -69,7 +62,7 @@ function TagFinder() {
                     </div>
                 </div>
                 <div className='w-1 h-auto border-l-2 border-gray-800/50'></div>
-                <div className="flex flex-col gap-2 h-full w-fit">
+                <div className="flex flex-col gap-2 h-full w-full xl:w-full">
                     <div className='w-auto h-1/6'>
                         <input type="text" className='p-2 w-full h-full rounded bg-gray-800/50' placeholder="Search..." onChange={(e) => { setSearch(e.target.value) }} />
                     </div>
@@ -94,15 +87,14 @@ function TagFinder() {
                     </div>
                 </div>
             </form>
-            <p>current filter:
-                {
-                    filterState.map((tag: any) => (
-                        <span key={tag} className='px-2 py-1 m-1 rounded bg-gray-800/50'>
-                            {tag}
-                        </span>
-                    ))
-                }
-            </p>
+            <div className=''>{
+                filterState.map((tag: any) => (
+                    <span key={tag} className='px-2 py-1 m-1 rounded bg-gray-800/50'>
+                        {tag}
+                    </span>
+                ))
+            }</div>
+
         </>
     )
 }
