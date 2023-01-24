@@ -22,8 +22,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         include: {
             tags: true,
             presets: true,
-        },
-        take: maxResults,
+        }
     });
     res.json(result);
 }
