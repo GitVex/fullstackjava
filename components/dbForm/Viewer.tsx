@@ -1,13 +1,48 @@
 import React from 'react'
 import { useQuery } from 'react-query'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ViewerContainer from './ViewerContainer'
 import { useFilterState, usePingRefetch } from '../contexts/FilterStateProvider'
 import TrackTotal from './TrackTotal'
+import { motion, AnimatePresence } from 'framer-motion'
+import LoadingAnim from '../utils/LoadingAnimDismount'
 
+const container = {
+    show: {
+        transition: {
+            staggerChildren: 1
+        }
+    },
+    exit: {
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item = {
+    hidden: {
+        opacity: 0,
+        x: 20,
+    },
+    show: (i: number) => {
+        return {
+            opacity: 1,
+            x: 0,
+            transition: {
+                delay: 0.05 * i,
+            }
+        }
+    },
+    exit: {
+        opacity: 0,
+        x: 20,
+    }
+};
 
 function Viewer() {
 
+    const [maxResults, setMaxResults] = useState(9)
     const filterState = useFilterState()
     const ping = usePingRefetch()
 
@@ -32,23 +67,44 @@ function Viewer() {
 
     return (
         <>
-
-            <h1>Viewer</h1>
-            {
-                isLoading ? (
-                    <div>Loading...</div>
-                ) : error ? (
-                    //@ts-ignore 
-                    <div>Error: {error.message}</div>
-                ) : data ? (
-                    <div className='flex flex-col gap-2 items-center w-full'>
-                        {data.map((track: any) => (
-                            <ViewerContainer key={track.id} id={track.id} title={track.title} artist={track.artist} url={track.url} tags={track.tags} />
-                        ))}
-                    </div>
-                ) : null
-            }
-            <TrackTotal />
+            <div className='flex flex-col gap-2 items-center w-full'>
+                <span className='flex flex-row gap-8 items-center'>
+                    <button onClick={() => setMaxResults(maxResults - 2)} className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Load less</button>
+                    <h1>Viewer</h1>
+                    <button onClick={() => setMaxResults(maxResults + 2)} className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Load more</button>
+                </span>
+                <div className='h-fit w-full'>
+                    <AnimatePresence mode='wait'>
+                        {isLoading ? (
+                            <motion.div key='loader'>
+                                <LoadingAnim />
+                            </motion.div>
+                        ) : error ? (
+                            //@ts-ignore 
+                            <div>Error: {error.message}</div>
+                        ) : data ? (
+                            <motion.div key="data" className='flex flex-col gap-1 items-center w-full'
+                                variants={container}
+                                animate={data.length > 0 && "show"}>
+                                <AnimatePresence>
+                                    {data.map((track: any, idx: number) => (
+                                        <ViewerContainer
+                                            key={track.id}
+                                            id={track.id}
+                                            title={track.title}
+                                            artist={track.artist}
+                                            url={track.url}
+                                            tags={track.tags}
+                                            variants={item}
+                                            custom={idx} />
+                                    )).slice(0, maxResults)}
+                                </AnimatePresence>
+                            </motion.div>
+                        ) : null}
+                    </AnimatePresence>
+                </div>
+                <TrackTotal />
+            </div>
         </>
 
     )

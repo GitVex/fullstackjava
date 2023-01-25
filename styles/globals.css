@@ -33,8 +33,13 @@ div {
   html {
     color-scheme: dark;
   }
+
   body {
     color: #ced1d5;
     background: #020509;
   }
+}
+
+.button-primary {
+  @apply p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100;
 }

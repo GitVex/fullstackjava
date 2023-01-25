@@ -7,6 +7,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     // add the tags to the filter if their value is true
     const filter = req.body.filter as string[];
+    const maxResults = req.body.maxResults as number;
 
     // include where clause if filter is not empty
     // entries should contain all tags
@@ -21,8 +22,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         include: {
             tags: true,
             presets: true,
-        },
-        take: 7,
+        }
     });
     res.json(result);
 }
