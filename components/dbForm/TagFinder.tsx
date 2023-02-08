@@ -1,8 +1,7 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 import { useState, useEffect } from 'react'
-import { useFilterState, useFilterStateUpdate, usePingRefetch } from './contexts/FilterStateProvider'
-import { motion } from 'framer-motion'
+import { useFilterState, useFilterStateUpdate, usePingRefetch } from '../contexts/FilterStateProvider'
 
 function TagFinder() {
 

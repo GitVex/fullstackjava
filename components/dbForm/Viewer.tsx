@@ -70,7 +70,7 @@ function Viewer() {
             <div className='flex flex-col gap-2 items-center w-full'>
                 <span className='flex flex-row gap-8 items-center'>
                     <button onClick={() => setMaxResults(maxResults - 2)} className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Load less</button>
-                    <h1>Viewer</h1>
+                    <h1>Viewer ({data ? data.length : null}) </h1>
                     <button onClick={() => setMaxResults(maxResults + 2)} className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Load more</button>
                 </span>
                 <div className='h-fit w-full'>

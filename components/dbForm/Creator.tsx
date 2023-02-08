@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import TagFinder from '../TagFinder'
+import TagFinder from './TagFinder'
 import Affirmator from '../utils/Affirmator'
 
 function Creator() {
