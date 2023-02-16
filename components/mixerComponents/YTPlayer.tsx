@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider'
 
-const fadeInterval = 100
+const fadeInterval = 75
 const fadeStep = 1
 
 const startCases = [-1, 2, 5, 3]
@@ -41,11 +41,16 @@ function YTPlayer({ playerId }: { playerId: number }) {
         }
     }
 
-    const fadeIn = () => {
+    const fadeIn = (e: any, pLimit?: number) => {
         if (!player) return
 
+        let limit = 0
+        if (pLimit) {
+            limit = pLimit
+        } else {
+            limit = player.getVolume() == 0 ? 50 : player.getVolume()
+        }
         setVolume(1)
-        const limit = player.getVolume() == 0 ? 50 : player.getVolume()
 
         const interval = setInterval(() => {
             if (!startCases.includes(player.getPlayerState()) && player.getVolume() < limit) {
@@ -60,7 +65,7 @@ function YTPlayer({ playerId }: { playerId: number }) {
         }, fadeInterval)
     }
 
-    const fadeOut = () => {
+    const fadeOut = (e: any) => {
         if (!player) return
         const limit = player.getVolume() == 0 ? 50 : player.getVolume()
 
@@ -76,18 +81,18 @@ function YTPlayer({ playerId }: { playerId: number }) {
 
     return (
         <div className='flex flex-col gap-2 p-2 bg-gray-800/50 rounded h-full w-full'>
-            <div className="flex flex-row justify-center items-center gap-2 h-full w-full">
+            <div className="flex flex-row justify-center items-center gap-2 h-5/6 w-full">
                 <div id={ID} />
-                <div className="flex flex-col justify-center items-center gap-2 h-full w-full">
-                    <p>{Math.round(volume)}</p>
-                    <input id={`volumeSlider_${playerId}`} type="range" min="0" max="100" step="1" className="-rotate-90 h-5/6 w-4/6 bg-gray-800/50"
+                <div className="flex flex-col justify-center items-center w-fit h-full">
+                    <p className='-translate-y-14'>{Math.round(volume)}</p>
+                    <input id={`volumeSlider_${playerId}`} type="range" min="0" max="100" step="1" className="bg-gray-800/50 w-4/6 -rotate-90"
                         onChange={sliderInputHandler}
                         onInput={sliderInputHandler}
                     />
                 </div>
             </div>
-            <div className="flex flex-row justify-center items-center gap-2">
-                <input type="text" className="w-1/2 bg-gray-800/50 rounded p-1" placeholder="Video ID" onKeyDown={
+            <div className="flex flex-row justify-center items-center gap-2 w-full h-1/6">
+                <input type="text" className="bg-gray-800/50 rounded p-1" placeholder="Video ID" onKeyDown={
                     (e) => {
                         //@ts-ignore
                         if (e.key === 'Enter' && e.target.value) {
@@ -98,8 +103,18 @@ function YTPlayer({ playerId }: { playerId: number }) {
                         }
                     }
                 } />
-                <button className="bg-gray-800/50 rounded p-1" onClick={fadeOut}>Fade Out</button>
-                <button className="bg-gray-800/50 rounded p-1" onClick={fadeIn}>Fade In</button>
+
+                <button className="bg-gray-800/50 rounded p-1 min-w-fit" onClick={fadeIn}>Fade In</button>
+                <input type="text" className=" bg-gray-800/50 rounded p-1 w-1/12 " placeholder="Limit" onKeyDown={
+                    (e) => {
+                        //@ts-ignore
+                        if (e.key === 'Enter' && e.target.value) {
+                            //@ts-ignore
+                            fadeIn(e, e.target.value)
+                        }
+                    }
+                } />
+                <button className="bg-gray-800/50 rounded p-1 min-w-fit" onClick={fadeOut}>Fade Out</button>
             </div>
         </div>
     )
