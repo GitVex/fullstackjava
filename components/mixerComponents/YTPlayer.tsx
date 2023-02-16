@@ -4,6 +4,8 @@ import { usePlayerHolderById } from '../contexts/PlayerHolderProvider'
 const fadeInterval = 100
 const fadeStep = 1
 
+const startCases = [-1, 2, 5, 3]
+
 /* USE VIDEO.JS https://videojs.com/getting-started | maybe for later projects :) */
 
 // Youtube Player utilizing the Youtube IFrame API
@@ -44,13 +46,14 @@ function YTPlayer({ playerId }: { playerId: number }) {
 
         setVolume(1)
         const limit = player.getVolume() == 0 ? 50 : player.getVolume()
-        player.playVideo()
 
         const interval = setInterval(() => {
-            if (player.getVolume() < limit) {
+            if (!startCases.includes(player.getPlayerState()) && player.getVolume() < limit) {
                 if (player.getPlayerState() == 1 && player.getPlayerState() != 3) {
                     setVolume(player.getVolume() + fadeStep)
                 }
+            } else if (startCases.includes(player.getPlayerState())) {
+                player.playVideo()
             } else {
                 clearInterval(interval)
             }
@@ -77,7 +80,7 @@ function YTPlayer({ playerId }: { playerId: number }) {
                 <div id={ID} />
                 <div className="flex flex-col justify-center items-center gap-2 h-full w-full">
                     <p>{Math.round(volume)}</p>
-                    <input id={`volumeSlider_${playerId}`} type="range" min="0" max="100" step="1" className="h-5/6 w-full bg-gray-800/50" orient="vertical"
+                    <input id={`volumeSlider_${playerId}`} type="range" min="0" max="100" step="1" className="-rotate-90 h-5/6 w-4/6 bg-gray-800/50"
                         onChange={sliderInputHandler}
                         onInput={sliderInputHandler}
                     />
