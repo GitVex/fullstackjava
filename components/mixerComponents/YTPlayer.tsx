@@ -1,58 +1,85 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ts from 'typescript'
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider'
 
 const fadeInterval = 100
 const fadeStep = 1
 
-const fadeIn = (player: any, ID: number) => {
-    const limit = player.getVolume() == 0 ? 50 : player.getVolume()
-    player.setVolume(0)
-    player.playVideo()
-
-    const interval = setInterval(() => {
-        if (player.getVolume() < limit) {
-            // @ts-ignore
-            document.getElementById(`volumeSlider${ID}`).value = player.getVolume() + fadeStep
-        } else {
-            clearInterval(interval)
-        }
-    }, fadeInterval)
-}
-
-const fadeOut = (player: any, ID: number) => {
-    const interval = setInterval(() => {
-        if (player.getVolume() > 0) {
-            // @ts-ignore
-            document.getElementById(`volumeSlider${ID}`).value = player.getVolume() - fadeStep
-        } else {
-            clearInterval(interval)
-            player.pauseVideo()
-        }
-    }, fadeInterval)
-}
-
 /* USE VIDEO.JS https://videojs.com/getting-started | maybe for later projects :) */
-
 
 // Youtube Player utilizing the Youtube IFrame API
 function YTPlayer({ playerId }: { playerId: number }) {
 
-    const player = usePlayerHolderById(playerId).player
+    const [volume, setVolume] = useState(50)
 
+    const player = usePlayerHolderById(playerId) ? usePlayerHolderById(playerId).player : null
     const ID = `player${playerId}`
+
+    useEffect(() => {
+        if (player) {
+            player.setVolume(volume)
+            if (volume == 0) {
+                player.pauseVideo()
+            } else {
+                //player.playVideo()
+            }
+        }
+
+        const slider = document.getElementById(`volumeSlider_${playerId}`)
+        if (slider) {
+            //@ts-ignore
+            slider.value = volume
+        }
+
+    }, [volume])
+
+    const sliderInputHandler = (e: any) => {
+        if (parseInt(e.target.value) != volume) {
+            setVolume(e.target.value)
+        }
+    }
+
+    const fadeIn = () => {
+        if (!player) return
+
+        setVolume(1)
+        const limit = player.getVolume() == 0 ? 50 : player.getVolume()
+        player.playVideo()
+
+        const interval = setInterval(() => {
+            if (player.getVolume() < limit) {
+                setVolume(player.getVolume() + fadeStep)
+            } else {
+                clearInterval(interval)
+            }
+        }, fadeInterval)
+    }
+
+    const fadeOut = () => {
+        if (!player) return
+        const limit = player.getVolume() == 0 ? 50 : player.getVolume()
+
+        const interval = setInterval(() => {
+            if (player.getVolume() > 0) {
+                setVolume(player.getVolume() - fadeStep)
+            } else {
+                clearInterval(interval)
+                player.pauseVideo()
+            }
+        }, fadeInterval)
+    }
 
     return (
         <div className='flex flex-col gap-2 p-2 bg-gray-800/50 rounded h-full w-full'>
             <div className="flex flex-row justify-center items-center gap-2 h-full w-full">
                 <div id={ID} />
-                {/* Style an input slider that controls the players volume */}
-                <input id={`volumeSlider${ID}`} type="range" min="0" max="100" step="1" className="h-5/6 w-full bg-gray-800/50" orient="vertical" onChange={
-                    (e) => {
-                        //@ts-ignore
-                        player.setVolume(e.target.value)
-                    }
-                } />
+                <div className="flex flex-col justify-center items-center gap-2 h-full w-full">
+                    <p>{Math.round(volume)}</p>
+                    <input id={`volumeSlider_${playerId}`} type="range" min="0" max="100" step="1" className="h-5/6 w-full bg-gray-800/50" orient="vertical"
+                        onChange={sliderInputHandler}
+                        onInput={sliderInputHandler}
+                    />
+                </div>
             </div>
             <div className="flex flex-row justify-center items-center gap-2">
                 <input type="text" className="w-1/2 bg-gray-800/50 rounded p-1" placeholder="Video ID" onKeyDown={
@@ -66,8 +93,8 @@ function YTPlayer({ playerId }: { playerId: number }) {
                         }
                     }
                 } />
-                <button className="bg-gray-800/50 rounded p-1" onClick={() => fadeOut(player, playerId)}>Fade Out</button>
-                <button className="bg-gray-800/50 rounded p-1" onClick={() => fadeIn(player, playerId)}>Fade In</button>
+                <button className="bg-gray-800/50 rounded p-1" onClick={fadeOut}>Fade Out</button>
+                <button className="bg-gray-800/50 rounded p-1" onClick={fadeIn}>Fade In</button>
             </div>
         </div>
     )

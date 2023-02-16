@@ -3,7 +3,7 @@ import IFPlayer from '../utils/IFPlayer'
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
 // This is a workaround for the fact that the youtube iframe api only allows one player per page
-const PlayerHolderContext = React.createContext([] as { id: number, player: HTMLDivElement | IFPlayer, isAvailable: boolean }[])
+const PlayerHolderContext = React.createContext([] as { id: number, player: any, isAvailable: boolean }[])
 
 export function usePlayerHolder() {
     return useContext(PlayerHolderContext)
@@ -17,11 +17,11 @@ export function usePlayerHolderById(id: number) {
 
 
 function PlayerHolderProvider({ children }: any) {
-    const [playerHolder, setPlayerHolder] = useState([] as { id: number, player: HTMLDivElement | IFPlayer, isAvailable: boolean }[]);
+    const [playerHolder, setPlayerHolder] = useState([] as { id: number, player: any, isAvailable: boolean }[]);
 
     useEffect(() => {
 
-        let playerHolderTemp = [] as { id: number, player: HTMLDivElement | IFPlayer, isAvailable: boolean }[];
+        let playerHolderTemp = [] as { id: number, player: any, isAvailable: boolean }[];
 
         const container = document.createElement('div');
         container.setAttribute('id', 'playerHolder');
@@ -46,7 +46,6 @@ function PlayerHolderProvider({ children }: any) {
 
         //@ts-ignore
         window.onYouTubeIframeAPIReady = function () {
-            console.log('API READY');
 
             for (let i = 0; i < 9; i++) {
                 //@ts-ignore
@@ -61,10 +60,6 @@ function PlayerHolderProvider({ children }: any) {
 
         };
     }, []);
-
-    useEffect(() => {
-        console.log("Players Initialized | ", playerHolder);
-    }, [playerHolder])
 
     return (
         <PlayerHolderContext.Provider value={playerHolder}>
