@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import ts from 'typescript'
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider'
 
 const fadeInterval = 100
@@ -12,7 +11,8 @@ function YTPlayer({ playerId }: { playerId: number }) {
 
     const [volume, setVolume] = useState(50)
 
-    const player = usePlayerHolderById(playerId) ? usePlayerHolderById(playerId).player : null
+    //@ts-ignore
+    const player = usePlayerHolderById(playerId).player
     const ID = `player${playerId}`
 
     useEffect(() => {
@@ -48,7 +48,9 @@ function YTPlayer({ playerId }: { playerId: number }) {
 
         const interval = setInterval(() => {
             if (player.getVolume() < limit) {
-                setVolume(player.getVolume() + fadeStep)
+                if (player.getPlayerState() == 1 && player.getPlayerState() != 3) {
+                    setVolume(player.getVolume() + fadeStep)
+                }
             } else {
                 clearInterval(interval)
             }

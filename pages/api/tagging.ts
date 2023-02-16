@@ -7,7 +7,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const title = req.body.prompt.title;
     const artist = req.body.prompt.artist;
@@ -30,4 +30,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     res.status(200).json(response.data.choices[0].text);
-};
+}
+
+export default tagging;

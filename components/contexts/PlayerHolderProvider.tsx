@@ -11,13 +11,17 @@ export function usePlayerHolder() {
 
 export function usePlayerHolderById(id: number) {
     const playerHolder = useContext(PlayerHolderContext)
+
+    if (!playerHolder[id]) {
+        return {}
+    }
+
     return playerHolder[id]
 }
 
 
-
 function PlayerHolderProvider({ children }: any) {
-    const [playerHolder, setPlayerHolder] = useState([] as { id: number, player: any, isAvailable: boolean }[]);
+    const [playerHolder, setPlayerHolder] = useState([] as { id: number, player: IFPlayer, isAvailable: boolean }[]);
 
     useEffect(() => {
 
