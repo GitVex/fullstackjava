@@ -63,6 +63,9 @@ function Viewer() {
         const res = await response.json()
         return res
     }
+    const titleSearch = (e: any) => {
+        setSearch(e.target.value)
+    }
 
     const { isLoading, error, data, refetch } = useQuery('tracks', callbackRequest, { refetchInterval: 15000, enabled: false })
 
@@ -74,7 +77,7 @@ function Viewer() {
                     <h1>Viewer ({data ? data.length : null}) </h1>
                     <button onClick={() => setMaxResults(maxResults + 2)} className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100'>Load more</button>
                 </span>
-                <input type="text" placeholder="Search Title" className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100' />
+                <input type="text" placeholder="Search Title" className='p-2 rounded bg-gray-800/50 w-fit hover:bg-gray-800/80 duration-100' onChange={titleSearch} />
                 <div className='h-fit w-full'>
                     <AnimatePresence mode='wait'>
                         {isLoading ? (
