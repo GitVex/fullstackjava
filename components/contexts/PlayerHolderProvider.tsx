@@ -3,7 +3,7 @@ import IFPlayer from '../utils/IFPlayer'
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
 // This is a workaround for the fact that the youtube iframe api only allows one player per page
-const PlayerHolderContext = React.createContext([] as { id: number, player: any, isAvailable: boolean }[])
+const PlayerHolderContext = React.createContext([] as { id: number, player: IFPlayer, isAvailable: boolean }[])
 
 export function usePlayerHolder() {
     return useContext(PlayerHolderContext)
@@ -13,7 +13,7 @@ export function usePlayerHolderById(id: number) {
     const playerHolder = useContext(PlayerHolderContext)
 
     if (!playerHolder[id]) {
-        return {}
+        return {id: -1, player: null, isAvailable: false}
     }
 
     return playerHolder[id]

@@ -31,9 +31,9 @@ export default interface IFPlayer {
     isMuted: () => boolean;
     isVideoInfoVisible: () => boolean;
     loadModule: (moduleName: string) => void;
-    loadPlaylist: (playlist: string[], index: number, startSeconds: number, suggestedQuality: string) => void;
-    loadVideoById: (videoId: string, startSeconds: number, suggestedQuality: string) => void;
-    loadVideoByUrl: (mediaContentUrl: string, startSeconds: number) => void;
+    loadPlaylist: (playlist: string[], index: number, startSeconds?: number, suggestedQuality?: string) => void;
+    loadVideoById: (videoId: string, startSeconds?: number, suggestedQuality?: string) => void;
+    loadVideoByUrl: (mediaContentUrl: string, startSeconds?: number) => void;
     logImaAdEvent: (eventType: string) => void;
     mute: () => void;
     nextVideo: () => void;

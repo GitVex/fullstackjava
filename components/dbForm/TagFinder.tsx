@@ -75,7 +75,8 @@ function TagFinder() {
                             ) : data ? (
                                 <>
                                     {data.map((tag: any) => (
-                                        tag.name.includes(search) ? <div key={tag.name} className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
+                                        tag.name.includes(search) ? 
+                                        <div key={tag.name} className='flex flex-row gap-1 px-2 rounded bg-gray-800/50'>
                                             <input type='checkbox' name={tag.name} id={tag.name + "Box"} />
                                             <label htmlFor={tag.name + "Box"} className='w-1/6'>{tag.name}</label>
                                         </div>
