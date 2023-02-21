@@ -42,7 +42,6 @@ function YTPlayer({ playerId }: { playerId: number }) {
         }
     }
 
-
     const fade = (e: any, pLimit?: number, inverse: boolean = false) => {
         if (!player) return
         let limit = 0
@@ -92,10 +91,10 @@ function YTPlayer({ playerId }: { playerId: number }) {
     }
 
     return (
-        <div className='flex flex-col gap-2 p-2 bg-gray-800/50 rounded h-full w-fit'>
-            <div className="flex flex-row justify-center items-center gap-2 ">
+        <div id={`${ID}_container`} className='flex flex-col gap-2 p-2 bg-gray-900 rounded justify-center items-center h-fit max-w-md'>
+            <div className="flex flex-row w-full h-full place-content-center items-center gap-8">
                 <div id={ID} />
-                <div className="flex flex-col justify-center items-center w-fit h-full">
+                <div className="flex flex-col justify-center items-center w-fit h-full rounded">
                     <p className=''>{Math.round(volume)}</p>
                     {/* @ts-ignore */}
                     <input id={`volumeSlider_${playerId}`} type="range" min="0" max="100" step="1" orient="vertical" className={stlyes.slider}
@@ -110,6 +109,11 @@ function YTPlayer({ playerId }: { playerId: number }) {
                         const field = e.target as HTMLInputElement
                         if (!player) return
                         if (e.key !== 'Enter' && field.value) return
+
+                        // strip video id from url and remove all other characters and timestamps
+                        field.value = field.value.replace(/(https:\/\/www\.youtube\.com\/watch\?v=|https:\/\/youtu\.be\/|&t=.*|&feature=emb_logo)/g, '')
+                        console.log(field.value)
+
                         player.loadVideoById(field.value)
                         player.pauseVideo()
                     }
