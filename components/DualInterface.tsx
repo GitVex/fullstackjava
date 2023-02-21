@@ -13,11 +13,9 @@ function DualInterface() {
 
     return (
         <div className='bg-gradient-to-tr dark:from-darknavy-600 overflow-hidden'>
-            <div className='absolute'>
-                <motion.div initial={{ y: -1000 }} animate={open ? { y: 0 } : { y: -1000 }} className="backdrop-blur-md">
+                <motion.div initial={{ y: -1000 }} animate={open ? { y: 0 } : { y: -1000 }} className="absolute backdrop-blur-md">
                     <MixerOverlay />
                 </motion.div>
-            </div>
 
 
 
