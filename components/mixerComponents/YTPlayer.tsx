@@ -116,6 +116,7 @@ function YTPlayer({ playerId }: { playerId: number }) {
 
                         player.loadVideoById(field.value)
                         player.pauseVideo()
+                        player.setLoop(true)
                     }
 
                 } />
