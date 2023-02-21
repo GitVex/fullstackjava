@@ -8,31 +8,24 @@ import { useState } from 'react'
 function DualInterface() {
 
     const [open, setOpen] = useState(false)
-
+    const yInit = -1100
 
 
     return (
-        <div className='bg-gradient-to-tr dark:from-darknavy-600 overflow-hidden'>
-                <motion.div initial={{ y: -1000 }} animate={open ? { y: 0 } : { y: -1000 }} className="absolute backdrop-blur-md">
-                    <MixerOverlay />
-                </motion.div>
+        <div className=' overflow-hidden'>
+            <div className="absolute flex flex-row w-screen justify-center">
+                <button onClick={() => setOpen(!open)} className="m-4 w-8 h-8 scale-x-[400%] z-20">
+                    <motion.svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" animate={open ? { scaleY: -1 } : {}}>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </motion.svg>
+                </button>
+            </div>
 
+            <motion.div initial={{ y: yInit }} animate={open ? { y: 0 } : { y: yInit }} className="absolute backdrop-blur-md z-10">
+                <MixerOverlay />
+            </motion.div>
 
-
-
-            <div className='flex flex-col h-screen'>
-            <button onClick={() => setOpen(!open)} className="absolute m-4 w-6 h-6 scale-x-[300%] self-center">
-                <motion.svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" animate={open ? { scaleY: -1 } : {} }>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                </motion.svg>
-            </button>
-
-
-
-
-
-
-
+            <div className='absolute flex flex-col h-screen w-screen z-0 bg-gradient-to-tr dark:from-darknavy-600'>
 
 
                 <QueryClientProvider client={new QueryClient()}>
