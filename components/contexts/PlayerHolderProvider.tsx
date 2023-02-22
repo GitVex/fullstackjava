@@ -54,8 +54,8 @@ function PlayerHolderProvider({ children }: any) {
             for (let i = 0; i < 9; i++) {
                 //@ts-ignore
                 playerHolderTemp[i].player = new YT.Player(playerHolderTemp[i].player.id, {
-                    height: window.innerHeight / 6,
-                    width: window.innerWidth / 6,
+                    height: 128,
+                    width: 256,
                     videoId: 'o49in-4Galg',
                 });
             }
