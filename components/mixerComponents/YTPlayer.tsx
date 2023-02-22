@@ -93,7 +93,7 @@ function YTPlayer({ playerId }: { playerId: number }) {
     return (
         <div id={`${ID}_container`} className='flex flex-col gap-2 p-2 bg-gray-900 rounded justify-center items-center h-fit max-w-md'>
             <div className="flex flex-row w-full h-full place-content-center items-center gap-8">
-                <div id={ID} />
+                <div className='rounded' id={ID} />
                 <div className="flex flex-col justify-center items-center w-fit h-full rounded">
                     <p className=''>{Math.round(volume)}</p>
                     {/* @ts-ignore */}
