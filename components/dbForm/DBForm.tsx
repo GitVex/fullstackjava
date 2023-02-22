@@ -7,7 +7,7 @@ function DBForm() {
     return (
         <FilterStateProvider>
             <div className='flex flex-col xl:flex-row p-4 items-center place-content-center h-full'>
-                <div className='flex flex-col xl:basis-1/2 items-center place-content-center w-full'>
+                <div className='flex flex-col xl:basis-1/2 items-center place-content-center w-full min-w-[50%]'>
                     <Creator />
                 </div>
                 <div className='flex flex-col xl:basis-1/2 items-center place-content-center w-full'>
