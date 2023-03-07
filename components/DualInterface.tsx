@@ -17,7 +17,7 @@ function DualInterface() {
     }, [])
 
     return (
-        <div className=' overflow-hidden'>
+        <div className='overflow-hidden'>
             {!isMobile ? (
                 <>
                     <div className="absolute flex flex-row w-screen justify-center">
