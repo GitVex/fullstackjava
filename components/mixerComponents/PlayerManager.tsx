@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { usePlayerHolder } from '../contexts/PlayerHolderProvider'
+import React from 'react'
 import YTPlayer from './YTPlayer'
 
 export default function PlayerManager() {
