@@ -3,7 +3,8 @@ import WindowSizeContext from '../contexts/WindowSizeProvider';
 import Create from './Create';
 import { breakpoints } from './breakpoints';
 import Filter from './Filter';
-import { Viewer, ViewColumn } from './Viewer/Viewer';
+import { Viewer } from './Viewer/Viewer';
+import { ViewColumn } from './Viewer/ViewColumn';
 
 function PageComponent() {
 	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
