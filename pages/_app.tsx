@@ -1,14 +1,14 @@
 import "../styles/globals.css";
 import type { AppProps, NextWebVitalsMetric } from "next/app";
 import { Analytics } from "@vercel/analytics/react";
-import { WindowWidthProvider } from "../components/contexts/WindowWidthProvider";
+import { WindowSizeProvider } from "../components/contexts/WindowSizeProvider";
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
-			<WindowWidthProvider>
+			<WindowSizeProvider>
 				<Component {...pageProps} />
-			</WindowWidthProvider>
+			</WindowSizeProvider>
 			<Analytics />
 		</>
 	);
