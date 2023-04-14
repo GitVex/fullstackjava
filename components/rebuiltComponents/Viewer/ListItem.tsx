@@ -20,11 +20,11 @@ function ListItem({ item }: { item: track }) {
 			</div>
 			<button
 				onClick={() => navigator.clipboard.writeText(item.url)}
-				className='rounded bg-indigo-600/20 py-1 text-xs font-semibold text-white'
+				className='rounded bg-indigo-600/20 px-2 py-1 text-xs font-semibold text-white'
 			>
 				Copy
 			</button>
-			<button className='rounded bg-indigo-600/20 py-1 text-xs font-semibold text-white'>
+			<button className='rounded bg-indigo-600/20 px-2 py-1 text-xs font-semibold text-white'>
 				Add
 			</button>
 		</div>

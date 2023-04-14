@@ -22,17 +22,115 @@ function PageComponent() {
 			let numberOfDivs: number, widthClass: string;
 
 			if (windowWidth >= breakpoints.lg) {
-				numberOfDivs = 4;
 				widthClass = 'w-1/4';
+				return (
+					<>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='new'
+						/>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='trend'
+						/>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='filter'
+						/>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='owned'
+						/>
+					</>
+				);
 			} else if (windowWidth >= breakpoints.md) {
-				numberOfDivs = 3;
 				widthClass = 'w-1/3';
+				return (
+					<>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='new'
+						/>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='filter'
+						/>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='trend'
+						/>
+					</>
+				);
 			} else if (windowWidth >= breakpoints.sm) {
-				numberOfDivs = 2;
 				widthClass = 'w-1/2';
+				return (
+					<>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+						/>
+						<ViewColumn
+							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+							style={
+								windowHeight
+									? { height: windowHeight - 4 * 24 }
+									: { height: '100%' }
+							}
+							type='trend'
+						/>
+					</>
+				);
 			} else {
-				numberOfDivs = 1;
 				widthClass = 'w-full';
+				return (
+					<ViewColumn
+						className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
+						style={
+							windowHeight
+								? { height: windowHeight - 4 * 24 }
+								: { height: '100%' }
+						}
+					/>
+				);
 			}
 
 			return (
@@ -57,7 +155,7 @@ function PageComponent() {
 		<div className='h-screen overflow-hidden'>
 			<div className='flex h-full flex-col gap-6 p-6'>
 				<div className='flex w-full flex-row justify-between'>
-					<Create/>
+					<Create />
 
 					<div
 						className='flex justify-center'

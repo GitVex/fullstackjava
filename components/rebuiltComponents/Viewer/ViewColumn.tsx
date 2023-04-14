@@ -8,11 +8,24 @@ export function ViewColumn({
 	children,
 	className,
 	style,
+	type,
 }: {
 	children?: React.ReactNode;
 	className?: string;
 	style?: React.CSSProperties;
+	type?: string;
 }) {
+	let route = '/api/rebuilt/list';
+	if (type === 'new') {
+		route = '/api/rebuilt/list';
+	} else if (type === 'trend') {
+		route = '/api/rebuilt/list';
+	} else if (type === 'filter') {
+		route = '/api/rebuilt/filter';
+	} else if (type === 'owned') {
+		route = '/api/rebuilt/list';
+	}
+
 	const { isLoading, error, data } = useQuery<track[], Error>(
 		'items',
 		fetchData,
@@ -25,7 +38,7 @@ export function ViewColumn({
 	useEffect(() => {}, [data]);
 
 	async function fetchData(): Promise<track[]> {
-		const response = await fetch('/api/rebuilt/list', {
+		const response = await fetch(route, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
