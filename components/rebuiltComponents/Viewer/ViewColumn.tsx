@@ -1,5 +1,5 @@
 // ViewColumn.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
 import ListItem from './ListItem';
@@ -35,8 +35,6 @@ export function ViewColumn({
 		}
 	);
 
-	useEffect(() => {}, [data]);
-
 	async function fetchData(): Promise<track[]> {
 		const response = await fetch(route, {
 			method: 'POST',
@@ -49,6 +47,10 @@ export function ViewColumn({
 
 		return res;
 	}
+
+	useEffect(() => {
+		console.log(`data from ${route}: ${JSON.stringify(data)}`);
+	}, [data]);
 
 	return (
 		<div className={className} style={style}>
