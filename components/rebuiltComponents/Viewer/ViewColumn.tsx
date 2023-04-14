@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
+import ListItem from './ListItem';
 
 export function ViewColumn({
 	children,
@@ -47,9 +48,9 @@ export function ViewColumn({
 					data.map((item) => {
 						return (
 							<li key={item.id}>
-								<p>
+								<ListItem item={item}>
 									{item.title}: <em>{item.artist}</em>
-								</p>
+								</ListItem>
 							</li>
 						);
 					})
