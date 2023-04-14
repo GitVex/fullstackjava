@@ -4,16 +4,19 @@ import { track } from '@prisma/client';
 function ListItem({ item }: { item: track }) {
 	return (
 		<div className='flex w-full flex-row items-center gap-2 rounded-lg bg-slate-500/10 p-2 text-sm'>
-			<div className='flex w-auto flex-1 flex-col'>
-				<p
+			<div className='flex flex-1 flex-col'>
+				<div
 					onClick={() => window.open(item.url, '_blank')?.focus()}
-					className='cursor-pointer truncate font-semibold'
+					className='w-full cursor-pointer truncate'
+					style={{ maxWidth: '100%' }}
 				>
-					{item.title}
-				</p>
-				<p className='cursor-pointer truncate text-slate-600'>
-					<em>{item.artist}</em>
-				</p>
+					<p className='overflow-hidden whitespace-nowrap font-semibold'>
+						{item.title}
+					</p>
+					<p className='truncate text-slate-600'>
+						<em>{item.artist}</em>
+					</p>
+				</div>
 			</div>
 			<button
 				onClick={() => navigator.clipboard.writeText(item.url)}
