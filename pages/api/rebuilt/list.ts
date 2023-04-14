@@ -21,5 +21,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             presets: true,
         }
     });
+
+    // randomize the result order
+    result.sort(() => Math.random() - 0.5);
+
     res.json(result);
 }
