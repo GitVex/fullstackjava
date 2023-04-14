@@ -8,10 +8,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     // order by created_at
     result.sort((a, b) => {
         if (a.createdAt < b.createdAt) {
-            return -1;
+            return 1;
         }
         if (a.createdAt > b.createdAt) {
-            return 1;
+            return -1;
         }
         return 0;
     });
