@@ -49,7 +49,7 @@ export function ViewColumn({
 	}
 
 	useEffect(() => {
-		console.log(`data from ${route}: ${JSON.stringify(data)}`);
+		console.log(`data from ${route}: `, data?.slice(0, 5));
 	}, [data]);
 
 	return (
