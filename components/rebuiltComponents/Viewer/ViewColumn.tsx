@@ -27,7 +27,7 @@ export function ViewColumn({
 	}
 
 	const { isLoading, error, data } = useQuery<track[], Error>(
-		type,
+		['items', type],
 		fetchData,
 		{
 			enabled: true,
