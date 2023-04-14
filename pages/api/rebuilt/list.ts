@@ -6,7 +6,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const result = await prisma.track.findMany({});
 
     // randomize the result order
-    result.sort(() => Math.random() - 0.5);
+    const seed = Math.random();
+    result.sort(() => seed - 0.5);
 
-    res.json(result);
+    console.log("Randomized with seed: " + seed);
+
+    res.status(200).json(result);
 }
