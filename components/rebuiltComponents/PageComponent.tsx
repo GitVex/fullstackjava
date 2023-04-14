@@ -132,22 +132,6 @@ function PageComponent() {
 					/>
 				);
 			}
-
-			return (
-				<>
-					{Array.from({ length: numberOfDivs }).map((_, index) => (
-						<ViewColumn
-							key={index}
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-						/>
-					))}
-				</>
-			);
 		}
 	}
 
