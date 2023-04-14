@@ -17,7 +17,7 @@ export function ViewColumn({
 }) {
 	let route = '/api/rebuilt/list';
 	if (type === 'new') {
-		route = '/api/rebuilt/list';
+		route = '/api/rebuilt/new';
 	} else if (type === 'trend') {
 		route = '/api/rebuilt/list';
 	} else if (type === 'filter') {
