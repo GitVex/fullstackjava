@@ -48,9 +48,7 @@ export function ViewColumn({
 					data.map((item) => {
 						return (
 							<li key={item.id}>
-								<ListItem item={item}>
-									{item.title}: <em>{item.artist}</em>
-								</ListItem>
+								<ListItem item={item} />
 							</li>
 						);
 					})
