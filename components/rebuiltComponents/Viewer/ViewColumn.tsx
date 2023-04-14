@@ -18,7 +18,7 @@ export function ViewColumn({
 		fetchData,
 		{
 			enabled: true,
-			refetchInterval: 15000,
+			refetchInterval: 1000 * 60 * 20,
 		}
 	);
 
