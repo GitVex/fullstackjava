@@ -48,7 +48,7 @@ export function ViewColumn({
 						return (
 							<li key={item.id}>
 								<p>
-									{item.title}: <em>{item.url}</em>
+									{item.title}: <em>{item.artist}</em>
 								</p>
 							</li>
 						);

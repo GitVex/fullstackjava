@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
-import WindowWidthContext from "../contexts/WindowSizeProvider";
-import { breakpoints } from "./breakpoints";
-import { motion } from "framer-motion";
+import React, { useState, useContext } from 'react';
+import WindowWidthContext from '../contexts/WindowSizeProvider';
+import { breakpoints } from './breakpoints';
+import { motion } from 'framer-motion';
 
 const menuWidth = 420;
 
@@ -23,13 +23,7 @@ const PlusVariants = {
 	},
 };
 
-function Create({
-	className,
-	children,
-}: {
-	className?: string;
-	children: React.ReactNode;
-}) {
+function Create({ className }: { className?: string }) {
 	const [isOpenCreate, setIsOpenCreate] = useState(false);
 
 	const context = useContext(WindowWidthContext);
@@ -40,15 +34,19 @@ function Create({
 		windowWidth >= breakpoints.md ? (
 		<motion.div
 			className={`relative ${className}`}
-			animate={isOpenCreate ? "open" : "closed"}
-			initial="closed"
+			animate={isOpenCreate ? 'open' : 'closed'}
+			initial='closed'
 			variants={SideBarVariants}
 		>
 			<div
-				className="absolute -left-6 -top-6 h-screen backdrop-blur-md"
+				className='absolute -left-6 -top-6 h-screen backdrop-blur-md'
 				style={{ width: menuWidth }}
 			>
-				{children}
+				<div className='flex h-full w-full flex-col gap-2 p-6'>
+					<div className='h-1/3 w-full rounded bg-emerald-500' />
+					<div className='h-1/3 w-full rounded bg-amber-500' />
+					<div className='h-1/3 w-full rounded bg-indigo-500' />
+				</div>
 			</div>
 
 			<motion.div
@@ -58,20 +56,20 @@ function Create({
 					setIsOpenCreate((prevIsOpenCreate) => !prevIsOpenCreate)
 				}
 				variants={PlusVariants}
-				animate={isOpenCreate ? "open" : "closed"}
+				animate={isOpenCreate ? 'open' : 'closed'}
 			>
 				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
+					xmlns='http://www.w3.org/2000/svg'
+					fill='none'
+					viewBox='0 0 24 24'
 					strokeWidth={1.5}
-					stroke="currentColor"
-					className="h-6 w-6 cursor-pointer text-[#FF0000]"
+					stroke='currentColor'
+					className='h-6 w-6 cursor-pointer text-[#FF0000]'
 				>
 					<path
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						d="M12 4.5v15m7.5-7.5h-15"
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						d='M12 4.5v15m7.5-7.5h-15'
 					/>
 				</svg>
 			</motion.div>

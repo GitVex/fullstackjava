@@ -57,13 +57,7 @@ function PageComponent() {
 		<div className='h-screen overflow-hidden'>
 			<div className='flex h-full flex-col gap-6 p-6'>
 				<div className='flex w-full flex-row justify-between'>
-					<Create>
-						<div className='flex h-full w-full flex-col gap-2 p-6'>
-							<div className='h-1/3 w-full rounded bg-emerald-500' />
-							<div className='h-1/3 w-full rounded bg-amber-500' />
-							<div className='h-1/3 w-full rounded bg-indigo-500' />
-						</div>
-					</Create>
+					<Create/>
 
 					<div
 						className='flex justify-center'
@@ -89,13 +83,7 @@ function PageComponent() {
 						</svg>
 					</div>
 
-					<Filter>
-						<div className='flex h-full w-full flex-col gap-2 p-6'>
-							<div className='h-1/3 w-full rounded bg-emerald-500' />
-							<div className='h-1/3 w-full rounded bg-amber-500' />
-							<div className='h-1/3 w-full rounded bg-indigo-500' />
-						</div>
-					</Filter>
+					<Filter />
 				</div>
 
 				<Viewer className={`flex w-full flex-1 flex-row gap-6`}>
