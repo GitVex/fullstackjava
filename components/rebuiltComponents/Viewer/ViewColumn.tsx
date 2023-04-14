@@ -62,7 +62,7 @@ export function ViewColumn({
 
 	return (
 		<div className={className} style={style}>
-			<p className='my-2 w-full text-center capitalize underline'>
+			<p className='mb-2 w-full text-center capitalize'>
 				{type}
 			</p>
 			<ul className='m-2 flex max-h-full flex-col gap-2'>
