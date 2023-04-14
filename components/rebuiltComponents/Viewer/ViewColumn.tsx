@@ -41,7 +41,10 @@ export function ViewColumn({
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({}),
+			body: JSON.stringify({
+				filter: {},
+				origin: type,
+			}),
 		});
 		const res = await response.json();
 
