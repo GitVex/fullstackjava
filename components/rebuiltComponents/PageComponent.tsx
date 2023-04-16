@@ -19,7 +19,7 @@ function PageComponent() {
 
 	function renderDivs() {
 		if (windowWidth) {
-			let numberOfDivs: number, widthClass: string;
+			let widthClass: string;
 
 			if (windowWidth >= breakpoints.lg) {
 				widthClass = 'w-1/4';

@@ -32,6 +32,7 @@ export function ViewColumn({
 		{
 			enabled: true,
 			refetchInterval: 1000 * 60 * 20,
+			refetchOnWindowFocus: false,
 		}
 	);
 
