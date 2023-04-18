@@ -5,7 +5,7 @@ import { breakpoints } from './breakpoints';
 import FilterSideMenu from './Filter/FilterSideMenu';
 import { Viewer } from './Viewer/Viewer';
 import { ViewColumn } from './Viewer/ViewColumn';
-import FilterStateProvider from '../contexts/FilterStateProvider';
+import FilterStateProvider from '../contexts/RebuiltFilterStateProvider';
 
 function PageComponent() {
 	const [isOpenPlayer, setIsOpenPlayer] = useState(false);

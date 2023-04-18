@@ -2,7 +2,7 @@ import React from 'react';
 import {
 	useFilterState,
 	useFilterStateUpdate,
-} from '../../contexts/FilterStateProvider';
+} from '../../contexts/RebuiltFilterStateProvider';
 
 function FilterUI() {
 	const filterState = useFilterState();
