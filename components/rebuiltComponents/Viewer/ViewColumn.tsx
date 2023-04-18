@@ -52,20 +52,18 @@ export function ViewColumn({
 		return res;
 	}
 
-	useEffect(() => {
+	/* useEffect(() => {
 		data !== undefined
 			? console.log(
 					`${type} is fetching data from ${route}: `,
 					data?.slice(0, 5)
 			  )
 			: null;
-	}, [data]);
+	}, [data]); */
 
 	return (
 		<div className={className} style={style}>
-			<p className='mb-2 w-full text-center capitalize'>
-				{type}
-			</p>
+			<p className='mb-2 w-full text-center capitalize'>{type}</p>
 			<ul className='m-2 flex max-h-full flex-col gap-2'>
 				{isLoading ? (
 					<p>Loading...</p>
