@@ -1,47 +1,33 @@
-import React, { useContext, useState, useEffect } from 'react'
+// Context to manage the state of the filter and update when new tags are selected
+import React, { useState, useContext, useEffect } from 'react';
 
-const FilterStateContext = React.createContext([] as string[])
-const FilterStateUpdateContext = React.createContext((newFilterState: string[]) => console.log('No FilterStateProvider'))
-const FetchSignalContext = React.createContext(false)
-
-export function useFilterState() {
-    return useContext(FilterStateContext)
-}
+const FilterStateContext = React.createContext([] as string[]);
+export const FilterStateUpdateContext = React.createContext(
+	{} as React.Dispatch<React.SetStateAction<string[]>>
+);
 
 export function useFilterStateUpdate() {
-    return useContext(FilterStateUpdateContext)
+	return useContext(FilterStateUpdateContext);
 }
 
-export function usePingRefetch() {
-    return useContext(FetchSignalContext)
+export function useFilterState() {
+	return useContext(FilterStateContext);
 }
 
-export function FilterStateProvider({ children }: { children: React.ReactNode }) {
+function FilterStateProvider({ children }: { children?: React.ReactNode }) {
+	const [filterState, setFilterState] = useState([] as string[]);
 
-    const [filterState, setFilterState] = useState([] as string[])
-    const [refetchSignal, setRefetchSignal] = useState(false)
+	useEffect(() => {
+		console.log('FilterStateContext updated');
+	}, [filterState]);
 
-    function updateFilterState(newFilterState: string[]) {
-        setFilterState(newFilterState)
-    }
-
-    function pingRefetch() {
-        setRefetchSignal(refetchSignal => !refetchSignal)
-    }
-
-    useEffect(() => {
-        pingRefetch()
-    }, [filterState])
-
-    return (
-        <FilterStateContext.Provider value={filterState}>
-            <FilterStateUpdateContext.Provider value={updateFilterState}>
-                <FetchSignalContext.Provider value={refetchSignal}>
-                    {children}
-                </FetchSignalContext.Provider>
-            </FilterStateUpdateContext.Provider>
-        </FilterStateContext.Provider>
-    )
+	return (
+		<FilterStateContext.Provider value={filterState}>
+			<FilterStateUpdateContext.Provider value={setFilterState}>
+				{children}
+			</FilterStateUpdateContext.Provider>
+		</FilterStateContext.Provider>
+	);
 }
 
-export default FilterStateProvider
+export default FilterStateProvider;

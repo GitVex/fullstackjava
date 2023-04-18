@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import WindowWidthContext from '../contexts/WindowSizeProvider';
-import { breakpoints } from './breakpoints';
+import WindowWidthContext from '../../contexts/WindowSizeProvider';
+import { breakpoints } from '../breakpoints';
 import { motion } from 'framer-motion';
+import FilterUI from './FilterUI';
 
 const menuWidth = 420;
 
@@ -24,7 +25,11 @@ const FilterIconVariants = {
 	},
 };
 
-function Filter({ children }: { children?: React.ReactNode }) {
+export default function FilterSideMenu({
+	children,
+}: {
+	children?: React.ReactNode;
+}) {
 	const [isOpenFilter, setIsOpenFilter] = useState(false);
 
 	const context = useContext(WindowWidthContext);
@@ -82,14 +87,8 @@ function Filter({ children }: { children?: React.ReactNode }) {
 				}
 				style={{ width: menuWidth }}
 			>
-				<div className='flex h-full w-full flex-col gap-2 p-6'>
-					<div className='h-1/3 w-full rounded bg-emerald-500' />
-					<div className='h-1/3 w-full rounded bg-amber-500' />
-					<div className='h-1/3 w-full rounded bg-indigo-500' />
-				</div>
+				<FilterUI />
 			</motion.div>
 		</motion.div>
 	);
 }
-
-export default Filter;
