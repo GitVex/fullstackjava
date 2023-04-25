@@ -29,7 +29,7 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
         max_tokens: 256,
     });
 
-    console.log(response.data.choices[0].text);
+    console.log(response);
 
     res.status(200).json(response);
 }
