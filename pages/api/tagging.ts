@@ -23,7 +23,7 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
     const prompt = 'Please create a raw string without formatting of 5 tags for the given track title: "' + title + '" by "' + artist + '". ' + options.join('. ')
 
     const response = await openai.createCompletion({
-        model: "text-davinci-003",
+        model: "gpt-3.5-turbo-0301",
         prompt: prompt,
         temperature: 0.5,
         max_tokens: 256,
@@ -31,7 +31,7 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
 
     console.log(response.data.choices[0].text);
 
-    res.status(200).json(response.data.choices[0].text);
+    res.status(200).json(response);
 }
 
 export default tagging;
