@@ -8,8 +8,8 @@ generator client {
 
 datasource db {
   provider          = "postgresql"
-  url               = env("NEXT_PUBLIC_DATABASE_URL")
-  // shadowDatabaseUrl = env("NEXT_PUBLIC_SHADOW_DATABASE_URL")
+  url               = env("DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model track {
