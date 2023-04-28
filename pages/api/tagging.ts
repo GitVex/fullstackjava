@@ -27,14 +27,14 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
         }
         catch (err) {
             console.log(err);
-            res.status(500).json({ error: err });
+            res.status(500).json(err);
         }
 
         res.status(200).json(response);
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({ error: err });
+        res.status(500).json(err);
     }
 };
 
