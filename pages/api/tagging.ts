@@ -36,5 +36,6 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
         console.log(err);
         res.status(500).json({ error: err });
     }
+};
 
     export default tagging;
