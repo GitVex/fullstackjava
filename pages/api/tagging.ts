@@ -11,6 +11,8 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
 
     try {
 
+        console.log('req.body', req.body);
+
         let response;
         const { title, artist } = req.body.prompt;
 
@@ -26,14 +28,14 @@ const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
             response = gptResponse.data.choices[0];
         }
         catch (err) {
-            console.log(err);
+            console.log('query error', err);
             res.status(500).json(err);
         }
 
         res.status(200).json(response);
 
     } catch (err) {
-        console.log(err);
+        console.log('general error', err);
         res.status(500).json(err);
     }
 };
