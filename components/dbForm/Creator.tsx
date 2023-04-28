@@ -52,9 +52,9 @@ function Creator() {
             body: JSON.stringify(data)
         })
 
-        console.log(response)
-
         const tags = await response.json()
+        
+        console.log(response)
         return tags
     }
 
