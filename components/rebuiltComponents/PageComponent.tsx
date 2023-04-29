@@ -17,124 +17,48 @@ function PageComponent() {
 	const context = useContext(WindowSizeContext);
 	const windowWidth = context?.windowWidth;
 	const windowHeight = context?.windowHeight;
+	  
+	  function renderDivs() {
+		function renderViewColumn(widthClass: string, type?: string) {
+			return (
+			  <ViewColumn
+				className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-500/25`}
+				style={
+				  windowHeight
+					? { height: windowHeight - 4 * 24 }
+					: { height: '100%' }
+				}
+				type={type}
+			  />
+			);
+		  }
 
-	function renderDivs() {
 		if (windowWidth) {
-			let widthClass: string;
-
-			if (windowWidth >= breakpoints.lg) {
-				widthClass = 'w-1/4';
-				return (
-					<>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='new'
-						/>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='trend'
-						/>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='filter'
-						/>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='owned'
-						/>
-					</>
-				);
-			} else if (windowWidth >= breakpoints.md) {
-				widthClass = 'w-1/3';
-				return (
-					<>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='new'
-						/>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='filter'
-						/>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='trend'
-						/>
-					</>
-				);
-			} else if (windowWidth >= breakpoints.sm) {
-				widthClass = 'w-1/2';
-				return (
-					<>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-						/>
-						<ViewColumn
-							className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-							style={
-								windowHeight
-									? { height: windowHeight - 4 * 24 }
-									: { height: '100%' }
-							}
-							type='trend'
-						/>
-					</>
-				);
-			} else {
-				widthClass = 'w-full';
-				return (
-					<ViewColumn
-						className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-slate-500/25`}
-						style={
-							windowHeight
-								? { height: windowHeight - 4 * 24 }
-								: { height: '100%' }
-						}
-					/>
-				);
-			}
+		  let widthClass: string;
+		  let columns: string[];
+	  
+		  if (windowWidth >= breakpoints.lg) {
+			widthClass = 'w-1/4';
+			columns = ['new', 'trend', 'filter', 'owned'];
+		  } else if (windowWidth >= breakpoints.md) {
+			widthClass = 'w-1/3';
+			columns = ['new', 'filter', 'trend'];
+		  } else if (windowWidth >= breakpoints.sm) {
+			widthClass = 'w-1/2';
+			columns = ['new', 'trend'];
+		  } else {
+			widthClass = 'w-full';
+			return renderViewColumn(widthClass);
+		  }
+	  
+		  return (
+			<>
+			  {columns.map((columnType) => renderViewColumn(widthClass, columnType))}
+			</>
+		  );
 		}
-	}
+	  }
+	  
 
 	return (
 		<div className='h-screen overflow-hidden'>
