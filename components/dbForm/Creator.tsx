@@ -5,35 +5,10 @@ import Affirmator from '../utils/Affirmator'
 
 function Creator() {
 
-    const [tags, setTags] = useState([] as string[])
+    const [tags, setTags] = useState([])
     const [title, setTitle] = useState('')
     const [affirmState, setAffirmState] = useState(false)
     const [isPresent, setIsPresent] = useState(false)
-
-    function customSort(a: string, b: string): number {
-        const specialStrings = ['Ambience', 'Music', 'standalone'];
-      
-        const aIndex = specialStrings.indexOf(a);
-        const bIndex = specialStrings.indexOf(b);
-      
-        // If both a and b are special strings, sort them based on their index in the specialStrings array
-        if (aIndex !== -1 && bIndex !== -1) {
-          return aIndex - bIndex;
-        }
-      
-        // If a is a special string and b is not, a should come first
-        if (aIndex !== -1) {
-          return -1;
-        }
-      
-        // If b is a special string and a is not, b should come first
-        if (bIndex !== -1) {
-          return 1;
-        }
-      
-        // If neither a nor b are special strings, sort them alphabetically
-        return a.localeCompare(b);
-      }
 
     const callbackRequest = async (data: any) => {
         const response = await fetch('/api/create', {
@@ -78,8 +53,6 @@ function Creator() {
         })
 
         const tags = await response.json()
-        
-        console.log(response)
         return tags
     }
 
@@ -98,16 +71,12 @@ function Creator() {
         setTitle(title)
         const author = res.author_name
 
-        callbackRequestTagRecommendation({ prompt: { title: title, artist: author } }).then((tags_raw: string) => {
+        callbackRequestTagRecommendation({ prompt: { title: title, artist: author } }).then((tags: any) => {
             // replace quotes, \n and \r with nothing
-            tags_raw = tags_raw.replace(/['"]+/g, '')
-            tags_raw = tags_raw.replace(/[\n\r]+/g, '')
+            tags = tags.replace(/['"]+/g, '')
+            tags = tags.replace(/[\n\r]+/g, '')
             // split the string into an array
-            const tags = tags_raw.split(',')
-
-            // sort the tags so that either Ambience, Music or standalone tags are first
-            tags.sort(customSort)
-
+            tags = tags.split(',')
             setTags(tags)
         }
         )

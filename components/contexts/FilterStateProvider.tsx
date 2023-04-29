@@ -16,7 +16,7 @@ export function usePingRefetch() {
     return useContext(FetchSignalContext)
 }
 
-export function FilterStateProvider({ children }: any) {
+export function FilterStateProvider({ children }: { children: React.ReactNode }) {
 
     const [filterState, setFilterState] = useState([] as string[])
     const [refetchSignal, setRefetchSignal] = useState(false)

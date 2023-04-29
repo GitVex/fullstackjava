@@ -10,7 +10,7 @@ export function useFetchSignal() {
 export function useFetchSignalUpdate() {
     return useContext(FetchSignalUpdateContext)
 }
-export function FetchSignalProvider({ children }: any) {
+export function FetchSignalProvider({ children }: { children: React.ReactNode }) {
 
     const [refetchSignal, setRefetchSignal] = useState(false)
 
