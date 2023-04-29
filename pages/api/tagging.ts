@@ -9,29 +9,19 @@ const openai = new OpenAIApi(configuration);
 
 const tagging = async (req: NextApiRequest, res: NextApiResponse) => {
 
-    const title = req.body.prompt.title;
-    const artist = req.body.prompt.artist;
+    const { title, artist } = req.body;
 
-    const options = [
-        "Example: 'rock, pop, alternative, indie, alternative rock'",
-        "Try to categorize the tracks into either 'ambience' or 'music', but not both",
-        "Refrain from using more than one word per tag",
-        "do not add special characters to tags like # or @",
-        "translate tags to english.",
-    ]
-    
-    const prompt = 'Please create a raw string without formatting of 5 tags for the given track title: "' + title + '" by "' + artist + '". ' + options.join('. ')
+    const gptResponse = await
+                openai.createChatCompletion({
+                    model: "gpt-4",
+                    messages: [
+                        { "role": "system", "content": "You are a helpful assistant that likes to tag youtube video titles. Example: 'rock, pop, alternative, indie, alternative rock'. Refrain from using more than one word per tag and seperate the tags by ','. Do not add special characters to tags like # or @. Translate tags to english." },
+                        { "role": "user", "content": "Please create a raw string without formatting of 5 tags for the given track title: '" + title + "' by '" + artist + "'. Try to categorize the tracks into either 'ambience', 'music' or 'standalone'(music & ambience) track? Try to use tags that describe the scene which the track portrays" },
+                    ]
+                })
+            const response = gptResponse.data.choices[0].message?.content;
 
-    const response = await openai.createCompletion({
-        model: "gpt-3.5-turbo",
-        prompt: prompt,
-        temperature: 0.5,
-        max_tokens: 256,
-    });
-
-    console.log(response.data.choices[0].text);
-
-    res.status(200).json(response.data.choices[0].text);
+    res.status(200).json(response);
 }
 
 export default tagging;
