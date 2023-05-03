@@ -22,7 +22,7 @@ function PageComponent() {
 		function renderViewColumn(widthClass: string, type?: string) {
 			return (
 			  <ViewColumn
-				className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-500/25`}
+				className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25`}
 				style={
 				  windowHeight
 					? { height: windowHeight - 4 * 24 }
