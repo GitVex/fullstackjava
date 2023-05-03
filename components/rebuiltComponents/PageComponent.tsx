@@ -81,7 +81,7 @@ function PageComponent() {
 								viewBox='0 0 24 24'
 								strokeWidth={1.5}
 								stroke='currentColor'
-								className='h-6 w-6 scale-x-[350%] cursor-pointer text-[#FF0000]'
+								className='h-6 w-6 scale-x-[350%] cursor-pointer text-red-600'
 							>
 								<path
 									strokeLinecap='round'
