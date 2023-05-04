@@ -1,19 +1,15 @@
 // pages/index.tsx
 import React from 'react';
 import NotificationButton from '../components/utils/NotificationButton';
+import FilterUI from '../components/rebuiltComponents/Filter/FilterUI';
+import FilterStateProvider from '../components/contexts/RebuiltFilterStateProvider';
 
 const NotificationPopup: React.FC = () => {
 	return (
-		<div className='flex min-h-screen items-center justify-around bg-black'>
-			<NotificationButton
-				buttonText='Click me!'
-				notificationText='Button pressed!'
-			/>
-
-			<NotificationButton
-				buttonText='Click me!'
-				notificationText='Button pressed!'
-			/>
+		<div className='flex h-screen items-center justify-around bg-black'>
+			<FilterStateProvider>
+				<FilterUI />
+			</FilterStateProvider>
 		</div>
 	);
 };

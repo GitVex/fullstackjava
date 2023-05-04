@@ -18,7 +18,7 @@ function FilterStateProvider({ children }: { children?: React.ReactNode }) {
 	const [filterState, setFilterState] = useState([] as string[]);
 
 	useEffect(() => {
-		console.log('FilterStateContext updated');
+		console.log('FilterStateContext updated to: ', filterState);
 	}, [filterState]);
 
 	return (

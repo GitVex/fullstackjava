@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import WindowWidthContext from '../contexts/WindowSizeProvider';
-import { breakpoints } from './breakpoints';
+import { breakpoints } from '../utils/breakpoints';
 import { motion } from 'framer-motion';
 
 const menuWidth = 420;
@@ -39,7 +39,7 @@ function Create({ className }: { className?: string }) {
 			variants={SideBarVariants}
 		>
 			<div
-				className='absolute -left-6 -top-6 h-screen backdrop-blur-md'
+				className='absolute -left-6 -top-6 h-screen backdrop-blur-md z-10'
 				style={{ width: menuWidth }}
 			>
 				<div className='flex h-full w-full flex-col gap-2 p-6'>

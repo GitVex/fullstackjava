@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
 import ListItem from './ListItem';
+import { useFilterState } from '../../contexts/RebuiltFilterStateProvider';
 
 export function ViewColumn({
 	children,
@@ -15,22 +16,27 @@ export function ViewColumn({
 	style?: React.CSSProperties;
 	type?: string;
 }) {
+
+	const filterState = useFilterState();
+
 	let route = '/api/rebuilt/list';
 	if (type === 'new') {
 		route = '/api/rebuilt/new';
 	} else if (type === 'trend') {
 		route = '/api/rebuilt/list';
 	} else if (type === 'filter') {
-		route = '/api/rebuilt/list';
+		route = '/api/rebuilt/filter';
 	} else if (type === 'owned') {
+		route = '/api/rebuilt/list';
+	} else {
 		route = '/api/rebuilt/list';
 	}
 
-	const { isLoading, error, data } = useQuery<track[], Error>(
+	const { isLoading, error, data, refetch } = useQuery<track[], Error>(
 		['items', type],
 		fetchData,
 		{
-			enabled: true,
+			enabled: route === '/api/rebuilt/filter' ? false : true,
 			refetchInterval: 1000 * 60 * 20,
 			refetchOnWindowFocus: false,
 		}
@@ -43,7 +49,7 @@ export function ViewColumn({
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				filter: {},
+				filter: filterState,
 				origin: type,
 			}),
 		});
@@ -52,14 +58,11 @@ export function ViewColumn({
 		return res;
 	}
 
-	/* useEffect(() => {
-		data !== undefined
-			? console.log(
-					`${type} is fetching data from ${route}: `,
-					data?.slice(0, 5)
-			  )
-			: null;
-	}, [data]); */
+	useEffect(() => {
+		if (route === '/api/rebuilt/filter') {
+			refetch();
+		}
+	}, [filterState]);
 
 	return (
 		<div className={className} style={style}>

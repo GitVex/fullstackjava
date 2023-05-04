@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
 import Create from './Create';
-import { breakpoints } from './breakpoints';
+import { breakpoints } from '../utils/breakpoints';
 import FilterSideMenu from './Filter/FilterSideMenu';
 import { Viewer } from './Viewer/Viewer';
 import { ViewColumn } from './Viewer/ViewColumn';
@@ -9,10 +9,6 @@ import FilterStateProvider from '../contexts/RebuiltFilterStateProvider';
 
 function PageComponent() {
 	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
-
-	useEffect(() => {
-		console.log(isOpenPlayer);
-	}, [isOpenPlayer]);
 
 	const context = useContext(WindowSizeContext);
 	const windowWidth = context?.windowWidth;
@@ -39,7 +35,7 @@ function PageComponent() {
 	  
 		  if (windowWidth >= breakpoints.lg) {
 			widthClass = 'w-1/4';
-			columns = ['new', 'trend', 'filter', 'owned'];
+			columns = ['new', 'filter', 'trend', 'owned'];
 		  } else if (windowWidth >= breakpoints.md) {
 			widthClass = 'w-1/3';
 			columns = ['new', 'filter', 'trend'];
