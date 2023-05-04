@@ -10,7 +10,6 @@ function FilterUI() {
 	const setFilterState = useFilterStateUpdate();
 
 	const [search, setSearch] = useState('');
-	const [tags, setTags] = useState<string[]>([]);
 
 	const globalDisable = false;
 
@@ -184,6 +183,8 @@ function FilterUI() {
 		'computers',
 	];
 
+	const [tags, setTags] = useState<string[]>(testArray);
+
 	const onChangeCallback = (e: any) => {
 		const { checked, name } = e.target;
 
@@ -196,19 +197,14 @@ function FilterUI() {
 		});
 	};
 
-	useEffect(() => {
-		console.log('filterState', filterState);
-		setTags(testArray);
-	}, [filterState]);
-
 	return (
-		<div className='flex h-full w-full flex-col gap-2 p-6'>
-			<div className='h-1/2 w-full rounded bg-emerald-500 p-6'>
-				<div className='flex max-h-full w-full flex-row flex-wrap gap-2'>
+		<div className='flex h-full w-full flex-col gap-2 p-6 s'>
+			<div className='h-full w-full rounded bg-blue-500/25 p-6'>
+				<div className='flex max-h-full w-full flex-row flex-wrap gap-2 overflow-scroll'>
 					<div className='h-1/6 w-full'>
-						<input
+						<input 
 							type='text'
-							className='h-full w-full rounded bg-gray-800/50 p-2'
+							className='h-full w-full rounded bg-indigo-800/75 p-2'
 							placeholder='Search...'
 							onChange={(e) => {
 								setSearch(e.target.value);
@@ -231,8 +227,6 @@ function FilterUI() {
 					})}
 				</div>
 			</div>
-			<div className='h-1/4 w-full rounded bg-amber-500' />
-			<div className='h-1/4 w-full rounded bg-indigo-500' />
 		</div>
 	);
 }
