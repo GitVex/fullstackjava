@@ -1,5 +1,6 @@
 import React from 'react';
 import { track } from '@prisma/client';
+import NotificationButton from '../../utils/NotificationButton';
 
 function ListItem({ item }: { item: track }) {
 	return (
@@ -18,15 +19,14 @@ function ListItem({ item }: { item: track }) {
 					</p>
 				</div>
 			</div>
-			<button
+			<NotificationButton
 				onClick={() => navigator.clipboard.writeText(item.url)}
-				className='rounded bg-indigo-600/20 px-2 py-1 text-xs font-semibold text-white'
-			>
-				Copy
-			</button>
-			<button className='rounded bg-indigo-600/20 px-2 py-1 text-xs font-semibold text-white'>
-				Add
-			</button>
+				buttonText='Copy'
+			/>
+			<NotificationButton
+				onClick={() => {}}
+				buttonText='Add'
+			/>
 		</div>
 	);
 }

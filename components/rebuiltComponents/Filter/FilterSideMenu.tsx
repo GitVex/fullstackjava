@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import WindowWidthContext from '../../contexts/WindowSizeProvider';
-import { breakpoints } from '../breakpoints';
+import { breakpoints } from '../../utils/breakpoints';
 import { motion } from 'framer-motion';
 import FilterUI from './FilterUI';
 
@@ -37,7 +37,7 @@ export default function FilterSideMenu({
 
 	return (
 		<motion.div
-			className='relative flex h-fit flex-row gap-2'
+			className='relative flex h-fit flex-row gap-2 z-10'
 			variants={SideBarVariants}
 			animate={isOpenFilter ? 'open' : 'closed'}
 			initial='closed'
