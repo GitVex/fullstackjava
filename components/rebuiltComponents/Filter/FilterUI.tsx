@@ -4,6 +4,7 @@ import {
 	useFilterStateUpdate,
 } from '../../contexts/RebuiltFilterStateProvider';
 import TagItem from './TagItem';
+import { useQuery } from 'react-query';
 
 function FilterUI() {
 	const filterState = useFilterState();
@@ -13,7 +14,7 @@ function FilterUI() {
 
 	const globalDisable = false;
 
-	const testArray = [
+	/* const testArray = [
 		'programming',
 		'coding',
 		'photography',
@@ -182,8 +183,9 @@ function FilterUI() {
 		'smartphones',
 		'computers',
 	];
+ */
 
-	const [tags, setTags] = useState<string[]>(testArray);
+	const [tags, setTags] = useState<string[]>([]);
 
 	const onChangeCallback = (e: any) => {
 		const { checked, name } = e.target;
@@ -197,12 +199,34 @@ function FilterUI() {
 		});
 	};
 
+	useEffect(() => {
+		(async () => {
+			const res = await fetch('/api/rebuilt/tags', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ filter: filterState }),
+			});
+			const tagNames = await res.json();
+
+			if (Array.isArray(tagNames)) {
+				setTags(tagNames as string[]);
+			} else {
+				console.error(
+					'Unknown data type on api response',
+					typeof tagNames
+				);
+			}
+		})();
+	}, [filterState]);
+
 	return (
-		<div className='flex h-full w-full flex-col gap-2 p-6 s'>
+		<div className='s flex h-full w-full flex-col gap-2 p-6'>
 			<div className='h-full w-full rounded bg-blue-500/25 p-6'>
 				<div className='flex max-h-full w-full flex-row flex-wrap gap-2 overflow-scroll'>
 					<div className='h-1/6 w-full'>
-						<input 
+						<input
 							type='text'
 							className='h-full w-full rounded bg-indigo-800/75 p-2'
 							placeholder='Search...'
@@ -211,7 +235,7 @@ function FilterUI() {
 							}}
 						/>
 					</div>
-					{tags.map((tag, index) => {
+					{tags.sort().map((tag, index) => {
 						return (
 							(tag.includes(search) ||
 								search === '' ||
@@ -221,6 +245,7 @@ function FilterUI() {
 									index={index}
 									globalDisable={globalDisable}
 									onChangeCallback={onChangeCallback}
+									isInFilter={filterState.includes(tag)}
 								/>
 							)
 						);

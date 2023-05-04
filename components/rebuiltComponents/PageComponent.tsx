@@ -10,10 +10,6 @@ import FilterStateProvider from '../contexts/RebuiltFilterStateProvider';
 function PageComponent() {
 	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
 
-	useEffect(() => {
-		console.log(isOpenPlayer);
-	}, [isOpenPlayer]);
-
 	const context = useContext(WindowSizeContext);
 	const windowWidth = context?.windowWidth;
 	const windowHeight = context?.windowHeight;
@@ -39,7 +35,7 @@ function PageComponent() {
 	  
 		  if (windowWidth >= breakpoints.lg) {
 			widthClass = 'w-1/4';
-			columns = ['new', 'trend', 'filter', 'owned'];
+			columns = ['new', 'filter', 'trend', 'owned'];
 		  } else if (windowWidth >= breakpoints.md) {
 			widthClass = 'w-1/3';
 			columns = ['new', 'filter', 'trend'];
