@@ -6,6 +6,7 @@ import FilterSideMenu from './Filter/FilterSideMenu';
 import { Viewer } from './Viewer/Viewer';
 import { ViewColumn } from './Viewer/ViewColumn';
 import FilterStateProvider from '../contexts/RebuiltFilterStateProvider';
+import CreateSideMenu from './Creator/CreateSideMenu';
 
 function PageComponent() {
 	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
@@ -41,7 +42,7 @@ function PageComponent() {
 			columns = ['new', 'filter', 'trend'];
 		  } else if (windowWidth >= breakpoints.sm) {
 			widthClass = 'w-1/2';
-			columns = ['new', 'trend'];
+			columns = ['filter', 'new'];
 		  } else {
 			widthClass = 'w-full';
 			return renderViewColumn(widthClass);
@@ -61,7 +62,7 @@ function PageComponent() {
 			<div className='flex h-full flex-col gap-6 p-6'>
 				<FilterStateProvider>
 					<div className='flex w-full flex-row justify-between'>
-						<Create />
+						<CreateSideMenu />
 
 						<div
 							className='flex justify-center'
