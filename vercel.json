@@ -2,7 +2,7 @@
     "crons": [
         {
             "path": "/api/cron/removeUnavailableEntries",
-            "schedule": "0 0 * * *"
+            "schedule": "0 1 * * *"
         }
     ]
 }
