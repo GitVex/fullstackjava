@@ -1,7 +1,7 @@
 {
     "crons": [
         {
-            "path": "/api/cron",
+            "path": "/api/cron/removeUnavailableEntries",
             "schedule": "0 0 * * *"
         }
     ]
