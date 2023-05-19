@@ -46,5 +46,5 @@ model log {
   time      DateTime @default(now())
   type      String
   message   String
-  data      String[]
+  history   String[]
 }
