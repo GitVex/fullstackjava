@@ -4,7 +4,7 @@ import { breakpoints } from '../../utils/breakpoints';
 import { motion } from 'framer-motion';
 import FilterUI from './FilterUI';
 
-const menuWidth = 420;
+const menuWidth = 500;
 
 const SideBarVariants = {
 	closed: {

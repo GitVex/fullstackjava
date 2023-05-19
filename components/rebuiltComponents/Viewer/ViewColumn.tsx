@@ -4,6 +4,8 @@ import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
 import ListItem from './ListItem';
 import { useFilterState } from '../../contexts/RebuiltFilterStateProvider';
+import { motion, AnimatePresence } from 'framer-motion';
+import LoadingAnim from '../../utils/LoadingAnimDismount';
 
 export function ViewColumn({
 	children,
@@ -16,7 +18,6 @@ export function ViewColumn({
 	style?: React.CSSProperties;
 	type?: string;
 }) {
-
 	const filterState = useFilterState();
 
 	let route = '/api/rebuilt/list';
@@ -67,23 +68,27 @@ export function ViewColumn({
 	return (
 		<div className={className} style={style}>
 			<p className='mb-2 w-full text-center capitalize'>{type}</p>
-			<ul className='m-2 flex max-h-full flex-col gap-2'>
+			<AnimatePresence mode='wait'>
 				{isLoading ? (
-					<p>Loading...</p>
+						<motion.div key='loader' className='self-center'>
+							<LoadingAnim />
+						</motion.div>
 				) : error ? (
 					<p>Error: {error.message}</p>
 				) : data ? (
-					data.map((item) => {
-						return (
-							<li key={item.id}>
-								<ListItem item={item} />
-							</li>
-						);
-					})
+					<ul className='m-2 flex max-h-full flex-col gap-2'>
+						{data?.map((item) => {
+							return (
+								<li key={item.id}>
+									<ListItem item={item} />
+								</li>
+							);
+						})}
+					</ul>
 				) : (
 					<p>no data</p>
 				)}
-			</ul>
+			</AnimatePresence>
 		</div>
 	);
 }
