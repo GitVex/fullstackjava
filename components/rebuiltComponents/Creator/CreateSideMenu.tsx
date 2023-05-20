@@ -4,7 +4,7 @@ import { breakpoints } from '../../utils/breakpoints';
 import { motion } from 'framer-motion';
 import CreateUI from './CreateUI';
 
-const menuWidth = 420;
+const menuWidth = 500;
 
 const SideBarVariants = {
 	closed: {
@@ -25,7 +25,7 @@ const PlusVariants = {
 };
 
 function CreateSideMenu({ className }: { className?: string }) {
-	const [isOpenCreate, setIsOpenCreate] = useState(false);
+	const [isOpenCreate, setIsOpenCreate] = useState(true);
 
 	const context = useContext(WindowWidthContext);
 	const windowWidth = context?.windowWidth;
