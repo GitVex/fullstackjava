@@ -3,7 +3,7 @@ import WindowWidthContext from '../contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import { motion } from 'framer-motion';
 
-const menuWidth = 420;
+const menuWidth = 500;
 
 const SideBarVariants = {
 	closed: {

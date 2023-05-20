@@ -1,0 +1,8 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/removeUnavailableEntries",
+            "schedule": "0 1 * * *"
+        }
+    ]
+} 

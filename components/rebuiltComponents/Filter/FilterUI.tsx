@@ -223,12 +223,12 @@ function FilterUI() {
 
 	return (
 		<div className='s flex h-full w-full flex-col gap-2 p-6'>
-			<div className='h-full w-full rounded bg-blue-500/25 p-6'>
+			<div className='h-full w-full rounded bg-blue-800/25 p-6'>
 				<div className='flex max-h-full w-full flex-row flex-wrap gap-2 overflow-scroll'>
 					<div className='h-1/6 w-full'>
 						<input
 							type='text'
-							className='h-full w-full rounded bg-indigo-800/75 p-2'
+							className='h-full w-full rounded bg-indigo-800/25 p-2'
 							placeholder='Search...'
 							onChange={(e) => {
 								setSearch(e.target.value);
