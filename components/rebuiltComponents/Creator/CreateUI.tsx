@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
-interface videoData {
+export interface videoData {
 	author_name: string;
 	author_url: string;
 	height: number;
