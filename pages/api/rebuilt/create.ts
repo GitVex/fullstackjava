@@ -5,19 +5,18 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
-    const { title, author_name, url, platform, tags } = req.body;
+    const { title, author_name, url, provider_url, tags } = req.body;
 
     const connectOrCreateQuery = buildQuery(tags);
 
-    console.log(title, author_name, url, platform, tags, connectOrCreateQuery);
-    return res.json(req.body);
+    console.log(title, author_name, url, provider_url, tags, connectOrCreateQuery);
 
     const createTrack = await prisma.track.create({
         data: {
             title: title,
             artist: author_name,
             url: url,
-            platform: platform,
+            platform: provider_url,
             tags: {
                 connectOrCreate: connectOrCreateQuery,
             },
@@ -32,11 +31,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         data: {
             time: new Date(),
             type: 'create',
-            message: `Created new track: ${title} by ${artist}`,
+            // later: log user id
+            message: `Created new track: ${title} by ${author_name}`,
             history: JSON.stringify(createTrack),
         },
     });
 
 
-    res.json(createTrack);
+    res.json([createTrack, logNewTrack]);
 }

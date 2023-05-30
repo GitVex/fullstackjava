@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 
 interface videoData {
 	author_name: string;
@@ -20,12 +21,12 @@ function CreateUI() {
 	const [url, setUrl] = useState('');
 	const [tags, setTags] = useState('');
 	const [isPresent, setIsPresent] = useState(false);
+	const [isSubmittable, setIsSubmittable] = useState(false);
 
 	const [focussedVideo, setFocussedVideo] = useState({} as videoData);
 
 	const validateUrl = (url: string) => {
 		const re = /^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-		console.log(re.test(url));
 		return re.test(url);
 	};
 
@@ -45,6 +46,7 @@ function CreateUI() {
 
 		if (!url) {
 			setFocussedVideo({} as videoData);
+			setIsPresent(false);
 			return;
 		}
 
@@ -56,6 +58,17 @@ function CreateUI() {
 		}
 	};
 
+	const unBlurTagsFieldHandler = (e: React.FocusEvent<HTMLInputElement>) => {
+		const tags = e.target.value;
+
+		if (!tags) {
+			setTags('');
+			return;
+		}
+
+		setTags(tags);
+	};
+
 	const checkPresence = async (url: string) => {
 		const res = await fetch('/api/rebuilt/presenceCheck', {
 			method: 'POST',
@@ -65,8 +78,6 @@ function CreateUI() {
 			body: JSON.stringify({ url }),
 		});
 		const presence = await res.json();
-
-		console.log(presence.status);
 
 		setIsPresent(presence.status);
 	};
@@ -101,11 +112,21 @@ function CreateUI() {
 		const data = await res.json();
 
 		console.log(data);
-
-		// if successful, clear the fields
-		setUrl('');
-		setTags('');
+		checkPresence(url);
 	};
+
+	useMemo(() => {
+
+		console.log('useMemo called', url, tags, isPresent);
+
+		if (url && tags && !isPresent) {
+			console.log('setting isSubmittable to true');
+			setIsSubmittable(true);
+		} else {
+			console.log('setting isSubmittable to false');
+			setIsSubmittable(false);
+		}
+	}, [url, tags, isPresent]);
 
 	return (
 		<main className='flex h-full w-full flex-col gap-2 p-6'>
@@ -133,21 +154,28 @@ function CreateUI() {
 								onBlur={unBlurUrlFieldHandler}
 							/>
 							<label
-								htmlFor='url'
+								htmlFor='tags'
 								className='text-center align-middle'
 							>
 								Tags
 							</label>
 							<input
 								type='text'
-								name='url'
-								id='url'
+								name='tags'
+								id='tags'
 								className='rounded bg-indigo-800/50 p-1'
+								onBlur={unBlurTagsFieldHandler}
 							/>
 						</fieldset>
-						<button className='place-self-center rounded bg-indigo-800/50 p-1'>
+						<motion.button
+							className={`place-self-center rounded p-1 text-white
+    							${isSubmittable ? 'bg-indigo-800/50' : 'cursor-not-allowed bg-gray-700/25'}`}
+							disabled={!isSubmittable}
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+						>
 							Submit
-						</button>
+						</motion.button>
 					</form>
 				</div>
 			</section>
@@ -158,7 +186,7 @@ function CreateUI() {
 				<span className='w-full truncate text-center text-lg'>
 					{focussedVideo.title}
 				</span>
-				<div className='w-fit flex-grow p-2'>
+				<div className='w-fit p-2'>
 					{focussedVideo && (
 						/* insert iframe from focussedVideo.html here */
 						<div
@@ -169,9 +197,9 @@ function CreateUI() {
 						/>
 					)}
 				</div>
-				<span className='text-md w-full truncate text-center text-red-600'>
-						{isPresent && "... It's already in here!"}
-					</span>
+				<span className='text-md w-full flex-grow truncate text-center text-red-600'>
+					{isPresent && "... It's already in here!"}
+				</span>
 			</section>
 		</main>
 	);
