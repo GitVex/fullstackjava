@@ -4,7 +4,7 @@ import { breakpoints } from '../../utils/breakpoints';
 import { motion } from 'framer-motion';
 import FilterUI from './FilterUI';
 
-const menuWidth = 420;
+const menuWidth = 500;
 
 const SideBarVariants = {
 	closed: {
@@ -37,7 +37,7 @@ export default function FilterSideMenu({
 
 	return (
 		<motion.div
-			className='relative flex h-fit flex-row gap-2 z-10'
+			className='relative z-10 flex h-fit flex-row gap-2'
 			variants={SideBarVariants}
 			animate={isOpenFilter ? 'open' : 'closed'}
 			initial='closed'

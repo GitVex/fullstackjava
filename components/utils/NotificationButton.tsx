@@ -25,7 +25,7 @@ const NotificationButton: React.FC<NotificationButtonProps> = ({
 	};
 
 	return (
-		<div className='relative' onClick={onClick}>
+		<div className='relative z-0' onClick={onClick}>
 			<AnimatePresence>
 				{showNotification && (
 					<motion.div

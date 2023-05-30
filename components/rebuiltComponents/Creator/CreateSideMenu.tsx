@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
-import WindowWidthContext from '../contexts/WindowSizeProvider';
-import { breakpoints } from '../utils/breakpoints';
+import WindowWidthContext from '../../contexts/WindowSizeProvider';
+import { breakpoints } from '../../utils/breakpoints';
 import { motion } from 'framer-motion';
+import CreateUI from './CreateUI';
 
 const menuWidth = 500;
 
@@ -23,7 +24,7 @@ const PlusVariants = {
 	},
 };
 
-function Create({ className }: { className?: string }) {
+function CreateSideMenu({ className }: { className?: string }) {
 	const [isOpenCreate, setIsOpenCreate] = useState(false);
 
 	const context = useContext(WindowWidthContext);
@@ -31,7 +32,7 @@ function Create({ className }: { className?: string }) {
 
 	return windowWidth !== undefined &&
 		windowWidth !== null &&
-		windowWidth >= breakpoints.md ? (
+		windowWidth >= breakpoints.sm ? (
 		<motion.div
 			className={`relative ${className}`}
 			animate={isOpenCreate ? 'open' : 'closed'}
@@ -39,18 +40,14 @@ function Create({ className }: { className?: string }) {
 			variants={SideBarVariants}
 		>
 			<div
-				className='absolute -left-6 -top-6 h-screen backdrop-blur-md z-10'
+				className='absolute -left-6 -top-6 z-10 h-screen backdrop-blur-md'
 				style={{ width: menuWidth }}
 			>
-				<div className='flex h-full w-full flex-col gap-2 p-6'>
-					<div className='h-1/3 w-full rounded bg-emerald-500' />
-					<div className='h-1/3 w-full rounded bg-amber-500' />
-					<div className='h-1/3 w-full rounded bg-indigo-500' />
-				</div>
+				<CreateUI />
 			</div>
 
 			<motion.div
-				className={`absolute`}
+				className={`absolute z-10`}
 				style={{ left: menuWidth }}
 				onClick={() =>
 					setIsOpenCreate((prevIsOpenCreate) => !prevIsOpenCreate)
@@ -79,4 +76,4 @@ function Create({ className }: { className?: string }) {
 	);
 }
 
-export default Create;
+export default CreateSideMenu;
