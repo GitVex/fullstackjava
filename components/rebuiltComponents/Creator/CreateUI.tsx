@@ -198,7 +198,7 @@ function CreateUI() {
 					)}
 				</div>
 				<span className='text-md w-full flex-grow truncate text-center text-red-600'>
-					{isPresent && "... It's already in here!"}
+					{isPresent && "... It&apos;s already in here!"}
 				</span>
 			</section>
 		</main>
