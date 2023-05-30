@@ -25,7 +25,7 @@ const PlusVariants = {
 };
 
 function CreateSideMenu({ className }: { className?: string }) {
-	const [isOpenCreate, setIsOpenCreate] = useState(true);
+	const [isOpenCreate, setIsOpenCreate] = useState(false);
 
 	const context = useContext(WindowWidthContext);
 	const windowWidth = context?.windowWidth;
