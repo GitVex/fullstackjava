@@ -109,6 +109,10 @@ function CreateUI() {
 			}),
 		});
 
+		// REMOVE THIS:
+		const init_generate_colors = await fetch('api/rebuilt/calculateColor')
+		console.log(init_generate_colors)
+
 		const data = await res.json();
 
 		console.log(data);

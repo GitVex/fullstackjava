@@ -1,15 +1,20 @@
 import { prisma } from './prismaClientProvider';
 import { track, log } from '@prisma/client';
 import { buildQuery } from '../../../utils/seperateTags';
+import { getDominantColor } from './calculateColor';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
-    const { title, author_name, url, provider_url, tags } = req.body;
+    console.log(req.body);
+
+    const { title, author_name, url, provider_url, tags, thumbnail_url } = req.body;
 
     const connectOrCreateQuery = buildQuery(tags);
 
-    console.log(title, author_name, url, provider_url, tags, connectOrCreateQuery);
+    console.log(title, author_name, url, provider_url, tags, connectOrCreateQuery, thumbnail_url);
+    const track_color = await getDominantColor(thumbnail_url);
+    console.log('finished getting dominant colors');
 
     const createTrack = await prisma.track.create({
         data: {
@@ -17,6 +22,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             artist: author_name,
             url: url,
             platform: provider_url,
+            color: track_color,
             tags: {
                 connectOrCreate: connectOrCreateQuery,
             },
@@ -36,7 +42,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             history: JSON.stringify(createTrack),
         },
     });
-
 
     res.json([createTrack, logNewTrack]);
 }

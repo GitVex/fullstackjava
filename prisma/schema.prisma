@@ -21,6 +21,7 @@ model track {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   platform        String
+  color           String  @default("#000000")
   tags            tag[]
   presets         preset[]
 }
