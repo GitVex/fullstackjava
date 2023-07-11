@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
-    "color-thief-jimp": "^2.0.2",
     "colorthief": "^2.4.0",
     "postcss": "^8.4.20",
     "prettier": "^2.8.8",
