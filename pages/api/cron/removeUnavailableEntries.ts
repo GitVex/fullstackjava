@@ -1,5 +1,6 @@
 import { prisma } from '../rebuilt/prismaClientProvider';
 import { track } from '@prisma/client';
+import { checkImageAvailability } from '../rebuilt/calculateColor';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
@@ -14,8 +15,9 @@ export default async function handler(
 		},
 	});
 
-	// go through each track and check if it is region blocked. Use Promise.all to make it faster
-	let regionBlockedTracks = await Promise.all(
+	// go through each track and check if it is region blocked OR the thumbnail image is unretrievable. Use Promise.all to make it faster
+	// trying to retrieve the thumbnail image of a video is appearently a good enough way to check for availability
+	let blockedTracks = await Promise.all(
 		allTracks.map(async (entry) => {
 			const response = await fetch(
 				`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${
@@ -24,10 +26,22 @@ export default async function handler(
 			);
 			const data = await response.json();
 
+			let thumbn_blocked = false;
+			try {
+				await checkImageAvailability(entry.url);
+			} catch (error) {
+				thumbn_blocked = true;
+			}
+
 			if (data.items[0]?.contentDetails?.regionRestriction?.blocked) {
 				return {
 					...entry,
 					...data.items[0].contentDetails.regionRestriction,
+				};
+			} else if (thumbn_blocked) {
+				return {
+					...entry,
+					blocked: 'thumbnail',
 				};
 			} else {
 				return 'valid';
@@ -36,10 +50,10 @@ export default async function handler(
 	);
 
 	// filter out all valid urls
-	regionBlockedTracks = regionBlockedTracks.filter((url) => url !== 'valid' && url.blocked.length > 2);
+	blockedTracks = blockedTracks.filter((entry) => entry !== 'valid' && entry.blocked.length > 2 && entry.blocked !== 'thumbnail');
 
 	//test wise
-	const tracksToBeDeleted = regionBlockedTracks;
+	const tracksToBeDeleted = blockedTracks;
 
 	// create new log entry to document the deletion
 	await prisma.log.create({

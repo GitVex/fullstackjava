@@ -109,15 +109,19 @@ function CreateUI() {
 			}),
 		});
 
-		// REMOVE THIS:
-		const init_generate_colors = await fetch('api/rebuilt/calculateColor')
-		console.log(init_generate_colors)
-
 		const data = await res.json();
 
 		console.log(data);
 		checkPresence(url);
 	};
+
+	const handleDebugSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		// Change this to the endpoint you want to debug
+		const debug_call = await fetch('/api/rebuilt/calculateColor')
+		console.log(debug_call)
+	}
 
 	useMemo(() => {
 
@@ -179,6 +183,15 @@ function CreateUI() {
 							whileTap={{ scale: 0.95 }}
 						>
 							Submit
+						</motion.button>
+						<motion.button
+							className={`place-self-center rounded p-1 text-white bg-red-500`}
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							//@ts-ignore
+							onClick={handleDebugSubmit}
+						>
+							Debug
 						</motion.button>
 					</form>
 				</div>

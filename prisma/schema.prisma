@@ -22,6 +22,7 @@ model track {
   updatedAt       DateTime @updatedAt
   platform        String
   color           String  @default("#000000")
+  luminance       Float   @default(0)
   tags            tag[]
   presets         preset[]
 }

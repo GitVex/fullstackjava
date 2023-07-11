@@ -3,16 +3,97 @@ import { track } from '@prisma/client';
 import Jimp from 'jimp';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export async function getDominantColor(url: string): Promise<Jimp.RGBA> {
-	const oembedUrl = `https://www.youtube.com/oembed?url=${url}&format=json`;
-	const oembedResponse = await fetch(oembedUrl);
-	const oembedJson = await oembedResponse.json();
-	const thumbnailUrl = oembedJson.thumbnail_url;
+function rgbToHex(rgb: {r: number, g: number, b: number, a?: number}) {
+    let r = rgb.r.toString(16);
+    let g = rgb.g.toString(16);
+    let b = rgb.b.toString(16);
+
+    if (r.length == 1)
+        r = "0" + r;
+    if (g.length == 1)
+        g = "0" + g;
+    if (b.length == 1)
+        b = "0" + b;
+
+    return "#" + r + g + b;
+}
+
+function clamp(num: number, min: number, max: number) {
+	return num <= min ? min : num >= max ? max : num;
+}
+
+export async function checkImageAvailability(url: string): Promise<boolean> {
+	try {
+		await Jimp.read(url);
+
+		return true;
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+}
+
+export async function getAverageColor(url: string, global_url?: boolean): Promise<{color: string, luminance: number}> {
+	
+	let thumbnailUrl = url;
+	if (global_url) {
+		const oembedUrl = `https://www.youtube.com/oembed?url=${url}&format=json`;
+		const oembedResponse = await fetch(oembedUrl);
+		const oembedJson = await oembedResponse.json();
+		thumbnailUrl = oembedJson.thumbnail_url;
+	}
+	const image = await Jimp.read(thumbnailUrl);
+
+	let redSum = 0, greenSum = 0, blueSum = 0, pixelCount = 0;
+
+	image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
+		const red = image.bitmap.data[idx];
+		const green = image.bitmap.data[idx + 1];
+		const blue = image.bitmap.data[idx + 2];
+
+		// Skip pure black pixels
+		if (red === 0 && green === 0 && blue === 0) {
+			return;
+		}
+
+		redSum += red;
+		greenSum += green;
+		blueSum += blue;
+
+		pixelCount++;
+	});
+
+	const luminosity_multiplier = 2;
+
+	const averageRed = clamp(Math.round((redSum / pixelCount) * luminosity_multiplier), 0, 255) ;
+	const averageGreen = clamp(Math.round((greenSum / pixelCount) * luminosity_multiplier), 0, 255) ;
+	const averageBlue = clamp(Math.round((blueSum / pixelCount) * luminosity_multiplier), 0, 255) ;
+
+	const averageColorHex = rgbToHex({ r: averageRed, g: averageGreen, b: averageBlue });
+	const luminosity = (0.2126 * averageRed + 0.7152 * averageGreen + 0.0722 * averageBlue) / 255;
+
+	console.log(url, averageColorHex, luminosity);
+	return {'color': averageColorHex, 'luminance': luminosity}
+}
+
+//@ts-ignore
+export async function getDominantColor(url: string, global_url?: boolean): Promise<Jimp.RGBA> {
+
+
+	let thumbnailUrl = url;
+	if (global_url) {
+		const oembedUrl = `https://www.youtube.com/oembed?url=${url}&format=json`;
+		const oembedResponse = await fetch(oembedUrl);
+		const oembedJson = await oembedResponse.json();
+		thumbnailUrl = oembedJson.thumbnail_url;
+	}
 
 	const image = await Jimp.read(thumbnailUrl);
 
 	const colorCount: Record<string, number> = {};
 	let dominantColor = '#000000';
+	const threshold = 10;
+	let dominantColor_rgba = { r: 0, g: 0, b: 0, a: 0 };
 	let maxCount = 0;
 
 	image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
@@ -20,6 +101,11 @@ export async function getDominantColor(url: string): Promise<Jimp.RGBA> {
 		const green = image.bitmap.data[idx + 1];
 		const blue = image.bitmap.data[idx + 2];
 		const alpha = image.bitmap.data[idx + 3];
+
+		if (red + green + blue < threshold) {
+			// Ignore this color
+			return;
+		}
 
 		const colorKey = `${red},${green},${blue},${alpha}`;
 
@@ -31,12 +117,11 @@ export async function getDominantColor(url: string): Promise<Jimp.RGBA> {
 
 		if (colorCount[colorKey] > maxCount) {
 			maxCount = colorCount[colorKey];
-			const dominantColor_rgba  = { r: red, g: green, b: blue, a: alpha };
-			const dominantColorInt = Jimp.rgbaToInt(dominantColor_rgba.r, dominantColor_rgba.g, dominantColor_rgba.b, dominantColor_rgba.a);
-			dominantColor = `#${dominantColorInt.toString(16).padStart(6, '0')}`;
+			dominantColor_rgba  = { r: red, g: green, b: blue, a: alpha };
 		}
 	});
-
+	
+	dominantColor = rgbToHex(dominantColor_rgba);
 	console.log(url, dominantColor);
 
 	return dominantColor;
@@ -57,15 +142,19 @@ export default async function handle(
 	const tracksWithColors = await Promise.all(
 		tracks.map(async (track) => {
 			console.log(`processing ${track.url}`);
-			var dominantColor = '#000000';
+			let dominantColor = '#000000';
+			let luminance = 0;
 			try {
-				dominantColor = await getDominantColor(track.url);
+				const color_data = await getAverageColor(track.url, true);
+				dominantColor = color_data.color;
+				luminance = color_data.luminance;
 			} catch (e) {
 				console.log(`error processing ${track.url} | ${e}`);
 			}
 			return {
 				...track,
 				color: dominantColor,
+				luminance: luminance,
 			};
 		})
 	);
@@ -79,6 +168,7 @@ export default async function handle(
 				},
 				data: {
 					color: track.color,
+					luminance: track.luminance,
 				},
 			});
 			return updatedTrack;
