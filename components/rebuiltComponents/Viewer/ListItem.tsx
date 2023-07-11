@@ -1,10 +1,13 @@
 import React from 'react';
 import { track } from '@prisma/client';
 import NotificationButton from '../../utils/NotificationButton';
+import ts from 'typescript';
 
 function ListItem({ item }: { item: track }) {
+
 	return (
-		<div className='flex w-full flex-row items-center gap-2 rounded-lg bg-indigo-600/10 p-2 text-sm'>
+		//@ts-ignore
+		<div className='flex w-full flex-row items-center gap-2 rounded-lg bg-indigo-600/10 p-2 text-sm hover:border-l-8 duration-100 ' style={{'border-inline-color': item.color}}>
 			<div className='flex w-3/5 flex-1 flex-col'>
 				<div
 					onClick={() => window.open(item.url, '_blank')?.focus()}
@@ -20,13 +23,21 @@ function ListItem({ item }: { item: track }) {
 				</div>
 			</div>
 			<NotificationButton
+				id = {item.id}
+				color = {item.color}
+				luminance={item.luminance}
 				onClick={() => navigator.clipboard.writeText(item.url)}
-				buttonText='Copy'
-			/>
+			>
+				Copy
+			</NotificationButton>
 			<NotificationButton
+				id = {item.id}
+				color = {item.color}
+				luminance={item.luminance}
 				onClick={() => {}}
-				buttonText='Add'
-			/>
+			>
+				Add
+			</NotificationButton>
 		</div>
 	);
 }

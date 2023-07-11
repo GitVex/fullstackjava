@@ -3,16 +3,20 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NotificationButtonProps {
-	buttonText: string;
-	notificationText?: string;
+	id: number,
 	className?: string;
+	color?: string;
+	luminance?: number;
+	children?: React.ReactNode;
 	onClick?: () => void;
 }
 
 const NotificationButton: React.FC<NotificationButtonProps> = ({
-	buttonText,
-	notificationText,
+	id,
 	className = '',
+	color,
+	luminance,
+	children,
 	onClick = () => {},
 }) => {
 	const [showNotification, setShowNotification] = useState(false);
@@ -67,11 +71,19 @@ const NotificationButton: React.FC<NotificationButtonProps> = ({
 				)}
 			</AnimatePresence>
 			<button
-				className={`flex w-auto flex-col justify-items-center rounded border border-blue-500 px-2 py-1 font-semibold text-white duration-200 hover:bg-blue-500 ${className}`}
+				id = {'notification-button-' + id}
+				className={`flex w-auto flex-col justify-items-center rounded border px-2 py-1 font-semibold text-white duration-200 border-blue-500 hover:bg-blue-500'} ${className}`}
 				onClick={handleButtonClick}
 			>
-				{buttonText}
+				{children}
 			</button>
+			<style>{ color ? `
+				#notification-button-${id}:hover {
+					border-color: ${color};
+					background-color: ${color};
+					${luminance ? luminance > 0.5 ? 'color: black' : '' : ''}
+				}
+			` : ''}</style>
 		</div>
 	);
 };
