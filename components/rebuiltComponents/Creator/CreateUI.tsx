@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
-interface videoData {
+export interface videoData {
 	author_name: string;
 	author_url: string;
 	height: number;
@@ -115,6 +115,14 @@ function CreateUI() {
 		checkPresence(url);
 	};
 
+	const handleDebugSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		// Change this to the endpoint you want to debug
+		const debug_call = await fetch('/api/rebuilt/calculateColor')
+		console.log(debug_call)
+	}
+
 	useMemo(() => {
 
 		console.log('useMemo called', url, tags, isPresent);
@@ -175,6 +183,15 @@ function CreateUI() {
 							whileTap={{ scale: 0.95 }}
 						>
 							Submit
+						</motion.button>
+						<motion.button
+							className={`place-self-center rounded p-1 text-white bg-red-500`}
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							//@ts-ignore
+							onClick={handleDebugSubmit}
+						>
+							Debug
 						</motion.button>
 					</form>
 				</div>

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "track" ADD COLUMN     "luminance" DOUBLE PRECISION NOT NULL DEFAULT 0;
