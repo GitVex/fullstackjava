@@ -6,18 +6,9 @@ import { Viewer } from './Viewer/Viewer';
 import { ViewColumn } from './Viewer/ViewColumn';
 import FilterStateProvider from '../contexts/RebuiltFilterStateProvider';
 import CreateSideMenu from './Creator/CreateSideMenu';
-
-function reducer(state: any, action: any) {
-  switch (action.type) {
-    case 'togglePlayer':
-      return { ...state, isOpenPlayer: !state.isOpenPlayer };
-    default:
-      throw new Error();
-  }
-}
+import PlayerTopMenu from './Player/PlayerTopMenu';
 
 function PageComponent() {
-  const [state, dispatch] = useReducer(reducer, { isOpenPlayer: false });
 
   const context = useContext(WindowSizeContext);
   const windowWidth = context?.windowWidth;
@@ -71,27 +62,7 @@ function PageComponent() {
           <div className='flex w-full flex-row justify-between'>
             <CreateSideMenu />
 
-            <div
-              className='flex justify-center'
-              onClick={() =>
-                dispatch({ type: 'togglePlayer' })
-              }
-            >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='h-6 w-6 scale-x-[350%] cursor-pointer text-red-600'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M19.5 8.25l-7.5 7.5-7.5-7.5'
-                />
-              </svg>
-            </div>
+            <PlayerTopMenu />
 
             <FilterSideMenu />
           </div>
