@@ -1,22 +1,57 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { usePlayerHolderById } from '../../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
 import IFPlayer from '../../utils/IFPlayer';
+import VolumeSlider from '../../utils/VolumeSlider';
 
 const DEFAULT_VOLUME = 50;
 const DEFAULT_FADE_INTERVAL = 75;
 const DEFAULT_FADE_STEP = 1;
 
-function sliderInputHandler(e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>, player: IFPlayer | null, setVolumeFunc: React.Dispatch<React.SetStateAction<number>>) {
+function sliderInputHandler(
+	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
+	player: IFPlayer | null,
+	setVolumeFunc: React.Dispatch<React.SetStateAction<number>>,
+	masterVolumeModifier: number
+) {
 	if (!player) return;
 
 	const field = e.target as HTMLInputElement;
 
+	const volume = parseInt(field.value) * masterVolumeModifier;
+
 	setVolumeFunc(parseInt(field.value));
-	player.setVolume(parseInt(field.value));
+	player.setVolume(volume);
 }
 
-function PlayerComponent({ playerId }: { playerId: number }) {
+function loadNewVideo(
+	e: React.FormEvent<HTMLInputElement>,
+	player: IFPlayer | null
+) {
+	const field = e.target as HTMLInputElement;
+	if (!player) return;
+	if (!field.value) return;
+
+	// strip video id from url and remove all other characters and timestamps
+	field.value = field.value.replace(
+		/(https:\/\/www\.youtube\.com\/watch\?v=|https:\/\/youtu\.be\/|&t=.*|&feature=emb_logo)/g,
+		''
+	);
+
+	player.loadVideoById(field.value);
+	setTimeout(() => {
+		player.pauseVideo();
+		player.setLoop(true);
+	}, 1000);
+}
+
+function PlayerComponent({
+	playerId,
+	masterVolumeModifier,
+}: {
+	playerId: number;
+	masterVolumeModifier: number;
+}) {
 	const ID = `player${playerId}`;
 
 	const [volume, setVolume] = useState(DEFAULT_VOLUME);
@@ -30,33 +65,77 @@ function PlayerComponent({ playerId }: { playerId: number }) {
 
 	const player = usePlayerHolderById(playerId).player;
 
+	useMemo(() => {
+		if (!player) return;
+
+		player.setVolume(volume * masterVolumeModifier);
+	}, [masterVolumeModifier]);
+
 	return (
-		<div className='h-44 w-96 rounded border-2 border-indigo-700 bg-indigo-900 p-1 duration-100 hover:bg-emerald-500'>
+		<div className='flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'>
 			<div className='flex w-full flex-row justify-around'>
 				<div className='rounded' id={ID} />
-				<div className='flex w-10 flex-row items-center gap-4'>
-					<input
-						id={`volumeSlider`}
-						type='range'
-						min='0'
-						max='100'
-						step='1'
-						// @ts-ignore
-						orient='vertical'
-						/* className={styles.slider} */
-						onChange={(e) => sliderInputHandler(e, player, setVolume)}
-						onInput={(e) => sliderInputHandler(e, player, setVolume)}
-					/>
-					<style>
-						{`
-							#volumeSlider {
-								-webkit-appearance: slider-vertical;
-								width: 8px;
-								height: 100px;
-						`}
-					</style>
-					<motion.p animate={{y: 50 + (-1 * volume) }}>{volume} </motion.p>
-				</div>
+				<VolumeSlider
+					player={player}
+					setVolume={setVolume}
+					volume={volume}
+					userOnChange={(e) =>
+						sliderInputHandler(
+							e,
+							player,
+							setVolume,
+							masterVolumeModifier
+						)
+					}
+					userOnInput={(e) =>
+						sliderInputHandler(
+							e,
+							player,
+							setVolume,
+							masterVolumeModifier
+						)
+					}
+				/>
+			</div>
+			<div className='flex w-full flex-row items-center justify-center gap-2'>
+				<input
+					type='text'
+					className='w-2/5 rounded bg-gray-800/50 p-1'
+					placeholder='Video ID'
+					onKeyDown={(e) => {
+						loadNewVideo(e, player);
+					}}
+				/>
+				<button
+					className='w-1/5 rounded bg-gray-800/50 p-1 disabled:opacity-50'
+					/* onClick={fadeIn} */
+					disabled={player ? false : true}
+				>
+					Fade In
+				</button>
+				<input
+					type='text'
+					className=' w-1/5 rounded bg-gray-800/50 p-1'
+					placeholder='Limit'
+					onKeyDown={(e) => {
+						const field = e.target as HTMLInputElement;
+						if (!player) return;
+						if (e.key !== 'Enter' && field.value) return;
+
+						if (player.getPlayerState() != 1) {
+							/* fadeIn(e, parseInt(field.value)); */
+							return;
+						}
+						/* fadeTo(e, parseInt(field.value)); */
+					}}
+				/>
+				<button
+					className='w-2/6 rounded bg-gray-800/50 p-1 disabled:opacity-50'
+					/* onClick={fadeOut} */
+					disabled={player ? false : true}
+				>
+					Fade Out
+				</button>
 			</div>
 		</div>
 	);

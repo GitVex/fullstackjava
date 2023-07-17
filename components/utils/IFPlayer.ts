@@ -1,3 +1,5 @@
+/* https://developers.google.com/youtube/iframe_api_reference?hl=de#Functions */
+
 export default interface IFPlayer {
     addCueRange: (start: number, end: number) => void;
     clearVideo: () => void;
