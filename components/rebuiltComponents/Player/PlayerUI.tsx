@@ -23,16 +23,30 @@ function PlayerUI() {
 				/* @ts-ignore */
 				style={{ width: windowWidth, height: windowHeight }}
 			>
-				<div className='flex w-2/3 flex-col items-center'>
-					<div className='grid grid-cols-2 grid-rows-4 gap-2'>
-						{[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
-							<PlayerComponent playerId={id} masterVolumeModifier={masterVolumeModifier} />
-						))}
+				<div className='flex w-fit flex-row items-center gap-4'>
+					<div className='flex w-full flex-col items-center'>
+						<div className='grid grid-cols-2 grid-rows-4 gap-2'>
+							{[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
+								<PlayerComponent
+									playerId={id}
+									masterVolumeModifier={masterVolumeModifier}
+								/>
+							))}
+						</div>
+					</div>
+					<div className='flex w-28 flex-col items-center gap-4'>
+						<p className='whitespace-nowrap'>Master Volume</p>
+						<VolumeSlider
+							volume={masterVolume}
+							setVolume={setMasterVolume}
+							height={500}
+						/>
 					</div>
 				</div>
-				<VolumeSlider volume={masterVolume} setVolume={setMasterVolume} height={500}/>
 
-				<div className='flex w-1/3 flex-col'></div>
+				<div className='flex w-1/3 flex-col items-center'>
+					<div></div>
+				</div>
 			</div>
 		</PlayerHolderProvider>
 	);
