@@ -1,75 +1,84 @@
-import React, { useState, useEffect, useContext } from 'react'
-import IFPlayer from '../utils/IFPlayer'
+import React, { useState, useEffect, useContext } from 'react';
+import IFPlayer from '../utils/IFPlayer';
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
 // This is a workaround for the fact that the youtube iframe api only allows one player per page
-const PlayerHolderContext = React.createContext([] as { id: number, player: IFPlayer, isAvailable: boolean }[])
+const PlayerHolderContext = React.createContext(
+	[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
+);
+const defaultVideoID = 'NpEaa2P7qZI'; // 'video placeholder' by Tristan Behaut
+const maxPlayers = 9;
 
 export function usePlayerHolder() {
-    return useContext(PlayerHolderContext)
+	return useContext(PlayerHolderContext);
 }
 
 export function usePlayerHolderById(id: number) {
-    const playerHolder = useContext(PlayerHolderContext)
+	const playerHolder = useContext(PlayerHolderContext);
 
-    if (!playerHolder[id]) {
-        return {id: -1, player: null, isAvailable: false}
-    }
+	const holder = playerHolder.find((holder) => holder.id === id);
 
-    return playerHolder[id]
+	if (!holder) {
+		return { id: -1, player: null, isAvailable: false };
+	}
+
+	return holder;
 }
 
+function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
+	const [playerHolder, setPlayerHolder] = useState(
+		[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
+	);
 
-function PlayerHolderProvider({ children }: any) {
-    const [playerHolder, setPlayerHolder] = useState([] as { id: number, player: IFPlayer, isAvailable: boolean }[]);
+	useEffect(() => {
+		let playerHolderTemp = [] as {
+			id: number;
+			player: any;
+			isAvailable: boolean;
+		}[];
 
-    useEffect(() => {
+		const container = document.createElement('div');
+		container.setAttribute('id', 'playerHolder');
+		container.setAttribute('style', 'display: none');
+		document.body.appendChild(container);
 
-        let playerHolderTemp = [] as { id: number, player: any, isAvailable: boolean }[];
+		for (let i = 0; i < maxPlayers; i++) {
+			const div = document.createElement('div');
+			div.setAttribute('id', `player${i}`);
+			container.appendChild(div);
 
-        const container = document.createElement('div');
-        container.setAttribute('id', 'playerHolder');
-        container.setAttribute('style', 'display: none');
-        document.body.appendChild(container);
+			playerHolderTemp.push({
+				id: i,
+				player: div,
+				isAvailable: true,
+			});
+		}
 
-        for (let i = 0; i < 9; i++) {
-            const div = document.createElement('div');
-            div.setAttribute('id', `player${i}`);
-            container.appendChild(div);
+		const tag = document.createElement('script');
+		tag.src = 'https://www.youtube.com/iframe_api';
+		document.body.appendChild(tag);
 
-            playerHolderTemp.push({
-                id: i,
-                player: div,
-                isAvailable: true,
-            });
-        }
+		//@ts-ignore
+		window.onYouTubeIframeAPIReady = function () {
+			playerHolderTemp = playerHolderTemp.map((holder) => ({
+				...holder,
+				// @ts-ignore
+				player: new YT.Player(holder.player.id, {
+					height: 128,
+					width: 256,
+					videoId: 'NpEaa2P7qZI',
+				}),
+			}));
 
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.body.appendChild(tag);
+			setPlayerHolder(playerHolderTemp);
+		};
+	}, []);
 
-        //@ts-ignore
-        window.onYouTubeIframeAPIReady = function () {
-
-            for (let i = 0; i < 9; i++) {
-                //@ts-ignore
-                playerHolderTemp[i].player = new YT.Player(playerHolderTemp[i].player.id, {
-                    height: 128,
-                    width: 256,
-                    videoId: 'NpEaa2P7qZI',
-                });
-            }
-
-            setPlayerHolder(playerHolderTemp);
-
-        };
-    }, []);
-
-    return (
-        <PlayerHolderContext.Provider value={playerHolder}>
-            {children}
-        </PlayerHolderContext.Provider>
-    );
+	return (
+		<PlayerHolderContext.Provider value={playerHolder}>
+			{children}
+		</PlayerHolderContext.Provider>
+	);
 }
 
-export default PlayerHolderProvider
+export default PlayerHolderProvider;

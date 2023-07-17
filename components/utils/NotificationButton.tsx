@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NotificationButtonProps {
-	id: number,
+	id: number;
 	className?: string;
 	color?: string;
 	luminance?: number;
@@ -20,16 +20,21 @@ const NotificationButton: React.FC<NotificationButtonProps> = ({
 	onClick = () => {},
 }) => {
 	const [showNotification, setShowNotification] = useState(false);
+	const [shadow, setShadow] = useState(false);
 
 	const handleButtonClick = () => {
 		setShowNotification(true);
+		setShadow(true);
 		setTimeout(() => {
 			setShowNotification(false);
 		}, 2000);
+		setTimeout(() => {
+			setShadow(false);
+		}, 3000);
 	};
 
 	return (
-		<div className='relative z-0' onClick={onClick}>
+		<div className={shadow ? 'relative' : ''} onClick={onClick}>
 			<AnimatePresence>
 				{showNotification && (
 					<motion.div
@@ -71,19 +76,23 @@ const NotificationButton: React.FC<NotificationButtonProps> = ({
 				)}
 			</AnimatePresence>
 			<button
-				id = {'notification-button-' + id}
-				className={`flex w-auto flex-col justify-items-center rounded border px-2 py-1 font-semibold text-white duration-200 border-blue-500 hover:bg-blue-500'} ${className}`}
+				id={'notification-button-' + id}
+				className={`hover:bg-blue-500'} flex w-auto flex-col justify-items-center rounded border border-blue-500 px-2 py-1 font-semibold text-white duration-200 ${className}`}
 				onClick={handleButtonClick}
 			>
 				{children}
 			</button>
-			<style>{ color ? `
+			<style>
+				{color
+					? `
 				#notification-button-${id}:hover {
 					border-color: ${color};
 					background-color: ${color};
-					${luminance ? luminance > 0.5 ? 'color: black' : '' : ''}
+					${luminance ? (luminance > 0.5 ? 'color: black' : '') : ''}
 				}
-			` : ''}</style>
+			`
+					: ''}
+			</style>
 		</div>
 	);
 };

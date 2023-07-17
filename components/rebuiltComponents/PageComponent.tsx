@@ -58,6 +58,7 @@ function PageComponent() {
 
 	return (
 		<div className='h-screen overflow-hidden'>
+			
 			<div className='flex h-full flex-col gap-6 p-6'>
 				<FilterStateProvider>
 					<div className='flex w-full flex-row justify-between'>

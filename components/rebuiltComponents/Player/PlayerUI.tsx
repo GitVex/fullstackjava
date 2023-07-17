@@ -1,4 +1,6 @@
 import React, { useContext } from 'react';
+import PlayerHolderProvider from '../../contexts/PlayerHolderProvider';
+import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../../contexts/WindowSizeProvider';
 
 function PlayerUI() {
@@ -7,17 +9,23 @@ function PlayerUI() {
 	const windowWidth: number | undefined | null = context?.windowWidth;
 
 	return (
-		<div
-			className='flex flex-col backdrop-blur-md'
-            /* @ts-ignore */
-			style={{ 'width': windowWidth - 30, 'height': windowHeight - 30 }}
-		>
-			PlayerUI
-			<div className='h-24 w-24 bg-emerald-500' />
-			<div className='h-24 w-24 bg-emerald-500' />
-			<div className='h-24 w-24 bg-emerald-500' />
-			<div className='h-24 w-24 bg-emerald-500' />
-		</div>
+		<PlayerHolderProvider>
+			<div
+				className='absolute z-10 flex flex-row items-center justify-center gap-2 p-4 backdrop-blur-md'
+				/* @ts-ignore */
+				style={{ width: windowWidth, height: windowHeight }}
+			>
+				<div className='flex w-2/3 flex-col items-center'>
+					<div className='grid grid-cols-2 grid-rows-4 gap-2'>
+						{[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
+							<PlayerComponent playerId={id} />
+						))}
+					</div>
+				</div>
+
+				<div className='flex w-1/3 flex-col'></div>
+			</div>
+		</PlayerHolderProvider>
 	);
 }
 
