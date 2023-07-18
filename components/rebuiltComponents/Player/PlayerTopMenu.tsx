@@ -7,10 +7,23 @@ import React, {
 } from 'react';
 import { motion } from 'framer-motion';
 import PlayerUI from './PlayerUI';
+import { breakpoints } from '../../utils/breakpoints';
+import WindowSizeContext from '../../contexts/WindowSizeProvider';
 
 function PlayerTopMenu() {
-	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
-	const yInit = window.innerHeight * -1;
+	const context = useContext(WindowSizeContext);
+	const windowHeight = context?.windowHeight;
+	const windowWidth = context?.windowWidth;
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleKeyPress);
+		return () => {
+			window.removeEventListener('keydown', handleKeyPress);
+		};
+	}, []);
+
+	const [isOpenPlayer, setIsOpenPlayer] = useState(true);
+	const yInit = windowHeight ? windowHeight * -1 : -1000;
 
 	// create a listener that listens for the spacebar keypress
 	// if the spacebar is pressed, then toggle the isOpenPlayer state
@@ -19,13 +32,6 @@ function PlayerTopMenu() {
 			setIsOpenPlayer((prevIsOpenPlayer) => !prevIsOpenPlayer);
 		}
 	};
-
-	useEffect(() => {
-		window.addEventListener('keydown', handleKeyPress);
-		return () => {
-			window.removeEventListener('keydown', handleKeyPress);
-		};
-	}, []);
 
 	const buttonVariants = {
 		closed: {
@@ -40,10 +46,12 @@ function PlayerTopMenu() {
 		console.log('isOpenPlayer', isOpenPlayer);
 	}, [isOpenPlayer]);
 
-	return (
+	return windowWidth !== undefined &&
+		windowWidth !== null &&
+		windowWidth >= breakpoints.lg ? (
 		<>
 			<motion.div
-				className='flex justify-center'
+				className='z-20 flex justify-center'
 				onClick={() =>
 					setIsOpenPlayer((prevIsOpenPlayer) => !prevIsOpenPlayer)
 				}
@@ -71,11 +79,14 @@ function PlayerTopMenu() {
 				initial={{ y: yInit }}
 				animate={isOpenPlayer ? { y: 0 } : { y: yInit }}
 				transition={{ duration: 1, ease: 'easeInOut' }}
-				className='absolute z-20 backdrop-blur-md'
+				className='absolute top-0 left-0'
 			>
+				{/* @ts-ignore */}
 				<PlayerUI />
 			</motion.div>
 		</>
+	) : (
+		<div className='h-6' />
 	);
 }
 
