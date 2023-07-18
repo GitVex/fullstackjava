@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import { motion } from 'framer-motion';
 import PlayerUI from './PlayerUI';
-import { breakpoints } from '../../utils/breakpoints';
-import WindowSizeContext from '../../contexts/WindowSizeProvider';
+import { breakpoints } from '../utils/breakpoints';
+import WindowSizeContext from '../contexts/WindowSizeProvider';
 
 function PlayerTopMenu() {
 	const context = useContext(WindowSizeContext);

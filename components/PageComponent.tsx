@@ -1,10 +1,10 @@
 import React, { useContext, useReducer, useMemo } from 'react';
-import WindowSizeContext from '../contexts/WindowSizeProvider';
-import { breakpoints } from '../utils/breakpoints';
+import WindowSizeContext from './contexts/WindowSizeProvider';
+import { breakpoints } from './utils/breakpoints';
 import FilterSideMenu from './Filter/FilterSideMenu';
 import { Viewer } from './Viewer/Viewer';
 import { ViewColumn } from './Viewer/ViewColumn';
-import FilterStateProvider from '../contexts/RebuiltFilterStateProvider';
+import FilterStateProvider from './contexts/RebuiltFilterStateProvider';
 import CreateSideMenu from './Creator/CreateSideMenu';
 import PlayerTopMenu from './Player/PlayerTopMenu';
 

@@ -1,28 +1,18 @@
-import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prismaClientProvider";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 
-    // add the tags to the filter if their value is true
-    const filter = req.body.filter as string[];
-    const maxResults = req.body.maxResults as number;
+    console.log(`list called from: ${req.body.origin}`)
 
-    // include where clause if filter is not empty
-    // entries should contain all tags
-    const where = filter.length > 0 ? {
-        AND:
-            filter.map((tag: string) => { return ({ tags: { some: { name: tag } } }) })
-    } : {};
+    // Query the database
+    const result = await prisma.track.findMany({});
 
+    // randomize the result order
+    function randomize(a: any, b: any) {
+        return Math.random() - 0.5;
+    }
+    result.sort(randomize);
 
-    const result = await prisma.track.findMany({
-        where: where,
-        include: {
-            tags: true,
-            presets: true,
-        }
-    });
-    res.json(result);
+    res.status(200).json(result);
 }

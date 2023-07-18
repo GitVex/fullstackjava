@@ -1,6 +1,6 @@
-import { prisma } from '../rebuilt/prismaClientProvider';
+import { prisma } from '../prismaClientProvider';
 import { track } from '@prisma/client';
-import { checkImageAvailability } from '../rebuilt/calculateColor';
+import { checkImageAvailability } from '../calculateColor';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(

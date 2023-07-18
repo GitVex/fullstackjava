@@ -1,5 +1,5 @@
 import React from 'react'
-import PageComponent from '../components/rebuiltComponents/PageComponent'
+import PageComponent from '../components/PageComponent'
 
 function second() {
     return (

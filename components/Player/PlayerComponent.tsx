@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { usePlayerHolderById } from '../../contexts/PlayerHolderProvider';
+import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
-import IFPlayer from '../../utils/IFPlayer';
-import VolumeSlider from '../../utils/VolumeSlider';
+import IFPlayer from '../utils/IFPlayer';
+import VolumeSlider from '../utils/VolumeSlider';
 
 const DEFAULT_VOLUME = 50;
 const DEFAULT_FADE_INTERVAL = 75;
@@ -87,12 +87,13 @@ function fadeInputHandler(
 }
 
 function loadNewVideo(
-	e: React.FormEvent<HTMLInputElement>,
+	e: React.KeyboardEvent<HTMLInputElement>,
 	player: IFPlayer | null
 ) {
 	const field = e.target as HTMLInputElement;
 	if (!player) return;
 	if (!field.value) return;
+	if (e.key !== 'Enter') return;
 
 	// strip video id from url and remove all other characters and timestamps
 	field.value = field.value.replace(
@@ -100,9 +101,12 @@ function loadNewVideo(
 		''
 	);
 
+	player.setVolume(0);
 	player.loadVideoById(field.value);
+	
 	setTimeout(() => {
 		player.pauseVideo();
+		player.seekTo(0, true);
 		player.setLoop(true);
 	}, 1000);
 }
