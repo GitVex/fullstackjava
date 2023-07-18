@@ -42,10 +42,6 @@ function PlayerTopMenu() {
 		},
 	};
 
-	useEffect(() => {
-		console.log('isOpenPlayer', isOpenPlayer);
-	}, [isOpenPlayer]);
-
 	return windowWidth !== undefined &&
 		windowWidth !== null &&
 		windowWidth >= breakpoints.lg ? (
