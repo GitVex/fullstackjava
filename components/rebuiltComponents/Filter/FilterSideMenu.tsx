@@ -37,7 +37,7 @@ export default function FilterSideMenu({
 
 	return (
 		<motion.div
-			className='relative z-10 flex h-fit flex-row gap-2'
+			className='relative z-0 flex h-fit flex-row gap-2'
 			variants={SideBarVariants}
 			animate={isOpenFilter ? 'open' : 'closed'}
 			initial='closed'
