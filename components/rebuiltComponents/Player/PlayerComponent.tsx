@@ -55,7 +55,6 @@ function fadeInputHandler(
 ) {
 	const field = e.target as HTMLInputElement;
 	if (!player) return;
-	console.log('e.key:', e.key);
 	if (e.key !== 'Enter' || !field.value) return;
 
 	if (player.getPlayerState() !== 1) {
@@ -120,67 +119,45 @@ function fade({
 	pLimit,
 	inverse,
 }: FadeOptions & { inverse?: boolean }) {
-	console.log(
-		'fade function called with the following parameters:',
-		arguments
-	);
 	if (!player) return;
 
 	// Clear any existing interval
 	if (currentFadeInterval) {
-		console.log('Clearing existing interval');
 		clearInterval(currentFadeInterval);
 		setCurrentFadeInterval(null);
 	}
 
 	const limit = pLimit ?? (volume === 0 ? DEFAULT_VOLUME : volume);
-	console.log('limit:', limit);
 	const startVolume = inverse ? volume : 1;
-	console.log('startVolume:', startVolume);
 	let currentVolume = inverse ? volume : 1;
 
 	if (!inverse) {
-		console.log('Setting volume to 1');
 		player.playVideo();
 		setVolume(1);
 	}
 
 	let runner = startVolume;
 
-	console.log('runner:', runner);
-
 	let intervalId = setInterval(() => {
-		console.log('Inside setInterval callback');
 		try {
 			if (inverse) {
-				console.log('In inverse condition');
 				if (currentVolume > 0) {
-					console.log('Player volume is greater than 0');
 					currentVolume = ease(runner, currentVolume);
 					setVolume(Math.floor(currentVolume));
 					runner -= fadeStep;
 				} else {
-					console.log(
-						'Player volume is not greater than 0, ending fade'
-					);
 					endFade(0, player);
 				}
 			} else {
-				console.log('In non-inverse condition');
 				if (currentVolume < limit) {
-					console.log('Player volume is less than limit');
 					currentVolume = ease(runner, limit);
 					setVolume(Math.floor(currentVolume));
 					runner += fadeStep;
 				} else {
-					console.log(
-						'Player volume is not less than limit, ending fade'
-					);
 					endFade(limit);
 				}
 			}
 		} catch (error) {
-			console.error('Error in fade function: ', error);
 			clearInterval(intervalId);
 		}
 	}, fadeInterval);
@@ -188,10 +165,8 @@ function fade({
 	setCurrentFadeInterval(intervalId);
 
 	function endFade(volume: number, player: IFPlayer | null = null) {
-		console.log('endFade function called with volume:', volume);
 		setVolume(volume);
 		if (volume === 0) {
-			console.log('Pausing video');
 			player?.pauseVideo();
 		}
 		clearInterval(intervalId);
@@ -242,7 +217,6 @@ function fadeTo(
 				endFade(targetVolume);
 			}
 		} catch (error) {
-			console.error('Error in fadeTo function: ', error);
 			clearInterval(intervalId);
 		}
 	}, fadeInterval);
