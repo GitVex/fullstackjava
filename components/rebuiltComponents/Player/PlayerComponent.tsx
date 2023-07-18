@@ -3,7 +3,6 @@ import { usePlayerHolderById } from '../../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
 import IFPlayer from '../../utils/IFPlayer';
 import VolumeSlider from '../../utils/VolumeSlider';
-import { sleep } from '../../utils/utils';
 
 const DEFAULT_VOLUME = 50;
 const DEFAULT_FADE_INTERVAL = 75;
@@ -39,6 +38,53 @@ function sliderInputHandler(
 
 	setVolumeFunc(parseInt(field.value));
 	player.setVolume(volume);
+}
+
+function fadeInputHandler(
+	e: React.KeyboardEvent<HTMLInputElement>,
+	player: IFPlayer | null,
+	setVolume: React.Dispatch<React.SetStateAction<number>>,
+	volume: number,
+	fadeStep: React.MutableRefObject<number>,
+	fadeInterval: React.MutableRefObject<number>,
+	ease: React.MutableRefObject<(x: number, limit: number) => number>,
+	currentFadeInterval: NodeJS.Timeout | null,
+	setCurrentFadeInterval: React.Dispatch<
+		React.SetStateAction<NodeJS.Timeout | null>
+	>
+) {
+	const field = e.target as HTMLInputElement;
+	if (!player) return;
+	console.log('e.key:', e.key);
+	if (e.key !== 'Enter' || !field.value) return;
+
+	if (player.getPlayerState() !== 1) {
+		fadeIn({
+			player,
+			setVolume,
+			volume,
+			fadeStep: fadeStep.current,
+			fadeInterval: fadeInterval.current,
+			ease: ease.current,
+			currentFadeInterval,
+			setCurrentFadeInterval,
+			pLimit: parseInt(field.value),
+		});
+		return;
+	}
+	fadeTo(
+		{
+			player,
+			setVolume,
+			volume,
+			fadeStep: fadeStep.current,
+			fadeInterval: fadeInterval.current,
+			currentFadeInterval,
+			setCurrentFadeInterval,
+			pLimit: parseInt(field.value),
+		},
+		parseInt(field.value)
+	);
 }
 
 function loadNewVideo(
@@ -229,14 +275,8 @@ function PlayerComponent({
 	const player = usePlayerHolderById(playerId).player;
 
 	useMemo(() => {
-		if (!player) return;
-
-		player.setVolume(volume * masterVolumeModifier);
-	}, [masterVolumeModifier]);
-
-	useEffect(() => {
-		console.log('vol ' + volume);
-	}, [volume]);
+		player?.setVolume(volume * masterVolumeModifier);
+	}, [volume, masterVolumeModifier]);
 
 	return (
 		<div className='flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'>
@@ -297,37 +337,16 @@ function PlayerComponent({
 					className=' w-1/5 rounded bg-gray-800/50 p-1'
 					placeholder='Volume'
 					onKeyDown={(e) => {
-						const field = e.target as HTMLInputElement;
-						if (!player) return;
-						console.log('e.key:', e.key);
-						if (e.key !== 'Enter' || !field.value) return;
-
-						if (player.getPlayerState() !== 1) {
-							fadeIn({
-								player,
-								setVolume,
-								volume,
-								fadeStep: fadeStep.current,
-								fadeInterval: fadeInterval.current,
-								ease: ease.current,
-								currentFadeInterval,
-								setCurrentFadeInterval,
-								pLimit: parseInt(field.value),
-							});
-							return;
-						}
-						fadeTo(
-							{
-								player,
-								setVolume,
-								volume,
-								fadeStep: fadeStep.current,
-								fadeInterval: fadeInterval.current,
-								currentFadeInterval,
-								setCurrentFadeInterval,
-								pLimit: parseInt(field.value),
-							},
-							parseInt(field.value)
+						fadeInputHandler(
+							e,
+							player,
+							setVolume,
+							volume,
+							fadeStep,
+							fadeInterval,
+							ease,
+							currentFadeInterval,
+							setCurrentFadeInterval
 						);
 					}}
 				/>
