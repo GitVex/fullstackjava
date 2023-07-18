@@ -1,19 +1,16 @@
-import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-
-const prisma = new PrismaClient();
+import { prisma } from './prismaClientProvider';
 
 export default async function handle(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	const filter: string[] = req.body.filter;
-	console.log('got request with filter: ' + filter, typeof filter);
+	const params = req.body.filter as string[];
 
 	const where =
-		filter.length > 0
+		params.length > 0
 			? {
-					AND: filter.map((tag: string) => {
+					AND: params.map((tag: string) => {
 						return {
 							tracks: { some: { tags: { some: { name: tag } } } },
 						};
@@ -21,16 +18,23 @@ export default async function handle(
 			  }
 			: {};
 
-	console.log(`where: ${JSON.stringify(where)}`);
-
-	const result = await prisma.tag.findMany({
-		//get all tags that are present in the tracks that fit the already applied filter
+	const tags = await prisma.tag.findMany({
+		select: {
+			name: true,
+			tracks: {
+				select: {
+					id: true,
+				},
+			},
+		},
 		where: where,
-		include: {
-			tracks: true,
+		orderBy: {
+			tracks: {
+				_count: 'desc',
+			},
 		},
 	});
+    const tagNames = tags.map(tag => tag.name) as string[];
 
-	console.log('sending response: ' + result);
-	res.json(result);
+	res.json(tagNames);
 }

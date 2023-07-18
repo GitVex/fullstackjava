@@ -72,6 +72,11 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
 			setPlayerHolder(playerHolderTemp);
 		};
+
+		return () => {
+			document.body.removeChild(container);
+		}
+
 	}, []);
 
 	return (

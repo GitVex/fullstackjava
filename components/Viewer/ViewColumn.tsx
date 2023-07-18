@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
 import ListItem from './ListItem';
-import { useFilterState } from '../../contexts/RebuiltFilterStateProvider';
+import { useFilterState } from '../contexts/RebuiltFilterStateProvider';
 import { motion, AnimatePresence } from 'framer-motion';
-import LoadingAnim from '../../utils/LoadingAnimDismount';
+import LoadingAnim from '../utils/LoadingAnimDismount';
 
 export function ViewColumn({
 	children,
@@ -20,24 +20,24 @@ export function ViewColumn({
 }) {
 	const filterState = useFilterState();
 
-	let route = '/api/rebuilt/list';
+	let route = '/api/list';
 	if (type === 'new') {
-		route = '/api/rebuilt/new';
+		route = '/api/new';
 	} else if (type === 'trend') {
-		route = '/api/rebuilt/list';
+		route = '/api/list';
 	} else if (type === 'filter') {
-		route = '/api/rebuilt/filter';
+		route = '/api/filter';
 	} else if (type === 'owned') {
-		route = '/api/rebuilt/list';
+		route = '/api/list';
 	} else {
-		route = '/api/rebuilt/list';
+		route = '/api/list';
 	}
 
 	const { isLoading, error, data, refetch } = useQuery<track[], Error>(
 		['items', type],
 		fetchData,
 		{
-			enabled: route === '/api/rebuilt/filter' ? false : true,
+			enabled: route === '/api/filter' ? false : true,
 			refetchInterval: 1000 * 60 * 20,
 			refetchOnWindowFocus: false,
 		}
@@ -60,7 +60,7 @@ export function ViewColumn({
 	}
 
 	useEffect(() => {
-		if (route === '/api/rebuilt/filter') {
+		if (route === '/api/filter') {
 			refetch();
 		}
 	}, [filterState]);

@@ -1,8 +1,8 @@
 import React, { useContext, useState, useMemo, use } from 'react';
-import PlayerHolderProvider from '../../contexts/PlayerHolderProvider';
+import PlayerHolderProvider from '../contexts/PlayerHolderProvider';
 import PlayerComponent from './PlayerComponent';
-import WindowSizeContext from '../../contexts/WindowSizeProvider';
-import VolumeSlider from '../../utils/VolumeSlider';
+import WindowSizeContext from '../contexts/WindowSizeProvider';
+import VolumeSlider from '../utils/VolumeSlider';
 
 function PlayerUI() {
 	const context = useContext(WindowSizeContext);

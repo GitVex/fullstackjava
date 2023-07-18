@@ -1,6 +1,6 @@
 import React from 'react';
 import { track } from '@prisma/client';
-import NotificationButton from '../../utils/NotificationButton';
+import NotificationButton from '../utils/NotificationButton';
 import ts from 'typescript';
 
 function ListItem({ item }: { item: track }) {

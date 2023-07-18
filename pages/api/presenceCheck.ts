@@ -1,8 +1,6 @@
 /* query the database to check if the url is already present */
 import { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from './prismaClientProvider';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
 

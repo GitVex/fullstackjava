@@ -70,7 +70,7 @@ function CreateUI() {
 	};
 
 	const checkPresence = async (url: string) => {
-		const res = await fetch('/api/rebuilt/presenceCheck', {
+		const res = await fetch('/api/presenceCheck', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ function CreateUI() {
 		console.log(url, tags);
 
 		// make a call to the create endpoint
-		const res = await fetch('/api/rebuilt/create', {
+		const res = await fetch('/api/create', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ function CreateUI() {
 		e.preventDefault();
 
 		// Change this to the endpoint you want to debug
-		const debug_call = await fetch('/api/rebuilt/calculateColor')
+		const debug_call = await fetch('/api/calculateColor')
 		console.log(debug_call)
 	}
 
