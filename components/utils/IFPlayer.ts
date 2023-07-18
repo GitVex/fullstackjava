@@ -1,16 +1,16 @@
+/* https://developers.google.com/youtube/iframe_api_reference?hl=de#Functions */
+
 export default interface IFPlayer {
-    addCueRange: (start: number, end: number) => void;
+    addEventListener: (event: string, listener: string) => void;
+    removeEventListener: (event: string, listener: string) => void;
     clearVideo: () => void;
     cuePlaylist: (playlist: string[], index: number, startSeconds: number, suggestedQuality: string) => void;
     cueVideoById: (videoId: string, startSeconds: number, suggestedQuality: string) => void;
     cueVideoByUrl: (mediaContentUrl: string, startSeconds: number) => void;
-    getApiInterface: () => any;
     getAvailablePlaybackRates: () => number[];
     getAvailableQualityLevels: () => string[];
     getCurrentTime: () => number;
-    getDebugText: () => string;
     getDuration: () => number;
-    getMediaReferenceTime: () => number;
     getPlaybackQuality: () => string;
     getPlaybackRate: () => number;
     getPlayerMode: () => any;
@@ -18,8 +18,6 @@ export default interface IFPlayer {
     getPlaylist: () => string[];
     getPlaylistId: () => string;
     getPlaylistIndex: () => number;
-    getSize: () => { width: number; height: number; };
-    getSphericalProperties: () => any;
     getVideoBytesLoaded: () => number;
     getVideoBytesTotal: () => number;
     getVideoData: () => any;
@@ -43,7 +41,6 @@ export default interface IFPlayer {
     playerInfo: { videoBytesLoaded: number; videoBytesTotal: number; videoLoadedFraction: number; };
     previousVideo: () => void;
     removeCueRange: (start: number, end: number) => void;
-    removeEventListener: (event: string, listener: any) => void;
     seekTo: (seconds: number, allowSeekAhead: boolean) => void;
     setLoop: (loopPlaylists: boolean) => void;
     setOption: (field: string, value: any) => void;
