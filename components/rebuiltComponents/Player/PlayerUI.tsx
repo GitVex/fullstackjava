@@ -28,6 +28,7 @@ function PlayerUI() {
 						<div className='grid grid-cols-2 grid-rows-4 gap-2'>
 							{[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
 								<PlayerComponent
+									key={id}
 									playerId={id}
 									masterVolumeModifier={masterVolumeModifier}
 								/>
