@@ -22,7 +22,7 @@ function PlayerTopMenu() {
 		};
 	}, []);
 
-	const [isOpenPlayer, setIsOpenPlayer] = useState(true);
+	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
 	const yInit = windowHeight ? windowHeight * -1 : -1000;
 
 	// create a listener that listens for the spacebar keypress
@@ -41,10 +41,6 @@ function PlayerTopMenu() {
 			scaleY: -1,
 		},
 	};
-
-	useEffect(() => {
-		console.log('isOpenPlayer', isOpenPlayer);
-	}, [isOpenPlayer]);
 
 	return windowWidth !== undefined &&
 		windowWidth !== null &&
