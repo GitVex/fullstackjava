@@ -1,9 +1,9 @@
 import React from 'react'
-import DualInterface from '../components/DualInterface'
+import PageComponent from '../components/rebuiltComponents/PageComponent'
 
 function second() {
     return (
-        <DualInterface />
+        <PageComponent />
     )
 }
 
