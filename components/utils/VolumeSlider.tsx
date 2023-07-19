@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 interface VolumeSliderProps {
 	player?: IFPlayer | null | undefined;
-	setVolume: React.Dispatch<React.SetStateAction<number>>;
+	setVolume: React.Dispatch<number>;
 	volume: number;
 	height?: number;
 	userOnChange?: (
@@ -22,7 +22,7 @@ interface VolumeSliderProps {
 function sliderInputHandler(
 	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
 	player: IFPlayer | null | undefined,
-	setVolumeFunc: React.Dispatch<React.SetStateAction<number>>
+	setVolumeFunc: React.Dispatch<number>
 ) {
 	const field = e.target as HTMLInputElement;
 	setVolumeFunc(parseInt(field.value));

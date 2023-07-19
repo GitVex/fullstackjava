@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import IFPlayer from '../utils/IFPlayer';
 import VolumeSlider from '../utils/VolumeSlider';
 
-const DEFAULT_VOLUME = 50;
 const DEFAULT_FADE_INTERVAL = 75;
 const DEFAULT_FADE_STEP = 1;
 const DEFAULT_EASE = (x: number, limit: number) =>
@@ -12,7 +11,7 @@ const DEFAULT_EASE = (x: number, limit: number) =>
 
 interface FadeOptions {
 	player: IFPlayer | null;
-	setVolume: React.Dispatch<React.SetStateAction<number>>;
+	setVolume: React.Dispatch<number>;
 	volume: number;
 	fadeStep?: number;
 	fadeInterval?: number;
@@ -24,10 +23,19 @@ interface FadeOptions {
 	pLimit?: number;
 }
 
+interface PlayerComponentProps {
+	playerId: number;
+	masterVolumeModifier: number;
+	pVolume?: number;
+	pSetVolume?: React.Dispatch<number>;
+	pSelected?: boolean;
+	pSetSelected?: React.Dispatch<boolean>;
+}
+
 function sliderInputHandler(
 	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
 	player: IFPlayer | null,
-	setVolumeFunc: React.Dispatch<React.SetStateAction<number>>,
+	setVolumeFunc: React.Dispatch<number>,
 	masterVolumeModifier: number
 ) {
 	if (!player) return;
@@ -43,7 +51,7 @@ function sliderInputHandler(
 function fadeInputHandler(
 	e: React.KeyboardEvent<HTMLInputElement>,
 	player: IFPlayer | null,
-	setVolume: React.Dispatch<React.SetStateAction<number>>,
+	setVolume: React.Dispatch<number>,
 	volume: number,
 	fadeStep: React.MutableRefObject<number>,
 	fadeInterval: React.MutableRefObject<number>,
@@ -103,7 +111,7 @@ function loadNewVideo(
 
 	player.setVolume(0);
 	player.loadVideoById(field.value);
-	
+
 	setTimeout(() => {
 		player.pauseVideo();
 		player.seekTo(0, true);
@@ -131,7 +139,7 @@ function fade({
 		setCurrentFadeInterval(null);
 	}
 
-	const limit = pLimit ?? (volume === 0 ? DEFAULT_VOLUME : volume);
+	const limit = pLimit ?? (volume === 0 ? 50 : volume);
 	const startVolume = inverse ? volume : 1;
 	let currentVolume = inverse ? volume : 1;
 
@@ -237,13 +245,19 @@ function fadeTo(
 function PlayerComponent({
 	playerId,
 	masterVolumeModifier,
-}: {
-	playerId: number;
-	masterVolumeModifier: number;
-}) {
+	pVolume,
+	pSetVolume,
+	pSelected,
+	pSetSelected,
+}: PlayerComponentProps) {
 	const ID = `player${playerId}`;
 
-	const [volume, setVolume] = useState(DEFAULT_VOLUME);
+	const volume = pVolume ?? 50;
+	const setVolume = pSetVolume ?? (() => {});
+
+	const selected = pSelected ?? false;
+	const setSelected = pSetSelected ?? (() => {});
+
 	const [currentFadeInterval, setCurrentFadeInterval] =
 		useState<NodeJS.Timeout | null>(null);
 	const fadeInterval = useRef(DEFAULT_FADE_INTERVAL);
@@ -258,6 +272,13 @@ function PlayerComponent({
 
 	return (
 		<div className='flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'>
+			<div
+				className='absolute h-4 w-4 bg-red-500'
+				onClick={(e) => {
+					const prevSelected = selected;
+					setSelected(!prevSelected);
+				}}
+			></div>
 			<div className='flex w-full flex-row justify-around'>
 				<div className='rounded' id={ID} />
 				<VolumeSlider
