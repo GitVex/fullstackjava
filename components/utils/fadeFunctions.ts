@@ -139,3 +139,5 @@ export function fadeTo(
 		setCurrentFadeInterval(null);
 	}
 }
+
+/* TO BE IMPLEMTNED: Crossfade two players */
