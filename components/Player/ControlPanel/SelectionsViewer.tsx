@@ -32,11 +32,13 @@ const SelectionsViewer: React.FC<SelectionsViewerProps> = ({
 							<motion.div
 								className={`absolute top-0 left-0 flex h-8 w-10 rounded`}
 								animate={{
-                                    boxShadow: selection.selected ? '0 0 8px 3px #f00' : '0 0 0 0px #f00',
+									boxShadow: selection.selected
+										? '0 0 8px 3px #f00'
+										: '0 0 0 0px #f00',
 								}}
-                                transition={{
-                                    duration: 0.2,
-                                }}
+								transition={{
+									duration: 0.2,
+								}}
 							/>
 							<div
 								className={`absolute top-0 left-0 flex h-8 w-10 rounded bg-transparent shadow-[inset_0_0_12px_rgba(108,117,130,1)]`}

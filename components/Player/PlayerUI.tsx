@@ -3,55 +3,22 @@ import PlayerHolderProvider from '../contexts/PlayerHolderProvider';
 import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
 import VolumeSlider from '../utils/VolumeSlider';
-import { motion } from 'framer-motion';
-import SelectionsViewer from './SelectionsViewer';
+import {
+	SelectionsState,
+	selectionsReducer,
+	VolumesState,
+	volumesReducer,
+	FadeIntervalsState,
+	fadeIntervalsReducer,
+} from './states';
+import SelectionsViewer from './ControlPanel/SelectionsViewer';
+import GroupFadeControl from './ControlPanel/GroupFadeControl';
 
 const DEFAULT_VOLUME = 50;
-
-interface VolumesState {
-	volume: number[];
-}
-
-interface VolumesAction {
-	type: 'setVolume';
-	index: number;
-	payload: number;
-}
 
 const initialVolumeStates: VolumesState = {
 	volume: Array(9).fill(DEFAULT_VOLUME),
 };
-
-const volumesReducer = (
-	state: VolumesState,
-	action: VolumesAction
-): VolumesState => {
-	switch (action.type) {
-		case 'setVolume':
-			return {
-				...state,
-				volume: state.volume.map((vol, index) => {
-					if (index === action.index) {
-						return action.payload;
-					} else {
-						return vol;
-					}
-				}),
-			};
-		default:
-			throw new Error();
-	}
-};
-
-interface SelectionsState {
-	selected: { id: number; selected: boolean }[];
-}
-
-interface SelectionsAction {
-	type: 'select' | 'deselect';
-	index: number;
-	selected?: boolean;
-}
 
 const initialSelectionStates: SelectionsState = {
 	selected: [0, 1, 2, 3, 4, 5, 6, 7].map((id) => ({
@@ -60,38 +27,8 @@ const initialSelectionStates: SelectionsState = {
 	})),
 };
 
-const selectionsReducer = (
-	state: SelectionsState,
-	action: SelectionsAction
-): SelectionsState => {
-	switch (action.type) {
-		case 'select':
-			console.log('selected player ' + action.index + '!', state);
-			return {
-				...state,
-				selected: state.selected.map((selection) => {
-					if (selection.id === action.index) {
-						return { ...selection, selected: true };
-					} else {
-						return selection;
-					}
-				}),
-			};
-		case 'deselect':
-			console.log('deselected player ' + action.index + '!', state);
-			return {
-				...state,
-				selected: state.selected.map((selection) => {
-					if (selection.id === action.index) {
-						return { ...selection, selected: false };
-					} else {
-						return selection;
-					}
-				}),
-			};
-		default:
-			throw new Error();
-	}
+const initialFadeIntervals: FadeIntervalsState = {
+	fadeIntervals: Array(9).fill(null),
 };
 
 function PlayerUI() {
@@ -101,6 +38,7 @@ function PlayerUI() {
 
 	const [masterVolume, setMasterVolume] = useState(100);
 	const [masterVolumeModifier, setMasterVolumeModifier] = useState(1);
+
 	const [volumes, volumeDispatch] = useReducer(
 		volumesReducer,
 		initialVolumeStates
@@ -109,6 +47,11 @@ function PlayerUI() {
 		selectionsReducer,
 		initialSelectionStates
 	);
+	const [fadeIntervals, fadeIntervalDispatch] = useReducer(
+		fadeIntervalsReducer,
+		initialFadeIntervals
+	);
+		
 
 	useMemo(() => {
 		setMasterVolumeModifier(masterVolume / 100);
@@ -151,6 +94,14 @@ function PlayerUI() {
 											});
 										}
 									}}
+									pCurrentFadeInterval={fadeIntervals.fadeIntervals[id]}
+									pSetCurrentFadeInterval={(interval) =>
+										fadeIntervalDispatch({
+											type: 'setCurrentFadeInterval',
+											index: id,
+											payload: interval,
+										})
+									}
 								/>
 							))}
 						</div>
@@ -170,6 +121,13 @@ function PlayerUI() {
 					<SelectionsViewer
 						selections={selections}
 						selectionDispatch={selectionDispatch}
+					/>
+					<GroupFadeControl
+						selections={selections}
+						volumes={volumes}
+						volumeDispatch={volumeDispatch}
+						fadeIntervals={fadeIntervals}
+						fadeIntervalDispatch={fadeIntervalDispatch}
 					/>
 				</div>
 			</div>

@@ -1,27 +1,9 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
 import IFPlayer from '../utils/IFPlayer';
 import VolumeSlider from '../utils/VolumeSlider';
-
-const DEFAULT_FADE_INTERVAL = 75;
-const DEFAULT_FADE_STEP = 1;
-const DEFAULT_EASE = (x: number, limit: number) =>
-	limit * (1 - Math.cos(((x / limit) * Math.PI) / 2));
-
-interface FadeOptions {
-	player: IFPlayer | null;
-	setVolume: React.Dispatch<number>;
-	volume: number;
-	fadeStep?: number;
-	fadeInterval?: number;
-	ease?: (x: number, limit: number) => number;
-	currentFadeInterval: NodeJS.Timeout | null;
-	setCurrentFadeInterval: React.Dispatch<
-		React.SetStateAction<NodeJS.Timeout | null>
-	>;
-	pLimit?: number;
-}
+import { fadeIn, fadeOut, fadeTo } from '../utils/fadeFunctions';
 
 interface PlayerComponentProps {
 	playerId: number;
@@ -30,6 +12,8 @@ interface PlayerComponentProps {
 	pSetVolume?: React.Dispatch<number>;
 	pSelected?: boolean;
 	pSetSelected?: () => void;
+	pCurrentFadeInterval?: NodeJS.Timeout | null;
+	pSetCurrentFadeInterval?: React.Dispatch<NodeJS.Timeout | null>;
 }
 
 function sliderInputHandler(
@@ -53,13 +37,8 @@ function fadeInputHandler(
 	player: IFPlayer | null,
 	setVolume: React.Dispatch<number>,
 	volume: number,
-	fadeStep: React.MutableRefObject<number>,
-	fadeInterval: React.MutableRefObject<number>,
-	ease: React.MutableRefObject<(x: number, limit: number) => number>,
 	currentFadeInterval: NodeJS.Timeout | null,
-	setCurrentFadeInterval: React.Dispatch<
-		React.SetStateAction<NodeJS.Timeout | null>
-	>
+	setCurrentFadeInterval: React.Dispatch<NodeJS.Timeout | null>
 ) {
 	const field = e.target as HTMLInputElement;
 	if (!player) return;
@@ -70,9 +49,6 @@ function fadeInputHandler(
 			player,
 			setVolume,
 			volume,
-			fadeStep: fadeStep.current,
-			fadeInterval: fadeInterval.current,
-			ease: ease.current,
 			currentFadeInterval,
 			setCurrentFadeInterval,
 			pLimit: parseInt(field.value),
@@ -84,8 +60,6 @@ function fadeInputHandler(
 			player,
 			setVolume,
 			volume,
-			fadeStep: fadeStep.current,
-			fadeInterval: fadeInterval.current,
 			currentFadeInterval,
 			setCurrentFadeInterval,
 			pLimit: parseInt(field.value),
@@ -119,129 +93,6 @@ function loadNewVideo(
 	}, 1000);
 }
 
-function fade({
-	player,
-	setVolume,
-	volume,
-	fadeStep = DEFAULT_FADE_STEP,
-	fadeInterval = DEFAULT_FADE_INTERVAL,
-	ease = DEFAULT_EASE,
-	currentFadeInterval,
-	setCurrentFadeInterval,
-	pLimit,
-	inverse,
-}: FadeOptions & { inverse?: boolean }) {
-	if (!player) return;
-
-	// Clear any existing interval
-	if (currentFadeInterval) {
-		clearInterval(currentFadeInterval);
-		setCurrentFadeInterval(null);
-	}
-
-	const limit = pLimit ?? (volume === 0 ? 50 : volume);
-	const startVolume = inverse ? volume : 1;
-	let currentVolume = inverse ? volume : 1;
-
-	if (!inverse) {
-		player.playVideo();
-		setVolume(1);
-	}
-
-	let runner = startVolume;
-
-	let intervalId = setInterval(() => {
-		try {
-			if (inverse) {
-				if (currentVolume > 0) {
-					currentVolume = ease(runner, currentVolume);
-					setVolume(Math.floor(currentVolume));
-					runner -= fadeStep;
-				} else {
-					endFade(0, player);
-				}
-			} else {
-				if (currentVolume < limit) {
-					currentVolume = ease(runner, limit);
-					setVolume(Math.floor(currentVolume));
-					runner += fadeStep;
-				} else {
-					endFade(limit);
-				}
-			}
-		} catch (error) {
-			clearInterval(intervalId);
-		}
-	}, fadeInterval);
-
-	setCurrentFadeInterval(intervalId);
-
-	function endFade(volume: number, player: IFPlayer | null = null) {
-		setVolume(volume);
-		if (volume === 0) {
-			player?.pauseVideo();
-		}
-		clearInterval(intervalId);
-		setCurrentFadeInterval(null);
-	}
-}
-
-function fadeIn(options: FadeOptions) {
-	fade({ ...options, inverse: false });
-}
-
-function fadeOut(options: FadeOptions) {
-	fade({ ...options, inverse: true });
-}
-
-function fadeTo(
-	{
-		player,
-		setVolume,
-		volume,
-		fadeStep = DEFAULT_FADE_STEP,
-		fadeInterval = DEFAULT_FADE_INTERVAL,
-		currentFadeInterval,
-		setCurrentFadeInterval,
-		pLimit,
-	}: FadeOptions,
-	targetVolume: number
-) {
-	if (!player) return;
-
-	// Clear any existing interval
-	if (currentFadeInterval) {
-		clearInterval(currentFadeInterval);
-		setCurrentFadeInterval(null);
-	}
-
-	let currentVolume = volume;
-
-	let intervalId = setInterval(() => {
-		try {
-			if (currentVolume > targetVolume) {
-				currentVolume -= fadeStep;
-				setVolume(currentVolume);
-			} else if (currentVolume < targetVolume) {
-				currentVolume += fadeStep;
-				setVolume(currentVolume);
-			} else {
-				endFade(targetVolume);
-			}
-		} catch (error) {
-			clearInterval(intervalId);
-		}
-	}, fadeInterval);
-
-	setCurrentFadeInterval(intervalId);
-
-	function endFade(volume: number) {
-		setVolume(volume);
-		clearInterval(intervalId);
-		setCurrentFadeInterval(null);
-	}
-}
-
 function PlayerComponent({
 	playerId,
 	masterVolumeModifier,
@@ -249,6 +100,8 @@ function PlayerComponent({
 	pSetVolume,
 	pSelected,
 	pSetSelected,
+	pCurrentFadeInterval,
+	pSetCurrentFadeInterval,
 }: PlayerComponentProps) {
 	const ID = `player${playerId}`;
 
@@ -258,16 +111,14 @@ function PlayerComponent({
 	const selected = pSelected ?? false;
 	const setSelected = pSetSelected ?? (() => {});
 
-	const [currentFadeInterval, setCurrentFadeInterval] =
-		useState<NodeJS.Timeout | null>(null);
-	const fadeInterval = useRef(DEFAULT_FADE_INTERVAL);
-	const fadeStep = useRef(DEFAULT_FADE_STEP);
-	const ease = useRef(DEFAULT_EASE);
+	const currentFadeInterval = pCurrentFadeInterval ?? null;
+	const setCurrentFadeInterval = pSetCurrentFadeInterval ?? (() => {});
 
 	const player = usePlayerHolderById(playerId).player;
 
 	useMemo(() => {
 		player?.setVolume(volume * masterVolumeModifier);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [volume, masterVolumeModifier]);
 
 	return (
@@ -334,9 +185,6 @@ function PlayerComponent({
 							player,
 							setVolume,
 							volume,
-							fadeStep: fadeStep.current,
-							fadeInterval: fadeInterval.current,
-							ease: ease.current,
 							currentFadeInterval,
 							setCurrentFadeInterval,
 							pLimit: volume,
@@ -356,9 +204,6 @@ function PlayerComponent({
 							player,
 							setVolume,
 							volume,
-							fadeStep,
-							fadeInterval,
-							ease,
 							currentFadeInterval,
 							setCurrentFadeInterval
 						);
@@ -371,9 +216,6 @@ function PlayerComponent({
 							player,
 							setVolume,
 							volume,
-							fadeStep: fadeStep.current,
-							fadeInterval: fadeInterval.current,
-							ease: ease.current,
 							currentFadeInterval,
 							setCurrentFadeInterval,
 						});
