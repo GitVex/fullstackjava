@@ -22,7 +22,7 @@ function PlayerTopMenu() {
 		};
 	}, []);
 
-	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
+	const [isOpenPlayer, setIsOpenPlayer] = useState(true);
 	const yInit = windowHeight ? windowHeight * -1 : -1000;
 
 	// create a listener that listens for the spacebar keypress

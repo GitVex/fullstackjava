@@ -4,6 +4,7 @@ import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
 import VolumeSlider from '../utils/VolumeSlider';
 import { motion } from 'framer-motion';
+import SelectionsViewer from './SelectionsViewer';
 
 const DEFAULT_VOLUME = 50;
 
@@ -120,7 +121,7 @@ function PlayerUI() {
 				/* @ts-ignore */
 				style={{ width: windowWidth, height: windowHeight }}
 			>
-				<div className='flex w-fit flex-row items-center gap-4'>
+				<div className='flex h-full w-fit flex-row items-center gap-4'>
 					<div className='flex w-full flex-col items-center'>
 						<div className='grid grid-cols-2 grid-rows-4 gap-2'>
 							{[0, 1, 2, 3, 4, 5, 6, 7].map((id) => (
@@ -137,15 +138,15 @@ function PlayerUI() {
 										})
 									}
 									pSelected={selections.selected[id].selected}
-									pSetSelected={(selected) => {
-										if (selected) {
+									pSetSelected={() => {
+										if (selections.selected[id].selected) {
 											selectionDispatch({
-												type: 'select',
+												type: 'deselect',
 												index: id,
 											});
 										} else {
 											selectionDispatch({
-												type: 'deselect',
+												type: 'select',
 												index: id,
 											});
 										}
@@ -164,42 +165,12 @@ function PlayerUI() {
 					</div>
 				</div>
 
-				<div className='flex w-1/3 flex-col items-center'>
-					<div className='flex flex-col items-center'>
-						{/* render all selection states as rounded boxes in a 2 by 4 grid */}
-						<p>Selections</p>
-						<div className='grid grid-cols-2 grid-rows-4 gap-2 rounded bg-darknavy-500 p-4 shadow-[inset_0_0_8px_rgba(108,117,130,1)]'>
-							{selections.selected.map((selection) => (
-								<div
-									key={selection.id}
-									className={`relative flex h-8 w-8 rounded bg-transparent`}
-								>
-									<motion.div
-										className={`absolute top-0 left-0 flex h-8 w-8 bg-blue-400`}
-										animate={{
-											scale: selection.selected ? 1.3 : 0,
-										}}
-									/>
-									<div
-										className={`absolute top-0 left-0 flex h-8 w-8 rounded bg-transparent shadow-[inset_0_0_12px_rgba(108,117,130,1)]`}
-										onClick={() => {
-											if (selection.selected) {
-												selectionDispatch({
-													type: 'deselect',
-													index: selection.id,
-												});
-											} else {
-												selectionDispatch({
-													type: 'select',
-													index: selection.id,
-												});
-											}
-										}}
-									/>
-								</div>
-							))}
-						</div>
-					</div>
+				<div className='flex h-full w-1/3 flex-col items-center justify-center'>
+					{/* render all selection states as rounded boxes in a 2 by 4 grid */}
+					<SelectionsViewer
+						selections={selections}
+						selectionDispatch={selectionDispatch}
+					/>
 				</div>
 			</div>
 		</PlayerHolderProvider>

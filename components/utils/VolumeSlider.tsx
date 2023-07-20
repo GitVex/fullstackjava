@@ -3,6 +3,8 @@ import IFPlayer from './IFPlayer';
 import { motion } from 'framer-motion';
 
 interface VolumeSliderProps {
+	className?: string;
+	textBgColor?: string;
 	player?: IFPlayer | null | undefined;
 	setVolume: React.Dispatch<number>;
 	volume: number;
@@ -33,6 +35,8 @@ function sliderInputHandler(
 }
 
 const VolumeSlider: React.FC<VolumeSliderProps> = ({
+	className,
+	textBgColor,
 	player,
 	setVolume,
 	volume,
@@ -46,7 +50,7 @@ const VolumeSlider: React.FC<VolumeSliderProps> = ({
 	);
 
 	return (
-		<div className='flex w-10 flex-row items-center gap-4'>
+		<div className={'flex w-10 flex-row items-center gap-4 ' + className}>
 			<input
 				id={uniqueId}
 				type='range'
@@ -102,6 +106,7 @@ const VolumeSlider: React.FC<VolumeSliderProps> = ({
 			</style>
 			<div style={{ height: height }}>
 				<motion.p
+					className={textBgColor}
 					animate={{
 						y: height * (1 - volume / 100) + 0.12 * volume - 20,
 					}}

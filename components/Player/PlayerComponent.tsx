@@ -29,7 +29,7 @@ interface PlayerComponentProps {
 	pVolume?: number;
 	pSetVolume?: React.Dispatch<number>;
 	pSelected?: boolean;
-	pSetSelected?: React.Dispatch<boolean>;
+	pSetSelected?: () => void;
 }
 
 function sliderInputHandler(
@@ -271,17 +271,32 @@ function PlayerComponent({
 	}, [volume, masterVolumeModifier]);
 
 	return (
-		<div className='flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'>
+		<motion.div
+			className={
+				'flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'
+			}
+			animate={{
+				boxShadow: selected ? '0 0 8px 1px #f00' : '0 0 0 0px #fff',
+			}}
+			transition={{
+				duration: 0.2,
+			}}
+			onClick={(e) => {
+				if (e.currentTarget !== e.target) return;
+				setSelected();
+			}}
+		>
 			<div
-				className='absolute h-4 w-4 bg-red-500'
+				className='flex w-full flex-row justify-around'
 				onClick={(e) => {
-					const prevSelected = selected;
-					setSelected(!prevSelected);
+					if (e.currentTarget !== e.target) return;
+					setSelected();
 				}}
-			></div>
-			<div className='flex w-full flex-row justify-around'>
+			>
 				<div className='rounded' id={ID} />
 				<VolumeSlider
+					className='rounded border-2 border-darknavy-400/25 p-2'
+					textBgColor='bg-darknavy-500'
 					player={player}
 					setVolume={setVolume}
 					volume={volume}
@@ -368,7 +383,7 @@ function PlayerComponent({
 					Fade Out
 				</button>
 			</div>
-		</div>
+		</motion.div>
 	);
 }
 
