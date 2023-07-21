@@ -21,9 +21,9 @@ const SelectionsViewer: React.FC<SelectionsViewerProps> = ({
 	selectionDispatch,
 }) => {
 	return (
-		<div className='absolute top-4 right-4'>
+		<div className=''>
 			<div className='flex flex-col items-center'>
-				<div className='grid grid-cols-2 grid-rows-4 gap-2 rounded bg-darknavy-500 p-4 shadow-[inset_0_0_8px_rgba(108,117,130,1)]'>
+				<div className='grid grid-cols-2 grid-rows-4 gap-2 rounded bg-darknavy-500 p-4 border-2 border-darknavy-700'>
 					{selections.selected.map((selection) => (
 						<div
 							key={selection.id}

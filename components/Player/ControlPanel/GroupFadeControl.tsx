@@ -116,9 +116,9 @@ function GroupFadeControl({
 
 	return (
 		<div>
-			<div className='flex flex-row gap-2 rounded border-2 border-darknavy-800 bg-darknavy-500 p-2'>
+			<div className='flex flex-row gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-2'>
 				<button
-					className='w-fit rounded border-2 border-darknavy-800 bg-darknavy-500 px-2 py-1 disabled:opacity-50'
+					className='w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50'
 					onClick={(e) => {
 						GroupFadeInHandler({
 							players: players,
@@ -134,7 +134,7 @@ function GroupFadeControl({
 					Fade In
 				</button>
 				<button
-					className='w-fit rounded border-2 border-darknavy-800 bg-darknavy-500 px-2 py-1 disabled:opacity-50'
+					className='w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50'
 					onClick={(e) => {
 						GroupFadeOutHandler({
 							players: players,

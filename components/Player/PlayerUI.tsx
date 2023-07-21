@@ -116,7 +116,7 @@ function PlayerUI() {
 					</div>
 				</div>
 
-				<div className='flex h-full w-1/3 flex-col items-center justify-center'>
+				<div className='flex h-full w-1/3 flex-col items-center justify-center gap-2'>
 					{/* render all selection states as rounded boxes in a 2 by 4 grid */}
 					<SelectionsViewer
 						selections={selections}
