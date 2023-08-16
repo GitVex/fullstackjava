@@ -4,7 +4,7 @@ BardicInspiration is a web-based database interface designed to store and recall
 
 ## Technologies
 
-The project is primarily written in JavaScript/TypeScript and Node.js, with HTML and CSS for the frontend.
+The project is primarily written in JavaScript/TypeScript and Node.js, with Next.js for both frontend and backend.
 
 ## Deployment
 
