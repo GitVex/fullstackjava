@@ -10,6 +10,13 @@ import PlayerUI from './PlayerUI';
 import { breakpoints } from '../utils/breakpoints';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
 
+let DEFAULT_ISOPENPLAYER_STATE: boolean;
+if (process.env.NODE_ENV !== "development") {
+    DEFAULT_ISOPENPLAYER_STATE = false;
+} else {
+	DEFAULT_ISOPENPLAYER_STATE = true;
+}
+
 function PlayerTopMenu() {
 	const context = useContext(WindowSizeContext);
 	const windowHeight = context?.windowHeight;
@@ -22,7 +29,8 @@ function PlayerTopMenu() {
 		};
 	}, []);
 
-	const [isOpenPlayer, setIsOpenPlayer] = useState(true);
+	
+	const [isOpenPlayer, setIsOpenPlayer] = useState(DEFAULT_ISOPENPLAYER_STATE);
 	const yInit = windowHeight ? windowHeight * -1 : -1000;
 
 	// create a listener that listens for the spacebar keypress
