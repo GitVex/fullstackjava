@@ -22,12 +22,15 @@ function PlayerTopMenu() {
 		};
 	}, []);
 
-	const [isOpenPlayer, setIsOpenPlayer] = useState(false);
+	const [isOpenPlayer, setIsOpenPlayer] = useState(true);
 	const yInit = windowHeight ? windowHeight * -1 : -1000;
 
 	// create a listener that listens for the spacebar keypress
 	// if the spacebar is pressed, then toggle the isOpenPlayer state
 	const handleKeyPress = (e: KeyboardEvent) => {
+		// ignore the spacebar keypress if the user is typing in an input field
+		if (e.target instanceof HTMLInputElement) return;
+
 		if (e.code === 'Space') {
 			setIsOpenPlayer((prevIsOpenPlayer) => !prevIsOpenPlayer);
 		}
