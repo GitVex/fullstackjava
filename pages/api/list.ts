@@ -6,7 +6,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     console.log(`list called from: ${req.body.origin}`)
 
     // Query the database
-    const result = await prisma.track.findMany({});
+    const result = await prisma.track.findMany({
+        include: {
+            tags: true
+        }
+    });
+    console.log(`result: ${JSON.stringify(result)}`)
 
     // randomize the result order
     function randomize(a: any, b: any) {

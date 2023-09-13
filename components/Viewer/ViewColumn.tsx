@@ -1,4 +1,5 @@
 // ViewColumn.tsx
+// @ts-nocheck
 import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
@@ -55,6 +56,7 @@ export function ViewColumn({
 			}),
 		});
 		const res = await response.json();
+		console.log(res);
 
 		return res;
 	}
@@ -70,9 +72,9 @@ export function ViewColumn({
 			<p className='mb-2 w-full text-center capitalize'>{type}</p>
 			<AnimatePresence mode='wait'>
 				{isLoading ? (
-						<motion.div key='loader' className='self-center'>
-							<LoadingAnim />
-						</motion.div>
+					<motion.div key='loader' className='self-center'>
+						<LoadingAnim />
+					</motion.div>
 				) : error ? (
 					<p>Error: {error.message}</p>
 				) : data ? (
