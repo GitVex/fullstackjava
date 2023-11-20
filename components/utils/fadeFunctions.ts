@@ -9,18 +9,23 @@ export interface FadeOptions {
 	player: IFPlayer | null;
 	setVolume: React.Dispatch<number>;
 	volume: number;
+	savedVolume?: {hasSaved: boolean, prevVol: number};
+	setSavedVolume?: React.Dispatch<{hasSaved: boolean, prevVol?: number}>;
 	currentFadeInterval: NodeJS.Timeout | null;
 	setCurrentFadeInterval: React.Dispatch<NodeJS.Timeout | null>;
 	pLimit?: number;
 	fadeStep?: number;
 	fadeInterval?: number;
 	ease?: (x: number, limit: number) => number;
+	inverse?: boolean
 }
 
 function fade({
 	player,
 	setVolume,
 	volume,
+	savedVolume,
+	setSavedVolume,
 	fadeStep = DEFAULT_FADE_STEP,
 	fadeInterval = DEFAULT_FADE_INTERVAL,
 	ease = DEFAULT_EASE,
@@ -28,7 +33,7 @@ function fade({
 	setCurrentFadeInterval,
 	pLimit,
 	inverse,
-}: FadeOptions & { inverse?: boolean }) {
+}: FadeOptions) {
 	if (!player) return;
 
 	// Clear any existing interval
@@ -37,7 +42,14 @@ function fade({
 		setCurrentFadeInterval(null);
 	}
 
-	const limit = pLimit ?? (volume === 0 ? 50 : volume);
+	// If hasSaved is true, then use the savedVolume as the limit
+	let limit = 0;
+	if (savedVolume?.hasSaved) {
+		limit = savedVolume?.prevVol ?? 0;
+	} else {
+		limit = pLimit ?? (volume === 0 ? 50 : volume);
+	}
+
 	const startVolume = inverse ? volume : 1;
 	let currentVolume = inverse ? volume : 1;
 
@@ -57,6 +69,7 @@ function fade({
 					runner -= fadeStep;
 				} else {
 					endFade(0, player);
+					setSavedVolume?.({ hasSaved: true, prevVol: startVolume }); // Might produce problems if intervals are cancelled
 				}
 			} else {
 				if (currentVolume < limit) {
@@ -85,11 +98,11 @@ function fade({
 }
 
 export function fadeIn(options: FadeOptions) {
-	fade({ ...options, inverse: false });
+	fade({ ...options, inverse: false, });
 }
 
 export function fadeOut(options: FadeOptions) {
-	fade({ ...options, inverse: true });
+	fade({ ...options, inverse: true, });
 }
 
 export function fadeTo(
