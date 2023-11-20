@@ -10,6 +10,8 @@ interface PlayerComponentProps {
 	masterVolumeModifier: number;
 	pVolume?: number;
 	pSetVolume?: React.Dispatch<number>;
+	pSavedVolume?: {hasSaved: boolean, prevVol: number};
+	pSetSavedVolume?: React.Dispatch<{hasSaved: boolean, prevVol?: number}>;
 	pSelected?: boolean;
 	pSetSelected?: () => void;
 	pCurrentFadeInterval?: NodeJS.Timeout | null;
@@ -20,6 +22,7 @@ function sliderInputHandler(
 	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
 	player: IFPlayer | null,
 	setVolumeFunc: React.Dispatch<number>,
+	setSavedVolumeFunc: React.Dispatch<{hasSaved: boolean, prevVol?: number}>,
 	masterVolumeModifier: number
 ) {
 	if (!player) return;
@@ -29,6 +32,7 @@ function sliderInputHandler(
 	const volume = parseInt(field.value) * masterVolumeModifier;
 
 	setVolumeFunc(parseInt(field.value));
+	setSavedVolumeFunc({ hasSaved: false });
 	player.setVolume(volume);
 }
 
@@ -98,6 +102,8 @@ function PlayerComponent({
 	masterVolumeModifier,
 	pVolume,
 	pSetVolume,
+	pSavedVolume,
+	pSetSavedVolume,
 	pSelected,
 	pSetSelected,
 	pCurrentFadeInterval,
@@ -108,11 +114,15 @@ function PlayerComponent({
 	const volume = pVolume ?? 50;
 	const setVolume = pSetVolume ?? (() => {});
 
+	const savedVolume = pSavedVolume ?? {hasSaved: false, prevVol: 0};
+	const setSavedVolume = pSetSavedVolume ?? (() => {});
+
 	const selected = pSelected ?? false;
 	const setSelected = pSetSelected ?? (() => {});
 
 	const currentFadeInterval = pCurrentFadeInterval ?? null;
 	const setCurrentFadeInterval = pSetCurrentFadeInterval ?? (() => {});
+
 
 	const player = usePlayerHolderById(playerId).player;
 
@@ -156,6 +166,7 @@ function PlayerComponent({
 							e,
 							player,
 							setVolume,
+							setSavedVolume,
 							masterVolumeModifier
 						)
 					}
@@ -164,6 +175,7 @@ function PlayerComponent({
 							e,
 							player,
 							setVolume,
+							setSavedVolume,
 							masterVolumeModifier
 						)
 					}
@@ -185,6 +197,8 @@ function PlayerComponent({
 							player,
 							setVolume,
 							volume,
+							savedVolume,
+							setSavedVolume,
 							currentFadeInterval,
 							setCurrentFadeInterval,
 							pLimit: volume,
@@ -216,6 +230,8 @@ function PlayerComponent({
 							player,
 							setVolume,
 							volume,
+							savedVolume,
+							setSavedVolume,
 							currentFadeInterval,
 							setCurrentFadeInterval,
 						});

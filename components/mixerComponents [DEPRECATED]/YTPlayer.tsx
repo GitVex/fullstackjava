@@ -7,6 +7,9 @@ import styles from './YTPlayer.module.css';
 // Youtube Player utilizing the Youtube IFrame API
 function YTPlayer({ playerId }: { playerId: number }) {
 	const [volume, setVolume] = useState(50);
+	const [prevVol, setPrevVol] = useState(0);
+	// volume tag to identify if the volume to fade in should be from the user slider input or previous volume from fade out
+	// true = user input, false = previous volume
 
 	const player = usePlayerHolderById(playerId).player;
 	const ID = `player${playerId}`;
@@ -36,6 +39,10 @@ function YTPlayer({ playerId }: { playerId: number }) {
 		}
 	}, [volume]);
 
+	useEffect(() => {
+		console.log('prevVol: ', prevVol);
+	}, [prevVol]);
+
 	const sliderInputHandler = (e: any) => {
 		if (parseInt(e.target.value) != volume) {
 			setVolume(e.target.value);
@@ -44,6 +51,7 @@ function YTPlayer({ playerId }: { playerId: number }) {
 
 	const fade = (e: any, pLimit?: number, inverse: boolean = false) => {
 		if (!player) return;
+		console.log('fading ..');
 		let limit = 0;
 		if (!inverse) {
 			limit = pLimit
@@ -79,11 +87,18 @@ function YTPlayer({ playerId }: { playerId: number }) {
 	};
 
 	const fadeIn = (e: any, pLimit?: number) => {
+		if (!player) return;
+		pLimit = prevVol
 		fade(e, pLimit);
 		player ? player.playVideo() : null;
 	};
-	const fadeOut = (e: any, pLimit?: number) => fade(e, pLimit, true);
 
+	const fadeOut = (e: any, pLimit?: number) => {
+		if (!player) return;
+		console.log('fadeOut');
+		setPrevVol(volume);
+		fade(e, pLimit, true);
+	}
 	const fadeTo = (e: any, volume: number) => {
 		if (!player) return;
 		const limit = player.getVolume() == 0 ? 50 : player.getVolume();
