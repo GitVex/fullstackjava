@@ -46,6 +46,7 @@ export const selectionsReducer = (
 
 export interface VolumesState {
 	volume: number[];
+	savedVolume: {hasSaved: boolean, prevVol: number}[];
 }
 
 export interface VolumesAction {
@@ -54,9 +55,16 @@ export interface VolumesAction {
 	payload: number;
 }
 
+export interface setVolumeStateAction {
+	type: 'setVolumeState';
+	index: number;
+	saveState: boolean;
+	payload: number;
+}
+
 export const volumesReducer = (
 	state: VolumesState,
-	action: VolumesAction
+	action: VolumesAction | setVolumeStateAction
 ): VolumesState => {
 	switch (action.type) {
 		case 'setVolume':
@@ -69,6 +77,22 @@ export const volumesReducer = (
 						return vol;
 					}
 				}),
+			};
+		case 'setVolumeState':
+			return {
+				...state,
+				savedVolume: state.savedVolume.map(
+					(entry, index) => {
+						if (index === action.index) {
+							return {
+								hasSaved: action.saveState,
+								prevVol: action.payload,
+							};
+						} else {
+							return entry;
+						}
+					}
+				)
 			};
 		default:
 			throw new Error();
