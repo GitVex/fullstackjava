@@ -66,7 +66,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 				player: new YT.Player(holder.player.id, {
 					height: 128,
 					width: 256,
-					videoId: '_dyA3Xp02Bo' /* Placeholder: NpEaa2P7qZI */,
+					videoId: process.env.NODE_ENV !== "development" ? defaultVideoID : 'P2NVJSJVGVQ'
 				}),
 			}));
 
