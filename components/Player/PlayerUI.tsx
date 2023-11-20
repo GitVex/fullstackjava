@@ -18,6 +18,7 @@ const DEFAULT_VOLUME = 50;
 
 const initialVolumeStates: VolumesState = {
 	volume: Array(9).fill(DEFAULT_VOLUME),
+	savedVolume: Array(9).fill({hasSaved: false, prevVol: 0}),
 };
 
 const initialSelectionStates: SelectionsState = {
@@ -78,6 +79,15 @@ function PlayerUI() {
 											type: 'setVolume',
 											index: id,
 											payload: volume,
+										})
+									}
+									pSavedVolume={volumes.savedVolume[id]}
+									pSetSavedVolume={(value: {hasSaved: boolean, prevVol?: number}) =>
+										volumeDispatch({
+											type: 'setVolumeState',
+											index: id,
+											payload: value.prevVol ? value.prevVol : 0,
+											saveState: value.hasSaved,
 										})
 									}
 									pSelected={selections.selected[id].selected}
