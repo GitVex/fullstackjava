@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { track } from '@prisma/client';
 import NotificationButton from '../utils/NotificationButton';
-import ts from 'typescript';
+
+
 
 function ListItem({ item }: { item: track & { tags: any } }) {
 	const [showTags, setShowTags] = useState(false);

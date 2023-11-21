@@ -93,7 +93,7 @@ function CreateUI() {
 			return;
 		}
 
-		console.log(url, tags);
+		// console.log(url, tags);
 
 		// make a call to the create endpoint
 		const res = await fetch('/api/create', {
@@ -111,7 +111,7 @@ function CreateUI() {
 
 		const data = await res.json();
 
-		console.log(data);
+		// console.log(data);
 		checkPresence(url);
 	};
 
@@ -120,18 +120,18 @@ function CreateUI() {
 
 		// Change this to the endpoint you want to debug
 		const debug_call = await fetch('/api/calculateColor')
-		console.log(debug_call)
+		// console.log(debug_call)
 	}
 
 	useMemo(() => {
 
-		console.log('useMemo called', url, tags, isPresent);
+		// console.log('useMemo called', url, tags, isPresent);
 
 		if (url && tags && !isPresent) {
-			console.log('setting isSubmittable to true');
+			// console.log('setting isSubmittable to true');
 			setIsSubmittable(true);
 		} else {
-			console.log('setting isSubmittable to false');
+			// console.log('setting isSubmittable to false');
 			setIsSubmittable(false);
 		}
 	}, [url, tags, isPresent]);
