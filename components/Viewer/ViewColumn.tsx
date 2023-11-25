@@ -56,7 +56,7 @@ export function ViewColumn({
 			}),
 		});
 		const res = await response.json();
-		console.log(res);
+		// console.log(res);
 
 		return res;
 	}

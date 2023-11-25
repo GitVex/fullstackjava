@@ -1,7 +1,7 @@
 /* https://developers.google.com/youtube/iframe_api_reference?hl=de#Functions */
 
-export default interface IFPlayer {
-    addEventListener: (event: string, listener: string) => void;
+export default interface IFPlayer extends YT.Player {
+    /* addEventListener: (event: string, listener: string) => void;
     removeEventListener: (event: string, listener: string) => void;
     clearVideo: () => void;
     cuePlaylist: (playlist: string[], index: number, startSeconds: number, suggestedQuality: string) => void;
@@ -54,5 +54,5 @@ export default interface IFPlayer {
     unMute: () => void;
     unloadModule: (moduleName: string) => void;
     v: HTMLDivElement;
-    videoTitle: string;
+    videoTitle: string; */
 }

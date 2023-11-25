@@ -13,6 +13,7 @@
     "@types/node": "18.11.15",
     "@types/react": "18.0.26",
     "@types/react-dom": "18.0.9",
+    "@types/youtube": "^0.0.50",
     "@vercel/analytics": "^0.1.8",
     "canvas": "^2.11.2",
     "eslint": "8.29.0",

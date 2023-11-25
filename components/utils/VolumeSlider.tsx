@@ -23,15 +23,11 @@ interface VolumeSliderProps {
 
 function sliderInputHandler(
 	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
-	player: IFPlayer | null | undefined,
-	setVolumeFunc: React.Dispatch<number>
+	setVolumeFunc: React.Dispatch<number>,
+	player?: IFPlayer | null | undefined,
 ) {
 	const field = e.target as HTMLInputElement;
 	setVolumeFunc(parseInt(field.value));
-
-	if (player) {
-		player.setVolume(parseInt(field.value));
-	}
 }
 
 const VolumeSlider: React.FC<VolumeSliderProps> = ({
@@ -63,12 +59,12 @@ const VolumeSlider: React.FC<VolumeSliderProps> = ({
 				onChange={
 					userOnChange
 						? userOnChange
-						: (e) => sliderInputHandler(e, player, setVolume)
+						: (e) => sliderInputHandler(e, setVolume)
 				}
 				onInput={
 					userOnInput
 						? userOnInput
-						: (e) => sliderInputHandler(e, player, setVolume)
+						: (e) => sliderInputHandler(e, setVolume)
 				}
 			/>
 			<style>
