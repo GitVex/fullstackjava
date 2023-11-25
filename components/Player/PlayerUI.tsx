@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo, useReducer } from 'react';
-import PlayerHolderProvider from '../contexts/PlayerHolderProvider';
+
 import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
 import VolumeSlider from '../utils/VolumeSlider';
@@ -59,7 +59,6 @@ function PlayerUI() {
 	}, [masterVolume]);
 
 	return (
-		<PlayerHolderProvider>
 			<div
 				className='absolute z-10 flex flex-row items-center justify-center gap-2 p-4 backdrop-blur-md'
 				/* @ts-ignore */
@@ -141,7 +140,6 @@ function PlayerUI() {
 					/>
 				</div>
 			</div>
-		</PlayerHolderProvider>
 	);
 }
 

@@ -129,3 +129,34 @@ export const fadeIntervalsReducer = (
 			throw new Error();
 	}
 };
+
+export interface PausedTimerState {
+	pausedAt: number[];
+}
+
+export interface PausedTimerAction {
+	type: 'setPausedAt';
+	index: number;
+	payload: number;
+}
+
+export const pausedTimerReducer = (
+	state: PausedTimerState,
+	action: PausedTimerAction
+): PausedTimerState => {
+	switch (action.type) {
+		case 'setPausedAt':
+			return {
+				...state,
+				pausedAt: state.pausedAt.map((time, index) => {
+					if (index === action.index) {
+						return action.payload;
+					} else {
+						return time;
+					}
+				}),
+			};
+		default:
+			throw new Error();
+	}
+}
