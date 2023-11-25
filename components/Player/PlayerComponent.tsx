@@ -33,7 +33,7 @@ function sliderInputHandler(
 
 	setVolumeFunc(parseInt(field.value));
 	setSavedVolumeFunc({ hasSaved: false });
-	player.setVolume(volume);
+	//player.setVolume(volume);
 }
 
 function fadeInputHandler(
@@ -72,23 +72,30 @@ function fadeInputHandler(
 	);
 }
 
-function loadNewVideo(
-	e: React.KeyboardEvent<HTMLInputElement>,
-	player: IFPlayer | null
+export function loadNewVideo(
+	player: IFPlayer | null,
+	url?: string,
+	e?: React.KeyboardEvent<HTMLInputElement>,
 ) {
-	const field = e.target as HTMLInputElement;
 	if (!player) return;
-	if (!field.value) return;
-	if (e.key !== 'Enter') return;
+	if (e) {
+		const field = e.target as HTMLInputElement;
+		if (!field.value) return;
+		if (e.key !== 'Enter') return
+		url = field.value;
+	} else if (!url) {
+		throw new Error('No url provided');
+	};
+	
 
 	// strip video id from url and remove all other characters and timestamps
-	field.value = field.value.replace(
+	const id = url.replace(
 		/(https:\/\/www\.youtube\.com\/watch\?v=|https:\/\/youtu\.be\/|&t=.*|&feature=emb_logo)/g,
 		''
 	);
 
 	player.setVolume(0);
-	player.loadVideoById(field.value);
+	player.loadVideoById(id);
 
 	setTimeout(() => {
 		player.pauseVideo();
@@ -187,7 +194,7 @@ function PlayerComponent({
 					className='w-2/5 rounded bg-gray-800/50 p-1'
 					placeholder='Video ID'
 					onKeyDown={(e) => {
-						loadNewVideo(e, player);
+						loadNewVideo(player, undefined, e);
 					}}
 				/>
 				<button

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { track } from '@prisma/client';
 import NotificationButton from '../utils/NotificationButton';
-
-
+import { useLoadVideoInLongestPausedPlayer } from '../utils/AddHandler';
 
 function ListItem({ item }: { item: track & { tags: any } }) {
+
+	const loadVideo = useLoadVideoInLongestPausedPlayer();
 	const [showTags, setShowTags] = useState(false);
 
 	return (
@@ -68,7 +69,7 @@ function ListItem({ item }: { item: track & { tags: any } }) {
 				id={item.id}
 				color={item.color}
 				luminance={item.luminance}
-				onClick={() => {}}
+				onClick={() => loadVideo(item.url)}
 			>
 				Add
 			</NotificationButton>

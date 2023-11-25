@@ -1,20 +1,39 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react';
+import React, { useState, useEffect, useContext, useReducer, use } from 'react';
 import IFPlayer from '../utils/IFPlayer';
 import { PausedTimerState, pausedTimerReducer } from '../Player/states';
+
+const defaultVideoID = 'NpEaa2P7qZI'; // 'video placeholder' by Tristan Behaut
+const maxPlayers = 9;
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
 // This is a workaround for the fact that the youtube iframe api only allows one player per page
 const PlayerHolderContext = React.createContext(
 	[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
 );
-const defaultVideoID = 'NpEaa2P7qZI'; // 'video placeholder' by Tristan Behaut
-const maxPlayers = 9;
+const PasuedTimerContext = React.createContext({} as { pausedAt: number[] });
+
 const InitialPausedTimerState: PausedTimerState = {
 	pausedAt: Array(maxPlayers).fill(0),
 };
 
 export function usePlayerHolder() {
-	return useContext(PlayerHolderContext);
+	const context = useContext(PlayerHolderContext);
+	if (context === undefined) {
+		throw new Error(
+			'usePausedTimer must be used within a PausedTimerProvider'
+		);
+	}
+	return context;
+}
+
+export function usePausedTimer() {
+	const context = useContext(PasuedTimerContext);
+	if (context === undefined) {
+		throw new Error(
+			'usePausedTimer must be used within a PausedTimerProvider'
+		);
+	}
+	return context;
 }
 
 export function usePlayerHolderById(id: number) {
@@ -30,7 +49,6 @@ export function usePlayerHolderById(id: number) {
 }
 
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
-
 	const [pauseTimers, pauseTimerDispatch] = useReducer(
 		pausedTimerReducer,
 		InitialPausedTimerState
@@ -41,11 +59,11 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 			index: pIndex,
 			payload: pPayload,
 		});
-	}
+	};
 
 	useEffect(() => {
 		console.log('Updated pauseTimers:', pauseTimers);
-	  }, [pauseTimers]);
+	}, [pauseTimers]);
 
 	const [playerHolder, setPlayerHolder] = useState(
 		[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
@@ -90,11 +108,25 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 			// console.log('playerIdx:', playerIdx, 'changedState:', changedState);
 
 			// console.log('registered state change in Player:', playerIdx, player.getPlayerState());
-			if (changedState === 2) {
+			if (changedState === YT.PlayerState.PAUSED) {
 				setPausedAt(playerIdx, Date.now());
-			} else if (changedState === 1) {
+			} else if (changedState === YT.PlayerState.PLAYING) {
 				setPausedAt(playerIdx, 0);
+			} else if (changedState === YT.PlayerState.ENDED) {
+				player.seekTo(0, true);
+				player.pauseVideo();
 			}
+		}
+
+		function onPlayerReady(e: any) {
+			const player = e.target as IFPlayer;
+
+			player.setVolume(0);
+			player.playVideo();
+			setTimeout(() => {
+				player.seekTo(0, true);
+				player.pauseVideo();
+			}, 500);
 		}
 
 		//@ts-ignore
@@ -111,6 +143,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 							: 'P2NVJSJVGVQ',
 					events: {
 						onStateChange: onPlayerStateChange,
+						onReady: onPlayerReady,
 					},
 				}),
 			}));
@@ -124,9 +157,11 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	return (
-		<PlayerHolderContext.Provider value={playerHolder}>
-			{children}
-		</PlayerHolderContext.Provider>
+		<PasuedTimerContext.Provider value={pauseTimers}>
+			<PlayerHolderContext.Provider value={playerHolder}>
+				{children}
+			</PlayerHolderContext.Provider>
+		</PasuedTimerContext.Provider>
 	);
 }
 

@@ -1,5 +1,6 @@
 import React, { useContext, useReducer, useMemo } from 'react';
 import WindowSizeContext from './contexts/WindowSizeProvider';
+import PlayerHolderProvider from './contexts/PlayerHolderProvider';
 import { breakpoints } from './utils/breakpoints';
 import FilterSideMenu from './Filter/FilterSideMenu';
 import { Viewer } from './Viewer/Viewer';
@@ -58,21 +59,22 @@ function PageComponent() {
 
 	return (
 		<div className='h-screen overflow-hidden'>
-			
 			<div className='flex h-full flex-col gap-6 p-6'>
-				<FilterStateProvider>
-					<div className='flex w-full flex-row justify-between'>
-						<CreateSideMenu />
+				<PlayerHolderProvider>
+					<FilterStateProvider>
+						<div className='flex w-full flex-row justify-between'>
+							<CreateSideMenu />
 
-						<PlayerTopMenu />
+							<PlayerTopMenu />
 
-						<FilterSideMenu />
-					</div>
+							<FilterSideMenu />
+						</div>
 
-					<Viewer className={`flex w-full flex-1 flex-row gap-6`}>
-						{renderDivs}
-					</Viewer>
-				</FilterStateProvider>
+						<Viewer className={`flex w-full flex-1 flex-row gap-6`}>
+							{renderDivs}
+						</Viewer>
+					</FilterStateProvider>
+				</PlayerHolderProvider>
 			</div>
 		</div>
 	);
