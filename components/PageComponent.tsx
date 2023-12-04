@@ -40,13 +40,13 @@ function PageComponent() {
 			let columns: string[];
 
 			if (windowWidth >= breakpoints.lg) {
-				widthClass = 'w-1/4';
+				widthClass = 'w-[24%]';
 				columns = ['new', 'filter', 'trend', 'owned'];
 			} else if (windowWidth >= breakpoints.md) {
-				widthClass = 'w-1/3';
+				widthClass = 'w-[32%]';
 				columns = ['new', 'filter', 'trend'];
 			} else if (windowWidth >= breakpoints.sm) {
-				widthClass = 'w-1/2';
+				widthClass = 'w-[49%]';
 				columns = ['new', 'trend'];
 			} else {
 				widthClass = 'w-full';
@@ -64,7 +64,7 @@ function PageComponent() {
 	}, [windowWidth, windowHeight]);
 
 	return (
-		<div className='h-screen overflow-hidden'>
+		<div className='h-screen overflow-hidden '>
 			<div className='flex h-full flex-col gap-6 p-6'>
 				<PlayerHolderProvider>
 					<FilterStateProvider>
@@ -76,7 +76,9 @@ function PageComponent() {
 							<FilterSideMenu />
 						</div>
 
-						<Viewer className={`flex w-full flex-1 flex-row gap-6`}>
+						<Viewer
+							className='flex flex-1 flex-row gap-6'
+						>
 							{renderDivs}
 						</Viewer>
 					</FilterStateProvider>

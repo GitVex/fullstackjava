@@ -78,22 +78,29 @@ export function ViewColumn({
 				) : error ? (
 					<p>Error: {error.message}</p>
 				) : data ? (
-					<div className='m-2 flex flex-col gap-2'>
-						<input type='text' className='w-full rounded p-1 bg-black/0' placeholder='Search ...' onChange={
+					<div className='flex flex-col gap-2'>
+						<input type='text' className=' rounded p-1 bg-transparent' placeholder='Search ...' onChange={
 							(e) => {
 								setSearch(e.target.value);
 							}
 						} />
 						<ul className=' flex max-h-full flex-col gap-2'>
 							{data?.map((item) => {
-								if (!item.title.toLowerCase().includes(search.toLowerCase())) {
-									return null;
-								}
-								return (
+								if (item.title.toLowerCase().includes(search.toLowerCase())) {
+									return (
+										<li key={item.id}>
+											<ListItem item={item} />
+										</li>
+										);
+								} else if (item.artist.toLowerCase().includes(search.toLowerCase())) {
+									return (
 									<li key={item.id}>
 										<ListItem item={item} />
 									</li>
-								);
+									);
+								} else {
+									return null;
+								}
 							})}
 						</ul>
 					</div>
