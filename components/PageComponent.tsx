@@ -17,15 +17,21 @@ function PageComponent() {
 	const renderDivs = useMemo(() => {
 		function renderViewColumn(widthClass: string, type?: string) {
 			return (
-				<ViewColumn
-					className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25`}
+				<div
+					className={`${widthClass} flex flex-col gap-2`}
 					style={
 						windowHeight
 							? { height: windowHeight - 4 * 24 }
 							: { height: '100%' }
 					}
-					type={type}
-				/>
+				>
+					<p className='w-full rounded bg-indigo-900/25 text-center capitalize'>
+						{type}
+					</p>
+					<div className='h-full overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25'>
+						<ViewColumn type={type} />
+					</div>
+				</div>
 			);
 		}
 

@@ -1,6 +1,6 @@
 // ViewColumn.tsx
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { track } from '@prisma/client';
 import ListItem from './ListItem';
@@ -20,6 +20,7 @@ export function ViewColumn({
 	type?: string;
 }) {
 	const filterState = useFilterState();
+	const [search, setSearch] = useState('');
 
 	let route = '/api/list';
 	if (type === 'new') {
@@ -65,11 +66,10 @@ export function ViewColumn({
 		if (route === '/api/filter') {
 			refetch();
 		}
-	}, [filterState]);
+	}, [filterState, refetch, route]);
 
 	return (
 		<div className={className} style={style}>
-			<p className='mb-2 w-full text-center capitalize'>{type}</p>
 			<AnimatePresence mode='wait'>
 				{isLoading ? (
 					<motion.div key='loader' className='self-center'>
@@ -78,15 +78,25 @@ export function ViewColumn({
 				) : error ? (
 					<p>Error: {error.message}</p>
 				) : data ? (
-					<ul className='m-2 flex max-h-full flex-col gap-2'>
-						{data?.map((item) => {
-							return (
-								<li key={item.id}>
-									<ListItem item={item} />
-								</li>
-							);
-						})}
-					</ul>
+					<div className='m-2 flex flex-col gap-2'>
+						<input type='text' className='w-full rounded p-1 bg-black/0' placeholder='Search ...' onChange={
+							(e) => {
+								setSearch(e.target.value);
+							}
+						} />
+						<ul className=' flex max-h-full flex-col gap-2'>
+							{data?.map((item) => {
+								if (!item.title.toLowerCase().includes(search.toLowerCase())) {
+									return null;
+								}
+								return (
+									<li key={item.id}>
+										<ListItem item={item} />
+									</li>
+								);
+							})}
+						</ul>
+					</div>
 				) : (
 					<p>no data</p>
 				)}
