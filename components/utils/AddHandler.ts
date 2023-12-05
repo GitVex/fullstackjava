@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { usePausedTimer } from '../contexts/PlayerHolderProvider';
 import { usePlayerHolder } from '../contexts/PlayerHolderProvider';
 import { loadNewVideo } from '../Player/PlayerComponent';
+import { argMin } from './utils';
 
 export const useLoadVideoInLongestPausedPlayer = () => {
 	const pausedTimers = usePausedTimer();
@@ -10,12 +11,7 @@ export const useLoadVideoInLongestPausedPlayer = () => {
 	const loadVideo = useCallback(
 		(url: string) => {
 			// Find the index of the longest paused player
-			const longestPausedIndex = pausedTimers.pausedAt.reduce(
-				(maxIdx, cur, idx, arr) => {
-					return cur > arr[maxIdx] ? idx : maxIdx;
-				},
-				0
-			);
+			const longestPausedIndex = argMin(pausedTimers.pausedAt);
 
 			// Retrieve the player using the index
 			const holder = playerHolder.find(
