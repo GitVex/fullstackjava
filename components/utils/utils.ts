@@ -6,15 +6,28 @@ export function sleep(milliseconds: number) {
 	} while (currentDate - date < milliseconds);
 }
 
-const argFact =
-	<T>(compareFn: (a: [T, number], b: [T, number]) => [T, number]) =>
-	(array: T[]): number =>
-		array.map((el, idx): [T, number] => [el, idx]).reduce(compareFn)[1];
+function findExtremeIndex(array: number[], compare: (a: number, b: number) => boolean): number {
+    if (array.length === 0) {
+        throw new Error('Cannot find extreme index of an empty array');
+    }
 
-export function argMin<T>(array: T[]): number {
-	return argFact<T>((min, el) => (el[0] < min[0] ? el : min))(array);
+    let extremeIndex = 0;
+    let extremeValue = array[0];
+
+    for (let i = 1; i < array.length; i++) {
+        if (compare(array[i], extremeValue)) {
+            extremeValue = array[i];
+            extremeIndex = i;
+        }
+    }
+
+    return extremeIndex;
 }
 
-export function argMax<T>(array: T[]): number {
-	return argFact<T>((max, el) => (el[0] > max[0] ? el : max))(array);
+export function argMax(array: number[]): number {
+    return findExtremeIndex(array, (a, b) => a > b);
+}
+
+export function argMin(array: number[]): number {
+    return findExtremeIndex(array, (a, b) => a < b);
 }

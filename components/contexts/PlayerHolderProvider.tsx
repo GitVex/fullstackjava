@@ -3,7 +3,7 @@ import IFPlayer from '../utils/IFPlayer';
 import { PausedTimerState, pausedTimerReducer } from '../Player/states';
 
 const defaultVideoID = 'NpEaa2P7qZI'; // 'video placeholder' by Tristan Behaut
-const maxPlayers = 9;
+const maxPlayers = 8;
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
 // This is a workaround for the fact that the youtube iframe api only allows one player per page
@@ -13,7 +13,7 @@ const PlayerHolderContext = React.createContext(
 const PasuedTimerContext = React.createContext({} as { pausedAt: number[] });
 
 const InitialPausedTimerState: PausedTimerState = {
-	pausedAt: Array(maxPlayers).fill(0),
+	pausedAt: Array(maxPlayers).fill(Date.now()),
 };
 
 export function usePlayerHolder() {
@@ -105,13 +105,13 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 			);
 			const changedState = player.getPlayerState();
 
-			// console.log('playerIdx:', playerIdx, 'changedState:', changedState);
+			console.log('playerIdx:', playerIdx, 'changedState:', changedState);
 
-			// console.log('registered state change in Player:', playerIdx, player.getPlayerState());
+			console.log('registered state change in Player:', playerIdx, player.getPlayerState());
 			if (changedState === YT.PlayerState.PAUSED) {
 				setPausedAt(playerIdx, Date.now());
 			} else if (changedState === YT.PlayerState.PLAYING) {
-				setPausedAt(playerIdx, 0);
+				setPausedAt(playerIdx, 9999999999999);
 			} else if (changedState === YT.PlayerState.ENDED) {
 				player.seekTo(0, true);
 				player.pauseVideo();
