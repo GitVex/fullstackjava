@@ -14,7 +14,7 @@ let DEFAULT_ISOPENPLAYER_STATE: boolean;
 if (process.env.NODE_ENV !== "development") {
     DEFAULT_ISOPENPLAYER_STATE = false;
 } else {
-	DEFAULT_ISOPENPLAYER_STATE = true;
+	DEFAULT_ISOPENPLAYER_STATE = false;
 }
 
 function PlayerTopMenu() {
