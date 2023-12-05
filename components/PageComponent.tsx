@@ -17,15 +17,23 @@ function PageComponent() {
 	const renderDivs = useMemo(() => {
 		function renderViewColumn(widthClass: string, type?: string) {
 			return (
-				<ViewColumn
-					className={`${widthClass} overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25`}
+				<div
+					className={`${widthClass} flex flex-col gap-2 overflow-x-hidden`}
 					style={
 						windowHeight
 							? { height: windowHeight - 4 * 24 }
 							: { height: '100%' }
 					}
-					type={type}
-				/>
+				>
+					<p className='w-full rounded bg-indigo-900/25 text-center capitalize'>
+						{type}
+					</p>
+					<div
+						className={`h-full overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25 p-2`}
+					>
+						<ViewColumn type={type} />
+					</div>
+				</div>
 			);
 		}
 
@@ -58,7 +66,7 @@ function PageComponent() {
 	}, [windowWidth, windowHeight]);
 
 	return (
-		<div className='h-screen overflow-hidden'>
+		<div className='h-screen overflow-hidden '>
 			<div className='flex h-full flex-col gap-6 p-6'>
 				<PlayerHolderProvider>
 					<FilterStateProvider>
@@ -70,7 +78,7 @@ function PageComponent() {
 							<FilterSideMenu />
 						</div>
 
-						<Viewer className={`flex w-full flex-1 flex-row gap-6`}>
+						<Viewer className='flex flex-1 flex-row gap-4'>
 							{renderDivs}
 						</Viewer>
 					</FilterStateProvider>
