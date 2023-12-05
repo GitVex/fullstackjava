@@ -18,7 +18,7 @@ function PageComponent() {
 		function renderViewColumn(widthClass: string, type?: string) {
 			return (
 				<div
-					className={`${widthClass} flex flex-col gap-2`}
+					className={`${widthClass} flex flex-col gap-2 overflow-x-hidden`}
 					style={
 						windowHeight
 							? { height: windowHeight - 4 * 24 }
@@ -28,7 +28,7 @@ function PageComponent() {
 					<p className='w-full rounded bg-indigo-900/25 text-center capitalize'>
 						{type}
 					</p>
-					<div className='h-full overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25'>
+					<div className={`h-full overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25 p-2`}>
 						<ViewColumn type={type} />
 					</div>
 				</div>
@@ -40,13 +40,13 @@ function PageComponent() {
 			let columns: string[];
 
 			if (windowWidth >= breakpoints.lg) {
-				widthClass = 'w-[24%]';
+				widthClass = 'w-1/4';
 				columns = ['new', 'filter', 'trend', 'owned'];
 			} else if (windowWidth >= breakpoints.md) {
-				widthClass = 'w-[32%]';
+				widthClass = 'w-1/3';
 				columns = ['new', 'filter', 'trend'];
 			} else if (windowWidth >= breakpoints.sm) {
-				widthClass = 'w-[49%]';
+				widthClass = 'w-1/2';
 				columns = ['new', 'trend'];
 			} else {
 				widthClass = 'w-full';
@@ -77,7 +77,7 @@ function PageComponent() {
 						</div>
 
 						<Viewer
-							className='flex flex-1 flex-row gap-6'
+							className='flex flex-1 flex-row gap-4'
 						>
 							{renderDivs}
 						</Viewer>
