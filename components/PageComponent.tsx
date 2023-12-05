@@ -28,7 +28,9 @@ function PageComponent() {
 					<p className='w-full rounded bg-indigo-900/25 text-center capitalize'>
 						{type}
 					</p>
-					<div className={`h-full overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25 p-2`}>
+					<div
+						className={`h-full overflow-y-auto overflow-x-hidden scroll-smooth rounded bg-indigo-900/25 p-2`}
+					>
 						<ViewColumn type={type} />
 					</div>
 				</div>
@@ -76,9 +78,7 @@ function PageComponent() {
 							<FilterSideMenu />
 						</div>
 
-						<Viewer
-							className='flex flex-1 flex-row gap-4'
-						>
+						<Viewer className='flex flex-1 flex-row gap-4'>
 							{renderDivs}
 						</Viewer>
 					</FilterStateProvider>
