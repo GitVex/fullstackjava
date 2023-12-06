@@ -76,6 +76,7 @@ export function loadNewVideo(
 	player: IFPlayer | null,
 	url?: string,
 	e?: React.KeyboardEvent<HTMLInputElement>,
+	volume?: number
 ) {
 	if (!player) return;
 	if (e) {
@@ -94,7 +95,7 @@ export function loadNewVideo(
 		''
 	);
 
-	player.setVolume(0);
+	volume ? player.setVolume(volume) : player.setVolume(player.getVolume());
 	player.loadVideoById(id);
 
 	setTimeout(() => {
@@ -194,7 +195,7 @@ function PlayerComponent({
 					className='w-2/5 rounded bg-gray-800/50 p-1'
 					placeholder='Video ID'
 					onKeyDown={(e) => {
-						loadNewVideo(player, undefined, e);
+						loadNewVideo(player, undefined, e, volume * masterVolumeModifier);
 					}}
 				/>
 				<button
