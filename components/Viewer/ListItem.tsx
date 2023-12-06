@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { track } from '@prisma/client';
 import NotificationButton from '../utils/NotificationButton';
 import { useLoadVideoInLongestPausedPlayer } from '../utils/AddHandler';
+import { Tooltip, Button } from '@material-tailwind/react';
 
 function ListItem({ item }: { item: track & { tags: any } }) {
 	const loadVideo = useLoadVideoInLongestPausedPlayer();
@@ -16,17 +17,22 @@ function ListItem({ item }: { item: track & { tags: any } }) {
 			onMouseEnter={() => setShowTags(true)}
 			onMouseLeave={() => setShowTags(false)}
 		>
-			<div className='flex flex-1 w-3/5 flex-col'>
-				<div
-					className='w-full truncate'
-					style={{ maxWidth: '100%' }}
-				>
-					<p
-						className='overflow-hidden whitespace-nowrap font-semibold cursor-pointer'
-						onClick={() => window.open(item.url, '_blank')?.focus()}
+			<div className='flex w-3/5 flex-1 flex-col'>
+				<div className='w-full truncate' style={{ maxWidth: '100%' }}>
+					<Tooltip
+						className='bg-transparent backdrop-blur-md'
+						content={<p className='rounded p-1'>{item.title}</p>}
+						placement='top'
 					>
-						{item.title}
-					</p>
+						<p
+							className='cursor-pointer overflow-hidden whitespace-nowrap font-semibold'
+							onClick={() =>
+								window.open(item.url, '_blank')?.focus()
+							}
+						>
+							{item.title}
+						</p>
+					</Tooltip>
 					<motion.div
 						initial={{ opacity: 1 }}
 						animate={{ opacity: showTags ? 0 : 1 }}
