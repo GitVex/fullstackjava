@@ -126,6 +126,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 			setTimeout(() => {
 				player.seekTo(0, true);
 				player.pauseVideo();
+				player.setVolume(50);
 			}, 500);
 		}
 

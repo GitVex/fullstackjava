@@ -23,7 +23,7 @@ export const useLoadVideoInLongestPausedPlayer = () => {
 				console.log(
 					`Loading video into player ${holder.id} with url ${url}`
 				);
-				loadNewVideo(holder.player, url, undefined);
+				loadNewVideo(holder.player, url, undefined, holder.player.getVolume());
 			} else {
 				console.error('Player not found for the given index.');
 			}

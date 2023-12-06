@@ -24,7 +24,6 @@ interface VolumeSliderProps {
 function sliderInputHandler(
 	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
 	setVolumeFunc: React.Dispatch<number>,
-	player?: IFPlayer | null | undefined,
 ) {
 	const field = e.target as HTMLInputElement;
 	setVolumeFunc(parseInt(field.value));
