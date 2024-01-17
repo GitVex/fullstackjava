@@ -12,7 +12,7 @@ import WindowSizeContext from '../contexts/WindowSizeProvider';
 
 let DEFAULT_ISOPENPLAYER_STATE: boolean;
 if (process.env.NODE_ENV !== "development") {
-    DEFAULT_ISOPENPLAYER_STATE = false;
+    DEFAULT_ISOPENPLAYER_STATE = true;
 } else {
 	DEFAULT_ISOPENPLAYER_STATE = false;
 }
