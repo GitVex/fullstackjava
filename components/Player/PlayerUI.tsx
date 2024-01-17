@@ -115,8 +115,8 @@ function PlayerUI() {
 							))}
 						</div>
 					</div>
-					<div className='flex w-28 flex-col items-center gap-4'>
-						<p className='whitespace-nowrap'>Master Volume</p>
+					<div className='flex w-28 flex-col items-center gap-4 rounded border-2 border-darknavy-700/50 bg-darknavy-500/50 p-1'>
+						<p className='text-center'>Master Volume</p>
 						<VolumeSlider
 							volume={masterVolume}
 							setVolume={setMasterVolume}
