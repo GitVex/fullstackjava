@@ -1,38 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
-interface Selection {
-	id: number;
-	selected: boolean;
-}
+import { PlayerState, PlayerStateAction } from '../states';
 
 interface SelectionsViewerProps {
-	selections: {
-		selected: Selection[];
-	};
-	selectionDispatch: React.Dispatch<{
-		type: 'select' | 'deselect';
-		index: number;
-	}>;
+	players: PlayerState[];
+	dispatch: React.Dispatch<PlayerStateAction>;
 }
 
-const SelectionsViewer: React.FC<SelectionsViewerProps> = ({
-	selections,
-	selectionDispatch,
-}) => {
+function SelectionsViewer({ players, dispatch }: SelectionsViewerProps) {
 	return (
 		<div className=''>
 			<div className='flex flex-col items-center'>
-				<div className='grid grid-cols-2 grid-rows-4 gap-2 rounded bg-darknavy-500 p-4 border-2 border-darknavy-700'>
-					{selections.selected.map((selection) => (
+				<div className='grid grid-cols-2 grid-rows-4 gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-4'>
+					{players.map((player, index) => (
 						<div
-							key={selection.id}
+							key={index}
 							className={`relative flex h-8 w-10 rounded bg-transparent`}
 						>
 							<motion.div
 								className={`absolute top-0 left-0 flex h-8 w-10 rounded`}
 								animate={{
-									boxShadow: selection.selected
+									boxShadow: player.selected
 										? '0 0 8px 3px #f00'
 										: '0 0 0 0px #f00',
 								}}
@@ -43,15 +31,15 @@ const SelectionsViewer: React.FC<SelectionsViewerProps> = ({
 							<div
 								className={`absolute top-0 left-0 flex h-8 w-10 rounded bg-transparent shadow-[inset_0_0_12px_rgba(108,117,130,1)]`}
 								onClick={() => {
-									if (selection.selected) {
-										selectionDispatch({
+									if (player.selected) {
+										dispatch({
 											type: 'deselect',
-											index: selection.id,
+											index: index,
 										});
 									} else {
-										selectionDispatch({
+										dispatch({
 											type: 'select',
-											index: selection.id,
+											index: index,
 										});
 									}
 								}}
@@ -62,6 +50,6 @@ const SelectionsViewer: React.FC<SelectionsViewerProps> = ({
 			</div>
 		</div>
 	);
-};
+}
 
 export default SelectionsViewer;

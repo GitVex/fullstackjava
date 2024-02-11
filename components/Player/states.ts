@@ -1,4 +1,4 @@
-// File to handle
+// ------------------- SELECTIONS REDUCER -------------------
 
 export interface SelectionsState {
 	selected: { id: number; selected: boolean }[];
@@ -44,9 +44,11 @@ export const selectionsReducer = (
 	}
 };
 
+// ------------------- VOLUMES REDUCER -------------------
+
 export interface VolumesState {
 	volume: number[];
-	savedVolume: {hasSaved: boolean, prevVol: number}[];
+	savedVolume: { hasSaved: boolean; prevVol: number }[];
 }
 
 export interface VolumesAction {
@@ -81,23 +83,23 @@ export const volumesReducer = (
 		case 'setVolumeState':
 			return {
 				...state,
-				savedVolume: state.savedVolume.map(
-					(entry, index) => {
-						if (index === action.index) {
-							return {
-								hasSaved: action.saveState,
-								prevVol: action.payload,
-							};
-						} else {
-							return entry;
-						}
+				savedVolume: state.savedVolume.map((entry, index) => {
+					if (index === action.index) {
+						return {
+							hasSaved: action.saveState,
+							prevVol: action.payload,
+						};
+					} else {
+						return entry;
 					}
-				)
+				}),
 			};
 		default:
 			throw new Error();
 	}
 };
+
+// ------------------- FADE INTERVALS REDUCER -------------------
 
 export interface FadeIntervalsState {
 	fadeIntervals: (NodeJS.Timeout | null)[];
@@ -130,6 +132,8 @@ export const fadeIntervalsReducer = (
 	}
 };
 
+// ------------------- PAUSED TIMER REDUCER -------------------
+
 export interface PausedTimerState {
 	pausedAt: number[];
 }
@@ -159,4 +163,147 @@ export const pausedTimerReducer = (
 		default:
 			throw new Error();
 	}
+};
+
+// ------------------- PLAYER URL REDUCER -------------------
+
+export interface PlayerUrlState {
+	url: string[];
 }
+
+export interface PlayerUrlAction {
+	type: 'setUrl';
+	index: number;
+	payload: string;
+}
+
+export const playerUrlReducer = (
+	state: PlayerUrlState,
+	action: PlayerUrlAction
+): PlayerUrlState => {
+	switch (action.type) {
+		case 'setUrl':
+			return {
+				...state,
+				url: state.url.map((url, index) => {
+					if (index === action.index) {
+						return action.payload;
+					} else {
+						return url;
+					}
+				}),
+			};
+		default:
+			throw new Error();
+	}
+};
+
+// ------------------- PLAYER STATE REDUCER -------------------
+
+export interface PresetState {
+	title: string;
+	players: PlayerState[];
+}
+
+export interface PlayerState {
+	title: string
+	selected: boolean;
+	volume: number;
+	savedVolume: { hasSaved: boolean; prevVol?: number };
+	pausedAt: number;
+	url: string;
+}
+
+export type PlayerStateAction = VolumeAction | SetPausedAtAction | SetUrlAction | SelectAction | SetTitleAction;
+
+type VolumeAction = SetVolumeAction | SetSavedVolumeAction;
+
+interface SetVolumeAction {
+	type: 'setVolume';
+	index: number;
+	payload: number;
+}
+
+interface SetSavedVolumeAction {
+	type: 'setSavedVolume';
+	index: number;
+	payload: {hasSaved: boolean, prevVol?: number};
+}
+
+interface SetPausedAtAction {
+	type: 'setPausedAt';
+	index: number;
+	payload: number;
+}
+
+interface SetUrlAction {
+	type: 'setUrl';
+	index: number;
+	payload: string;
+}
+
+interface SetTitleAction {
+	type: 'setTitle';
+	index: number;
+	payload: string;
+}
+
+interface SelectAction {
+	type: 'select' | 'deselect';
+	index: number;
+}
+
+export const playerStateReducer = (
+	state: PresetState,
+	action: PlayerStateAction
+): PresetState => {
+
+	function updatePlayerAtIndex(players: PlayerState[], index: number, update: Partial<PlayerState>): PlayerState[] {
+		return players.map((player, i) => i === index ? { ...player, ...update } : player);
+	  }
+
+	switch (action.type) {
+		case 'setTitle':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { title: action.payload }),
+			};
+		case 'setVolume':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { volume: action.payload }),
+			};
+		case 'setSavedVolume':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { savedVolume: action.payload }),
+			};
+		case 'setPausedAt':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { pausedAt: action.payload }),
+			};
+		case 'setUrl':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { url: action.payload }),
+			};
+		case 'select':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { selected: true }),
+			};
+		case 'deselect':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { selected: false }),
+			};
+		default:
+			throw new Error();
+	}
+};
+
+
+
+
+

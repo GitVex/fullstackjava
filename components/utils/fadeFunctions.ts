@@ -6,10 +6,10 @@ const DEFAULT_EASE = (x: number, limit: number) =>
 	limit * (1 - Math.cos(((x / limit) * Math.PI) / 2));
 
 export interface FadeOptions {
-	player: IFPlayer | null;
+	framePlayer: IFPlayer | null;
 	setVolume: React.Dispatch<number>;
 	volume: number;
-	savedVolume?: {hasSaved: boolean, prevVol: number};
+	savedVolume?: {hasSaved: boolean, prevVol?: number};
 	setSavedVolume?: React.Dispatch<{hasSaved: boolean, prevVol?: number}>;
 	currentFadeInterval: NodeJS.Timeout | null;
 	setCurrentFadeInterval: React.Dispatch<NodeJS.Timeout | null>;
@@ -21,7 +21,7 @@ export interface FadeOptions {
 }
 
 function fade({
-	player,
+	framePlayer,
 	setVolume,
 	volume,
 	savedVolume,
@@ -34,7 +34,7 @@ function fade({
 	pLimit,
 	inverse,
 }: FadeOptions) {
-	if (!player) return;
+	if (!framePlayer) return;
 
 	// Clear any existing interval
 	if (currentFadeInterval) {
@@ -54,7 +54,7 @@ function fade({
 	let currentVolume = inverse ? volume : 1;
 
 	if (!inverse) {
-		player.playVideo();
+		framePlayer.playVideo();
 		setVolume(1);
 	}
 
@@ -68,7 +68,7 @@ function fade({
 					setVolume(Math.floor(currentVolume));
 					runner -= fadeStep;
 				} else {
-					endFade(0, player);
+					endFade(0, framePlayer);
 					setSavedVolume?.({ hasSaved: true, prevVol: startVolume }); // Might produce problems if intervals are cancelled
 				}
 			} else {
@@ -77,7 +77,7 @@ function fade({
 					setVolume(Math.floor(currentVolume));
 					runner += fadeStep;
 				} else {
-					endFade(limit, player);
+					endFade(limit, framePlayer);
 				}
 			}
 		} catch (error) {
@@ -87,10 +87,10 @@ function fade({
 
 	setCurrentFadeInterval(intervalId);
 
-	function endFade(volume: number, player: IFPlayer | null = null) {
+	function endFade(volume: number, framePlayer: IFPlayer | null = null) {
 		setVolume(volume);
 		if (volume === 0) {
-			player?.pauseVideo();
+			framePlayer?.pauseVideo();
 		}
 		clearInterval(intervalId);
 		setCurrentFadeInterval(null);
@@ -107,7 +107,7 @@ export function fadeOut(options: FadeOptions) {
 
 export function fadeTo(
 	{
-		player,
+		framePlayer,
 		setVolume,
 		volume,
 		fadeStep = DEFAULT_FADE_STEP,
@@ -118,7 +118,7 @@ export function fadeTo(
 	}: FadeOptions,
 	targetVolume: number
 ) {
-	if (!player) return;
+	if (!framePlayer) return;
 
 	// Clear any existing interval
 	if (currentFadeInterval) {
@@ -153,4 +153,4 @@ export function fadeTo(
 	}
 }
 
-/* TO BE IMPLEMTNED: Crossfade two players */
+/* TO BE IMPLEMTNED: Crossfade two framePlayers */
