@@ -211,10 +211,10 @@ export interface PlayerState {
 	volume: number;
 	savedVolume: { hasSaved: boolean; prevVol?: number };
 	pausedAt: number;
-	url: string;
+	id: string;
 }
 
-export type PlayerStateAction = VolumeAction | SetPausedAtAction | SetUrlAction | SelectAction | SetTitleAction;
+export type PlayerStateAction = VolumeAction | SetPausedAtAction | SetIdAction | SelectAction | SetTitleAction;
 
 type VolumeAction = SetVolumeAction | SetSavedVolumeAction;
 
@@ -236,8 +236,8 @@ interface SetPausedAtAction {
 	payload: number;
 }
 
-interface SetUrlAction {
-	type: 'setUrl';
+interface SetIdAction {
+	type: 'setId';
 	index: number;
 	payload: string;
 }
@@ -283,10 +283,10 @@ export const playerStateReducer = (
 				...state,
 				players: updatePlayerAtIndex(state.players, action.index, { pausedAt: action.payload }),
 			};
-		case 'setUrl':
+		case 'setId':
 			return {
 				...state,
-				players: updatePlayerAtIndex(state.players, action.index, { url: action.payload }),
+				players: updatePlayerAtIndex(state.players, action.index, { id: action.payload }),
 			};
 		case 'select':
 			return {

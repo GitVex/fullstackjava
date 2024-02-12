@@ -2,6 +2,7 @@ import React, { useContext, useState, useMemo, useReducer } from 'react';
 
 import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
+import { usePresetState } from '../contexts/PlayerHolderProvider'
 import VolumeSlider from '../utils/VolumeSlider';
 import {
 	SelectionsState,
@@ -16,38 +17,20 @@ import {
 } from './states';
 import ControlPanel from './ControlPanel/ControlPanel';
 
-const DEFAULT_VOLUME = 50;
-
-const initialPresetState: PresetState = {
-	title: 'New Preset',
-	players: Array(8)
-		.fill(null)
-		.map((_, index) => ({
-			title: `Player ${index + 1}`,
-			selected: false,
-			volume: DEFAULT_VOLUME,
-			savedVolume: { hasSaved: false, prevVol: DEFAULT_VOLUME },
-			pausedAt: Date.now(),
-			url: '',
-		})),
-};
-
 const initialFadeIntervals: FadeIntervalsState = {
 	fadeIntervals: Array(9).fill(null),
 };
 
 function PlayerUI() {
-	const context = useContext(WindowSizeContext);
-	const windowHeight: number | undefined | null = context?.windowHeight;
-	const windowWidth: number | undefined | null = context?.windowWidth;
+	const windowSizeContext = useContext(WindowSizeContext);
+	const windowHeight: number | undefined | null = windowSizeContext?.windowHeight;
+	const windowWidth: number | undefined | null = windowSizeContext?.windowWidth;
+
+	const {presetState, presetDispatch} = usePresetState();
 
 	const [masterVolume, setMasterVolume] = useState(100);
 	const [masterVolumeModifier, setMasterVolumeModifier] = useState(1);
 
-	const [presetState, presetDispatch] = useReducer(
-		playerStateReducer,
-		initialPresetState
-	);
 
 	const [fadeIntervals, fadeIntervalDispatch] = useReducer(
 		fadeIntervalsReducer,
@@ -57,6 +40,10 @@ function PlayerUI() {
 	useMemo(() => {
 		setMasterVolumeModifier(masterVolume / 100);
 	}, [masterVolume]);
+
+	useMemo(() => {
+		console.log(presetState)
+	}, [presetState])
 
 	return (
 		<div

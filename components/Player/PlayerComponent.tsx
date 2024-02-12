@@ -12,8 +12,8 @@ import {
 interface PlayerComponentProps {
 	playerId: number;
 	masterVolumeModifier: number;
-	player?: PlayerState;
-	dispatch?: React.Dispatch<PlayerStateAction>;
+	player: PlayerState;
+	dispatch: React.Dispatch<PlayerStateAction>;
 	pCurrentFadeInterval?: NodeJS.Timeout | null;
 	pSetCurrentFadeInterval?: React.Dispatch<NodeJS.Timeout | null>;
 }
@@ -73,6 +73,8 @@ function fadeInputHandler(
 }
 
 export function loadNewVideo(
+	playerId: number,
+	dispatch: React.Dispatch<PlayerStateAction>,
 	framePlayer: IFPlayer | null,
 	url?: string,
 	e?: React.KeyboardEvent<HTMLInputElement>,
@@ -84,6 +86,11 @@ export function loadNewVideo(
 		if (!field.value) return;
 		if (e.key !== 'Enter') return
 		url = field.value;
+		dispatch({
+			type: 'setUrl',
+			index: playerId,
+			payload: url,
+		});
 	} else if (!url) {
 		throw new Error('No url provided');
 	};
@@ -365,7 +372,7 @@ function PlayerComponent({
 					className='w-2/5 rounded bg-gray-800/50 p-1'
 					placeholder='Video ID'
 					onKeyDown={(e) => {
-						loadNewVideo(framePlayer, undefined, e, volume * masterVolumeModifier);
+						loadNewVideo(playerId, dispatch, framePlayer, undefined, e, volume * masterVolumeModifier);
 					}}
 				/>
 				<button
