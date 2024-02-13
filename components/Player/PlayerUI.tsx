@@ -2,35 +2,44 @@ import React, { useContext, useState, useMemo, useReducer } from 'react';
 
 import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
-import { usePresetState } from '../contexts/PlayerHolderProvider'
+import { usePresetState } from '../contexts/PlayerHolderProvider';
 import VolumeSlider from '../utils/VolumeSlider';
 import {
-	SelectionsState,
-	selectionsReducer,
-	VolumesState,
-	volumesReducer,
 	FadeIntervalsState,
 	fadeIntervalsReducer,
-	PlayerStateAction,
-	playerStateReducer,
-	PresetState,
+	VolumesState,
+	volumesReducer,
 } from './states';
 import ControlPanel from './ControlPanel/ControlPanel';
+
+import { DEFAULT_VOLUME } from '../utils/DEFAULTS';
+import { useDebounce } from '../utils/utils';
 
 const initialFadeIntervals: FadeIntervalsState = {
 	fadeIntervals: Array(9).fill(null),
 };
 
+const initialVolumes: VolumesState = {
+	volume: Array(8).fill(DEFAULT_VOLUME),
+};
+
 function PlayerUI() {
 	const windowSizeContext = useContext(WindowSizeContext);
-	const windowHeight: number | undefined | null = windowSizeContext?.windowHeight;
-	const windowWidth: number | undefined | null = windowSizeContext?.windowWidth;
+	const windowHeight: number | undefined | null =
+		windowSizeContext?.windowHeight;
+	const windowWidth: number | undefined | null =
+		windowSizeContext?.windowWidth;
 
-	const {presetState, presetDispatch} = usePresetState();
+	const { presetState, presetDispatch } = usePresetState();
+	const debouncedPresetDispatch = useDebounce(presetDispatch, 750);
+
+	const [volumes, volumesDispatch] = useReducer(
+		volumesReducer,
+		initialVolumes
+	);
 
 	const [masterVolume, setMasterVolume] = useState(100);
 	const [masterVolumeModifier, setMasterVolumeModifier] = useState(1);
-
 
 	const [fadeIntervals, fadeIntervalDispatch] = useReducer(
 		fadeIntervalsReducer,
@@ -42,8 +51,8 @@ function PlayerUI() {
 	}, [masterVolume]);
 
 	useMemo(() => {
-		console.log(presetState)
-	}, [presetState])
+		console.log(presetState);
+	}, [presetState]);
 
 	return (
 		<div
@@ -71,6 +80,14 @@ function PlayerUI() {
 										payload: interval,
 									})
 								}
+								pVolume={volumes.volume[id]}
+								pSetVolume={(volume: number) => {
+									volumesDispatch({
+										type: 'setVolume',
+										index: id,
+										payload: volume,
+									});
+								}}
 							/>
 						))}
 					</div>
@@ -85,11 +102,12 @@ function PlayerUI() {
 				</div>
 			</div>
 
-			<ControlPanel 
-				states={presetState} 
-				dispatch={presetDispatch} 
+			<ControlPanel
+				states={presetState}
+				dispatch={presetDispatch}
 				fadeIntervals={fadeIntervals}
-				fadeIntervalDispatch={fadeIntervalDispatch}/>
+				fadeIntervalDispatch={fadeIntervalDispatch}
+			/>
 		</div>
 	);
 }

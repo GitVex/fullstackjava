@@ -3,11 +3,9 @@ import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
 import IFPlayer from '../utils/IFPlayer';
 import VolumeSlider from '../utils/VolumeSlider';
+import { useDebounce } from '../utils/utils';
 import { fadeIn, fadeOut, fadeTo } from '../utils/fadeFunctions';
-import {
-	PlayerState,
-	PlayerStateAction,
-} from './states';
+import { PlayerState, PlayerStateAction } from './states';
 
 interface PlayerComponentProps {
 	playerId: number;
@@ -16,13 +14,15 @@ interface PlayerComponentProps {
 	dispatch: React.Dispatch<PlayerStateAction>;
 	pCurrentFadeInterval?: NodeJS.Timeout | null;
 	pSetCurrentFadeInterval?: React.Dispatch<NodeJS.Timeout | null>;
+	pVolume: number;
+	pSetVolume: React.Dispatch<number>;
 }
 
 function sliderInputHandler(
 	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
 	player: IFPlayer | null,
 	setVolumeFunc: React.Dispatch<number>,
-	setSavedVolumeFunc: React.Dispatch<{hasSaved: boolean, prevVol?: number}>,
+	setSavedVolumeFunc: React.Dispatch<{ hasSaved: boolean; prevVol?: number }>,
 	masterVolumeModifier: number
 ) {
 	if (!player) return;
@@ -84,17 +84,11 @@ export function loadNewVideo(
 	if (e) {
 		const field = e.target as HTMLInputElement;
 		if (!field.value) return;
-		if (e.key !== 'Enter') return
+		if (e.key !== 'Enter') return;
 		url = field.value;
-		dispatch({
-			type: 'setUrl',
-			index: playerId,
-			payload: url,
-		});
 	} else if (!url) {
 		throw new Error('No url provided');
-	};
-	
+	}
 
 	// strip video id from url and remove all other characters and timestamps
 	const id = url.replace(
@@ -102,7 +96,14 @@ export function loadNewVideo(
 		''
 	);
 
-	volume ? framePlayer.setVolume(volume) : framePlayer.setVolume(framePlayer.getVolume());
+	volume
+		? framePlayer.setVolume(volume)
+		: framePlayer.setVolume(framePlayer.getVolume());
+	dispatch({
+		type: 'setId',
+		index: playerId,
+		payload: url,
+	});
 	framePlayer.loadVideoById(id);
 
 	setTimeout(() => {
@@ -112,156 +113,6 @@ export function loadNewVideo(
 	}, 1000);
 }
 
-/*
-function PlayerComponent({
-	playerId,
-	masterVolumeModifier,
-	pVolume,
-	pSetVolume,
-	pSavedVolume,
-	pSetSavedVolume,
-	pSelected,
-	pSetSelected,
-	pCurrentFadeInterval,
-	pSetCurrentFadeInterval,
-}: PlayerComponentProps) {
-	const ID = `player${playerId}`;
-
-	const volume = pVolume ?? 50;
-	const setVolume = pSetVolume ?? (() => {});
-
-	const savedVolume = pSavedVolume ?? {hasSaved: false, prevVol: 0};
-	const setSavedVolume = pSetSavedVolume ?? (() => {});
-
-	const selected = pSelected ?? false;
-	const setSelected = pSetSelected ?? (() => {});
-
-	const currentFadeInterval = pCurrentFadeInterval ?? null;
-	const setCurrentFadeInterval = pSetCurrentFadeInterval ?? (() => {});
-
-
-	const player = usePlayerHolderById(playerId).player;
-
-	useMemo(() => {
-		player?.setVolume(volume * masterVolumeModifier);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [volume, masterVolumeModifier]);
-
-	return (
-		<motion.div
-			className={
-				'flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'
-			}
-			animate={{
-				boxShadow: selected ? '0 0 8px 1px #f00' : '0 0 0 0px #fff',
-			}}
-			transition={{
-				duration: 0.2,
-			}}
-			onClick={(e) => {
-				if (e.currentTarget !== e.target) return;
-				setSelected();
-			}}
-		>
-			<div
-				className='flex w-full flex-row justify-around'
-				onClick={(e) => {
-					if (e.currentTarget !== e.target) return;
-					setSelected();
-				}}
-			>
-				<div className='rounded' id={ID} />
-				<VolumeSlider
-					className='rounded border-2 border-darknavy-400/25 p-2'
-					textBgColor='bg-darknavy-500'
-					player={player}
-					setVolume={setVolume}
-					volume={volume}
-					userOnChange={(e) =>
-						sliderInputHandler(
-							e,
-							player,
-							setVolume,
-							setSavedVolume,
-							masterVolumeModifier
-						)
-					}
-					userOnInput={(e) =>
-						sliderInputHandler(
-							e,
-							player,
-							setVolume,
-							setSavedVolume,
-							masterVolumeModifier
-						)
-					}
-				/>
-			</div>
-			<div className='flex w-full flex-row items-center justify-center gap-2'>
-				<input
-					type='text'
-					className='w-2/5 rounded bg-gray-800/50 p-1'
-					placeholder='Video ID'
-					onKeyDown={(e) => {
-						loadNewVideo(player, undefined, e, volume * masterVolumeModifier);
-					}}
-				/>
-				<button
-					className='w-1/5 rounded bg-gray-800/50 p-1 disabled:opacity-50'
-					onClick={(e) => {
-						fadeIn({
-							player,
-							setVolume,
-							volume,
-							savedVolume,
-							setSavedVolume,
-							currentFadeInterval,
-							setCurrentFadeInterval,
-							pLimit: volume,
-						});
-					}}
-					disabled={player ? false : true}
-				>
-					Fade In
-				</button>
-				<input
-					type='text'
-					className=' w-1/5 rounded bg-gray-800/50 p-1'
-					placeholder='Volume'
-					onKeyDown={(e) => {
-						fadeInputHandler(
-							e,
-							player,
-							setVolume,
-							volume,
-							currentFadeInterval,
-							setCurrentFadeInterval
-						);
-					}}
-				/>
-				<button
-					className='w-2/6 rounded bg-gray-800/50 p-1 disabled:opacity-50'
-					onClick={(e) => {
-						fadeOut({
-							player,
-							setVolume,
-							volume,
-							savedVolume,
-							setSavedVolume,
-							currentFadeInterval,
-							setCurrentFadeInterval,
-						});
-					}}
-					disabled={player ? false : true}
-				>
-					Fade Out
-				</button>
-			</div>
-		</motion.div>
-	);
-}
-*/
-
 function PlayerComponent({
 	playerId,
 	masterVolumeModifier,
@@ -269,29 +120,28 @@ function PlayerComponent({
 	dispatch,
 	pCurrentFadeInterval,
 	pSetCurrentFadeInterval,
+	pVolume,
+	pSetVolume,
 }: PlayerComponentProps) {
 	const ID = `player${playerId}`;
 
-	const volume = player?.volume ?? 50;
-	const setVolume = (volume: number) => {
-		dispatch?.({
-			type: 'setVolume',
-			index: playerId,
-			payload: volume,
-		});
-	}
+	const debouncedDispatch = useDebounce(dispatch, 750);
 
-	const savedVolume = player?.savedVolume ?? {hasSaved: false, prevVol: 0};
-	const setSavedVolume = (value: {hasSaved: boolean, prevVol?: number}) => {
-		dispatch?.({
+	const volume = pVolume;
+	const setVolume = pSetVolume;
+
+	const savedVolume = player?.savedVolume ?? { hasSaved: false, prevVol: 0 };
+	const setSavedVolume = (value: { hasSaved: boolean; prevVol?: number }) => {
+		debouncedDispatch?.({
 			type: 'setSavedVolume',
 			index: playerId,
 			payload: value,
 		});
-	}
+	};
 
 	const selected = player?.selected ?? false;
 	const setSelected = () => {
+		console.log('changing selection');
 		if (player?.selected) {
 			dispatch?.({
 				type: 'deselect',
@@ -303,18 +153,22 @@ function PlayerComponent({
 				index: playerId,
 			});
 		}
-	}
+	};
 
 	const currentFadeInterval = pCurrentFadeInterval ?? null;
 	const setCurrentFadeInterval = pSetCurrentFadeInterval ?? (() => {});
-
 
 	const framePlayer = usePlayerHolderById(playerId).player as IFPlayer | null;
 
 	useMemo(() => {
 		framePlayer?.setVolume(volume * masterVolumeModifier);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [volume, masterVolumeModifier]);
+		debouncedDispatch({
+			type: 'setVolume',
+			index: playerId,
+			payload: volume,
+		});
+	//eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [volume, masterVolumeModifier, debouncedDispatch]);
 
 	return (
 		<motion.div
@@ -372,7 +226,14 @@ function PlayerComponent({
 					className='w-2/5 rounded bg-gray-800/50 p-1'
 					placeholder='Video ID'
 					onKeyDown={(e) => {
-						loadNewVideo(playerId, dispatch, framePlayer, undefined, e, volume * masterVolumeModifier);
+						loadNewVideo(
+							playerId,
+							dispatch,
+							framePlayer,
+							undefined,
+							e,
+							volume * masterVolumeModifier
+						);
 					}}
 				/>
 				<button

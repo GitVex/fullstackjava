@@ -9,9 +9,8 @@ import {
 	playerStateReducer,
 } from '../Player/states';
 
-const DEFAULT_VIDEOID =
-	process.env.NODE_ENV !== 'development' ? 'NpEaa2P7qZI' : 'P2NVJSJVGVQ'; // 'video placeholder' by Tristan Behaut
-const DEFAULT_VOLUME = 50;
+import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
+
 const maxPlayers = 8;
 
 // ----------------- CONTEXT DECLARATION -----------------
@@ -22,15 +21,14 @@ const PlayerHolderContext = React.createContext(
 	[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
 );
 
-const PasuedTimerContext = React.createContext({} as { pausedAt: number[] });
-
-const PresetStateContext = React.createContext({} as {presetState: PresetState, presetDispatch: React.Dispatch<PlayerStateAction>});
+const PresetStateContext = React.createContext(
+	{} as {
+		presetState: PresetState;
+		presetDispatch: React.Dispatch<PlayerStateAction>;
+	}
+);
 
 // ----------------- REDUCERS -----------------
-
-const InitialPausedTimerState: PausedTimerState = {
-	pausedAt: Array(maxPlayers).fill(Date.now()),
-};
 
 const initialPresetState: PresetState = {
 	title: 'New Preset',
@@ -44,6 +42,7 @@ const initialPresetState: PresetState = {
 			pausedAt: Date.now(),
 			id: DEFAULT_VIDEOID,
 		})),
+	masterVolume: 100,
 };
 
 // ----------------- HOOKS -----------------
@@ -68,16 +67,6 @@ export function usePresetState() {
 	return context;
 }
 
-export function usePausedTimer() {
-	const context = useContext(PasuedTimerContext);
-	if (context === undefined) {
-		throw new Error(
-			'usePausedTimer must be used within a PausedTimerProvider'
-		);
-	}
-	return context;
-}
-
 export function usePlayerHolderById(id: number) {
 	const playerHolder = useContext(PlayerHolderContext);
 
@@ -93,11 +82,6 @@ export function usePlayerHolderById(id: number) {
 // ----------------- PROVIDER -----------------
 
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
-	const [pauseTimers, pauseTimerDispatch] = useReducer(
-		pausedTimerReducer,
-		InitialPausedTimerState
-	);
-
 	const [presetState, presetDispatch] = useReducer(
 		playerStateReducer,
 		initialPresetState
@@ -198,13 +182,11 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	return (
-		<PasuedTimerContext.Provider value={pauseTimers}>
-			<PresetStateContext.Provider value={{presetState, presetDispatch}}>
-					<PlayerHolderContext.Provider value={playerHolder}>
-						{children}
-					</PlayerHolderContext.Provider>
-			</PresetStateContext.Provider>
-		</PasuedTimerContext.Provider>
+		<PresetStateContext.Provider value={{ presetState, presetDispatch }}>
+			<PlayerHolderContext.Provider value={playerHolder}>
+				{children}
+			</PlayerHolderContext.Provider>
+		</PresetStateContext.Provider>
 	);
 }
 

@@ -59,7 +59,7 @@ function ListItem({ item }: { item: track & { tags: any } }) {
 				id={item.id}
 				color={item.color}
 				luminance={item.luminance}
-				onClick={() => loadVideo(item.url)}
+				onClick={() => loadVideo(item.title, item.url)}
 			>
 				Add
 			</NotificationButton>

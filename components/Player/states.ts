@@ -48,25 +48,18 @@ export const selectionsReducer = (
 
 export interface VolumesState {
 	volume: number[];
-	savedVolume: { hasSaved: boolean; prevVol: number }[];
 }
 
-export interface VolumesAction {
+export interface SetVolumesAction {
 	type: 'setVolume';
 	index: number;
 	payload: number;
 }
 
-export interface setVolumeStateAction {
-	type: 'setVolumeState';
-	index: number;
-	saveState: boolean;
-	payload: number;
-}
 
 export const volumesReducer = (
 	state: VolumesState,
-	action: VolumesAction | setVolumeStateAction
+	action: SetVolumesAction
 ): VolumesState => {
 	switch (action.type) {
 		case 'setVolume':
@@ -77,20 +70,6 @@ export const volumesReducer = (
 						return action.payload;
 					} else {
 						return vol;
-					}
-				}),
-			};
-		case 'setVolumeState':
-			return {
-				...state,
-				savedVolume: state.savedVolume.map((entry, index) => {
-					if (index === action.index) {
-						return {
-							hasSaved: action.saveState,
-							prevVol: action.payload,
-						};
-					} else {
-						return entry;
 					}
 				}),
 			};
@@ -203,6 +182,7 @@ export const playerUrlReducer = (
 export interface PresetState {
 	title: string;
 	players: PlayerState[];
+	masterVolume: number;
 }
 
 export interface PlayerState {
@@ -216,7 +196,7 @@ export interface PlayerState {
 
 export type PlayerStateAction = VolumeAction | SetPausedAtAction | SetIdAction | SelectAction | SetTitleAction;
 
-type VolumeAction = SetVolumeAction | SetSavedVolumeAction;
+type VolumeAction = SetVolumeAction | SetSavedVolumeAction | SetMasterVolumeAction;
 
 interface SetVolumeAction {
 	type: 'setVolume';
@@ -228,6 +208,11 @@ interface SetSavedVolumeAction {
 	type: 'setSavedVolume';
 	index: number;
 	payload: {hasSaved: boolean, prevVol?: number};
+}
+
+interface SetMasterVolumeAction {
+	type: 'setMasterVolume';
+	payload: number;
 }
 
 interface SetPausedAtAction {
@@ -297,6 +282,11 @@ export const playerStateReducer = (
 			return {
 				...state,
 				players: updatePlayerAtIndex(state.players, action.index, { selected: false }),
+			};
+		case 'setMasterVolume':
+			return {
+				...state,
+				masterVolume: action.payload,
 			};
 		default:
 			throw new Error();
