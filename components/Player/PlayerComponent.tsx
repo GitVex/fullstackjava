@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
 import IFPlayer from '../utils/IFPlayer';
 import VolumeSlider from '../utils/VolumeSlider';
-import { useDebounce } from '../utils/utils';
+import { useDebounceCallback } from 'usehooks-ts';
 import { fadeIn, fadeOut, fadeTo } from '../utils/fadeFunctions';
 import { PlayerState, PlayerStateAction } from './states';
 
@@ -75,7 +75,7 @@ function fadeInputHandler(
 export function loadNewVideo(
 	playerId: number,
 	dispatch: React.Dispatch<PlayerStateAction>,
-	framePlayer: IFPlayer | null,
+	framePlayer: IFPlayer,
 	url?: string,
 	e?: React.KeyboardEvent<HTMLInputElement>,
 	volume?: number
@@ -99,12 +99,14 @@ export function loadNewVideo(
 	volume
 		? framePlayer.setVolume(volume)
 		: framePlayer.setVolume(framePlayer.getVolume());
+
+	framePlayer.loadVideoById(id);
+
 	dispatch({
 		type: 'setId',
 		index: playerId,
-		payload: url,
+		payload: id,
 	});
-	framePlayer.loadVideoById(id);
 
 	setTimeout(() => {
 		framePlayer.pauseVideo();
@@ -125,7 +127,7 @@ function PlayerComponent({
 }: PlayerComponentProps) {
 	const ID = `player${playerId}`;
 
-	const debouncedDispatch = useDebounce(dispatch, 750);
+	const debouncedDispatch = useDebounceCallback(dispatch, 750);
 
 	const volume = pVolume;
 	const setVolume = pSetVolume;
@@ -141,14 +143,13 @@ function PlayerComponent({
 
 	const selected = player?.selected ?? false;
 	const setSelected = () => {
-		console.log('changing selection');
 		if (player?.selected) {
-			dispatch?.({
+			debouncedDispatch?.({
 				type: 'deselect',
 				index: playerId,
 			});
 		} else {
-			dispatch?.({
+			debouncedDispatch?.({
 				type: 'select',
 				index: playerId,
 			});
@@ -158,17 +159,20 @@ function PlayerComponent({
 	const currentFadeInterval = pCurrentFadeInterval ?? null;
 	const setCurrentFadeInterval = pSetCurrentFadeInterval ?? (() => {});
 
-	const framePlayer = usePlayerHolderById(playerId).player as IFPlayer | null;
+	const framePlayer = usePlayerHolderById(playerId).player as IFPlayer;
 
-	useMemo(() => {
+	useEffect(() => {
 		framePlayer?.setVolume(volume * masterVolumeModifier);
+		//eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [volume, masterVolumeModifier, debouncedDispatch]);
+
+	useEffect(() => {
 		debouncedDispatch({
 			type: 'setVolume',
 			index: playerId,
 			payload: volume,
 		});
-	//eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [volume, masterVolumeModifier, debouncedDispatch]);
+	}, [volume, debouncedDispatch, playerId]);
 
 	return (
 		<motion.div

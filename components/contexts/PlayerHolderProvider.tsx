@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react';
+import React, { useState, useEffect, useContext, useReducer, use } from 'react';
 import IFPlayer from '../utils/IFPlayer';
 import {
-	PausedTimerState,
-	pausedTimerReducer,
 	PresetState,
-	PlayerState,
 	PlayerStateAction,
 	playerStateReducer,
 } from '../Player/states';
 
 import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
+import { useDebounceCallback, useLocalStorage } from 'usehooks-ts';
+import { copyStateWithoutFramePlayer } from '../utils/utils';
 
 const maxPlayers = 8;
 
@@ -35,12 +34,13 @@ const initialPresetState: PresetState = {
 	players: Array(8)
 		.fill(null)
 		.map((_, index) => ({
-			title: `Player ${index + 1}`,
+			id: index,
 			selected: false,
 			volume: DEFAULT_VOLUME,
 			savedVolume: { hasSaved: false, prevVol: DEFAULT_VOLUME },
 			pausedAt: Date.now(),
-			id: DEFAULT_VIDEOID,
+			videoId: DEFAULT_VIDEOID,
+			framePlayer: undefined,
 		})),
 	masterVolume: 100,
 };
@@ -82,6 +82,21 @@ export function usePlayerHolderById(id: number) {
 // ----------------- PROVIDER -----------------
 
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
+	
+	const loadPersistPreset = (): PresetState => {
+		const savedState = localStorage.getItem('presetState');
+		if (savedState) return JSON.parse(savedState);
+		return initialPresetState;
+	}
+	const savePersistPreset = (state: PresetState) => {
+		localStorage.setItem('presetState', JSON.stringify(state));
+	}
+	
+	/* const [persistPreset, setPersistPreset] = useLocalStorage(
+		'presetState',
+		initialPresetState
+	); */
+
 	const [presetState, presetDispatch] = useReducer(
 		playerStateReducer,
 		initialPresetState
@@ -180,6 +195,44 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 			document.body.removeChild(container);
 		};
 	}, []);
+
+	useEffect(() => {
+		console.log('presetState changed');
+	}, [presetState]);
+
+	/* useEffect(() => {
+		return () => {
+			const persistState = copyStateWithoutFramePlayer(presetState);
+			setPersistPreset(persistState);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); */
+
+	useEffect(() => {
+		console.log("loading preset: ", loadPersistPreset())
+		presetDispatch({
+			type: 'setPreset',
+			payload: loadPersistPreset(),
+		})
+	}, [])
+
+	useEffect(() => {
+		
+		window.removeEventListener('beforeunload', (e: BeforeUnloadEvent) => {});
+
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+			console.log("saving preset:", presetState)
+			savePersistPreset(presetState);
+			e.preventDefault();
+			e.returnValue = '';
+		}
+
+		window.addEventListener('beforeunload', handleBeforeUnload);
+
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload);
+		}
+	}, [presetState])
 
 	return (
 		<PresetStateContext.Provider value={{ presetState, presetDispatch }}>

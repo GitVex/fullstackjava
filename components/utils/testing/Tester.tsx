@@ -1,30 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { cyclicGenerator } from '../../../utils/cyclicGenerator';
+import React from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
 function Tester() {
-	const arr = Array.from({ length: 100 }, (_, i) => i);
-	const gen = cyclicGenerator(arr, 50);
-
-	const [num, setNum] = useState(gen.start);
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setNum(gen.next());
-		}, 25);
-
-		return () => clearInterval(interval);
-	}, []);
-
-	const opacity = (num: number, len: number) => {
-		return num / len;
-	};
+	const [count, setCount] = useLocalStorage('count', 0, {
+		initializeWithValue: false,
+	});
 
 	return (
 		<div
 			className={`flex h-screen w-screen place-content-center items-center text-2xl`}
-			style={{ opacity: opacity(num, gen.length) }}
 		>
-			{num}
+			<button
+				className={`m-2 rounded-md bg-blue-500 p-2 text-white`}
+				onClick={() => setCount(count + 1)}
+			>
+				Increment
+			</button>
+			<div>{count}</div>
 		</div>
 	);
 }

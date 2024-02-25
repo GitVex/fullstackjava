@@ -1,4 +1,5 @@
-import { useCallback, useRef } from 'react';
+import { useEffect, useState } from 'react';
+import { PresetState } from '../Player/states';
 
 export function sleep(milliseconds: number) {
 	const date = Date.now();
@@ -37,36 +38,13 @@ export function argMin(array: number[]): number {
 	return findExtremeIndex(array, (a, b) => a < b);
 }
 
-// A hook that takes a function and a delay, and returns a debounced version of the function
-export const useDebounce = <F extends (...args: any[]) => any>(
-	func: F,
-	delay: number = 500
-): F => {
-	// Use a ref to store the function's arguments and timeout ID
-	const argsRef = useRef<any[]>();
-	const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-
-	// The debounced function
-	const debouncedFunc = useCallback(
-		(...args: any[]) => {
-			// Store the latest arguments
-			argsRef.current = args;
-
-			// If there's an existing timeout, clear it
-			if (timeoutRef.current) {
-				clearTimeout(timeoutRef.current);
-			}
-
-			// Set a new timeout
-			timeoutRef.current = setTimeout(() => {
-				if (argsRef.current) {
-					func(...argsRef.current);
-				}
-			}, delay);
-		},
-		[func, delay]
-	); // Dependencies
-
-	// Return the debounced function, casting it to the same type as the input function
-	return debouncedFunc as F;
-};
+export function copyStateWithoutFramePlayer(state: PresetState): PresetState {
+	return {
+	  ...state, // Copy the rest of the state
+	  players: state.players.map(player => {
+		const { framePlayer, ...rest } = player; // Destructure to exclude framePlayer
+		return rest; // Return the rest of the properties
+	  }),
+	};
+  };
+  

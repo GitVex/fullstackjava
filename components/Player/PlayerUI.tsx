@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, useReducer } from 'react';
+import React, { useContext, useState, useMemo, useReducer, useEffect } from 'react';
 
 import PlayerComponent from './PlayerComponent';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
@@ -13,7 +13,7 @@ import {
 import ControlPanel from './ControlPanel/ControlPanel';
 
 import { DEFAULT_VOLUME } from '../utils/DEFAULTS';
-import { useDebounce } from '../utils/utils';
+import { useDebounceCallback } from 'usehooks-ts';
 
 const initialFadeIntervals: FadeIntervalsState = {
 	fadeIntervals: Array(9).fill(null),
@@ -31,28 +31,25 @@ function PlayerUI() {
 		windowSizeContext?.windowWidth;
 
 	const { presetState, presetDispatch } = usePresetState();
-	const debouncedPresetDispatch = useDebounce(presetDispatch, 750);
+	const debouncedPresetDispatch = useDebounceCallback(presetDispatch, 1000);
 
 	const [volumes, volumesDispatch] = useReducer(
 		volumesReducer,
 		initialVolumes
 	);
 
-	const [masterVolume, setMasterVolume] = useState(100);
-	const [masterVolumeModifier, setMasterVolumeModifier] = useState(1);
+	const [masterVolume, setMasterVolume] = useState(presetState.masterVolume);
+	const [masterVolumeModifier, setMasterVolumeModifier] = useState(presetState.masterVolume / 100);
 
 	const [fadeIntervals, fadeIntervalDispatch] = useReducer(
 		fadeIntervalsReducer,
 		initialFadeIntervals
 	);
 
-	useMemo(() => {
+	useEffect(() => {
 		setMasterVolumeModifier(masterVolume / 100);
-	}, [masterVolume]);
-
-	useMemo(() => {
-		console.log(presetState);
-	}, [presetState]);
+		debouncedPresetDispatch({ type: 'setMasterVolume', payload: masterVolume });
+	}, [masterVolume, debouncedPresetDispatch]);
 
 	return (
 		<div

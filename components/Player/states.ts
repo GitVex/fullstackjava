@@ -1,3 +1,5 @@
+import IFPlayer from "../utils/IFPlayer";
+
 // ------------------- SELECTIONS REDUCER -------------------
 
 export interface SelectionsState {
@@ -186,15 +188,16 @@ export interface PresetState {
 }
 
 export interface PlayerState {
-	title: string
+	id: number;
 	selected: boolean;
 	volume: number;
 	savedVolume: { hasSaved: boolean; prevVol?: number };
 	pausedAt: number;
-	id: string;
+	videoId: string;
+	framePlayer?: IFPlayer;
 }
 
-export type PlayerStateAction = VolumeAction | SetPausedAtAction | SetIdAction | SelectAction | SetTitleAction;
+export type PlayerStateAction = VolumeAction | SetPausedAtAction | SetIdAction | SelectAction | SetTitleAction | SetFramePlayerAction | SetPresetAction;
 
 type VolumeAction = SetVolumeAction | SetSavedVolumeAction | SetMasterVolumeAction;
 
@@ -229,13 +232,24 @@ interface SetIdAction {
 
 interface SetTitleAction {
 	type: 'setTitle';
-	index: number;
 	payload: string;
 }
 
 interface SelectAction {
 	type: 'select' | 'deselect';
 	index: number;
+}
+
+interface SetFramePlayerAction {
+	type: 'setFramePlayer';
+	index: number;
+	payload: IFPlayer;
+}
+
+interface SetPresetAction {
+	type: 'setPreset';
+	payload: PresetState;
+
 }
 
 export const playerStateReducer = (
@@ -248,10 +262,12 @@ export const playerStateReducer = (
 	  }
 
 	switch (action.type) {
+		case 'setPreset':
+			return action.payload;
 		case 'setTitle':
 			return {
 				...state,
-				players: updatePlayerAtIndex(state.players, action.index, { title: action.payload }),
+				title: action.payload,
 			};
 		case 'setVolume':
 			return {
@@ -271,7 +287,7 @@ export const playerStateReducer = (
 		case 'setId':
 			return {
 				...state,
-				players: updatePlayerAtIndex(state.players, action.index, { id: action.payload }),
+				players: updatePlayerAtIndex(state.players, action.index, { videoId: action.payload }),
 			};
 		case 'select':
 			return {
@@ -287,6 +303,11 @@ export const playerStateReducer = (
 			return {
 				...state,
 				masterVolume: action.payload,
+			};
+		case 'setFramePlayer':
+			return {
+				...state,
+				players: updatePlayerAtIndex(state.players, action.index, { framePlayer: action.payload }),
 			};
 		default:
 			throw new Error();

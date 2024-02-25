@@ -119,12 +119,11 @@ function CreateUI() {
 		e.preventDefault();
 
 		// Change this to the endpoint you want to debug
-		const debug_call = await fetch('/api/calculateColor')
+		const debug_call = await fetch('/api/calculateColor');
 		// console.log(debug_call)
-	}
+	};
 
 	useMemo(() => {
-
 		// console.log('useMemo called', url, tags, isPresent);
 
 		if (url && tags && !isPresent) {
@@ -177,14 +176,18 @@ function CreateUI() {
 						</fieldset>
 						<motion.button
 							className={`place-self-center rounded p-1 text-white
-    							${isSubmittable ? 'bg-indigo-800/50' : 'cursor-not-allowed bg-gray-700/25'}`}
+    							${
+									isSubmittable
+										? 'bg-indigo-800/50'
+										: 'cursor-not-allowed bg-gray-700/25'
+								}`}
 							disabled={!isSubmittable}
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 						>
 							Submit
 						</motion.button>
-						<motion.button
+						{/* <motion.button
 							className={`place-self-center rounded p-1 text-white bg-red-500`}
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
@@ -192,7 +195,7 @@ function CreateUI() {
 							onClick={handleDebugSubmit}
 						>
 							Debug
-						</motion.button>
+						</motion.button> */}
 					</form>
 				</div>
 			</section>
