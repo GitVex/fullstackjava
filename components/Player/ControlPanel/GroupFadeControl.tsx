@@ -88,12 +88,12 @@ function GroupFadeControl({
 }: GroupFadeControlProps) {
 
 	const playerHolder = usePlayerHolder();
-	const framedPlayers = playerHolder.map((_, index) => {
-		const player = playerHolder[index].player;
-		if (player) {
+	const framedPlayers = playerHolder?.holders.map((holder) => {
+		const player = holder.player;
+		if (player && holder.isReady) {
 			return player;
 		} else {
-			throw new Error('Player not found');
+			/* throw new Error('Player not found'); */
 		}
 	});
 

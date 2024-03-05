@@ -77,8 +77,8 @@ function PlayerUI() {
 										payload: interval,
 									})
 								}
-								pVolume={volumes.volume[id]}
-								pSetVolume={(volume: number) => {
+								volume={volumes.volume[id]}
+								setVolume={(volume: number) => {
 									volumesDispatch({
 										type: 'setVolume',
 										index: id,
@@ -104,6 +104,8 @@ function PlayerUI() {
 				dispatch={presetDispatch}
 				fadeIntervals={fadeIntervals}
 				fadeIntervalDispatch={fadeIntervalDispatch}
+				pVolumes={volumes.volume}
+				pSetVolume={volumesDispatch}
 			/>
 		</div>
 	);

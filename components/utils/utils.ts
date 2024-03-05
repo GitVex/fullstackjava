@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { PresetState } from '../Player/states';
 
 export function sleep(milliseconds: number) {
@@ -40,11 +40,33 @@ export function argMin(array: number[]): number {
 
 export function copyStateWithoutFramePlayer(state: PresetState): PresetState {
 	return {
-	  ...state, // Copy the rest of the state
-	  players: state.players.map(player => {
-		const { framePlayer, ...rest } = player; // Destructure to exclude framePlayer
-		return rest; // Return the rest of the properties
-	  }),
+		...state, // Copy the rest of the state
+		players: state.players.map((player) => {
+			const { framePlayer, ...rest } = player; // Destructure to exclude framePlayer
+			return rest; // Return the rest of the properties
+		}),
 	};
-  };
-  
+}
+
+function getVideoIdFromYoutubeUrl(url: string) {
+	const regex =
+		/(?:youtu\.be\/|youtube\.com(?:\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|shorts\/)|youtu\.be\/|embed\/|v\/|m\/|watch\?(?:[^=]+=[^&]+&)*?v=))([^"&?\/\s]{11})/gm;
+	const match = regex.exec(url);
+	if (!match) {
+		throw new Error('Invalid youtube url');
+	}
+	return match[1];
+}
+
+export function transformToTarget(input: string) {
+	if (!input) {
+		return null;
+	}
+
+	// Check if it's just the video ID
+	if (input.length === 11) {
+		return input;
+	} else {
+		return getVideoIdFromYoutubeUrl(input);
+	}
+}

@@ -9,35 +9,14 @@ interface VolumeSliderProps {
 	setVolume: React.Dispatch<number>;
 	volume: number;
 	height?: number;
-	userOnChange?: (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.FormEvent<HTMLInputElement>
-	) => void;
-	userOnInput?: (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.FormEvent<HTMLInputElement>
-	) => void;
-}
-
-function sliderInputHandler(
-	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
-	setVolumeFunc: React.Dispatch<number>,
-) {
-	const field = e.target as HTMLInputElement;
-	setVolumeFunc(parseInt(field.value));
 }
 
 const VolumeSlider: React.FC<VolumeSliderProps> = ({
 	className,
 	textBgColor,
-	player,
 	setVolume,
 	volume,
 	height = 100,
-	userOnChange,
-	userOnInput,
 }) => {
 	// Generate a unique ID for each instance
 	const [uniqueId] = useState(
@@ -55,16 +34,9 @@ const VolumeSlider: React.FC<VolumeSliderProps> = ({
 				// @ts-ignore
 				orient='vertical'
 				value={volume}
-				onChange={
-					userOnChange
-						? userOnChange
-						: (e) => sliderInputHandler(e, setVolume)
-				}
-				onInput={
-					userOnInput
-						? userOnInput
-						: (e) => sliderInputHandler(e, setVolume)
-				}
+				onChange={(e) => {
+					setVolume(parseInt(e.currentTarget.value));
+				}}
 			/>
 			<style>
 				{`
