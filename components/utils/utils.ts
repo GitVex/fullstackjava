@@ -1,5 +1,5 @@
 import React from 'react';
-import { PresetState } from '../Player/states';
+import { PresetState } from '../contexts/states';
 
 export function sleep(milliseconds: number) {
 	const date = Date.now();
@@ -36,16 +36,6 @@ export function argMax(array: number[]): number {
 
 export function argMin(array: number[]): number {
 	return findExtremeIndex(array, (a, b) => a < b);
-}
-
-export function copyStateWithoutFramePlayer(state: PresetState): PresetState {
-	return {
-		...state, // Copy the rest of the state
-		players: state.players.map((player) => {
-			const { framePlayer, ...rest } = player; // Destructure to exclude framePlayer
-			return rest; // Return the rest of the properties
-		}),
-	};
 }
 
 function getVideoIdFromYoutubeUrl(url: string) {
