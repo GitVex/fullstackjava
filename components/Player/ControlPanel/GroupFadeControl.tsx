@@ -48,7 +48,7 @@ const handleGroupFade = (
 
         fadeAction({
             framePlayer: framedPlayers[idx],
-            localVolumeControl: { volume: localVolumeControl.localVolumes[idx], setVolume },
+            localVolumeControl: { localVolume: localVolumeControl.localVolumes[idx], setLocalVolume: setVolume },
             fadeIntervalControl: {
                 currentFadeInterval: fadeIntervalsControls.currentFadeIntervals[idx],
                 setCurrentFadeInterval,
