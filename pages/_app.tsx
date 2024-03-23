@@ -16,7 +16,6 @@ export default function App({ Component, pageProps }: AppProps) {
 			<WindowSizeProvider>
 				<Component {...pageProps} />
 			</WindowSizeProvider>
-			<SpeedInsights />
 		</>
 	);
 }
