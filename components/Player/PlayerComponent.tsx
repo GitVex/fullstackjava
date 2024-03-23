@@ -99,7 +99,6 @@ function PlayerComponent(props: PlayerComponentProps) {
 
     const localVolume = props.localVolumeControl.localVolume;
     const setLocalVolume = (vol: number) => {
-        console.log('setting volume to', vol);
         if (!framePlayer) return;
 
         props.localVolumeControl.localVolumeDispatch({

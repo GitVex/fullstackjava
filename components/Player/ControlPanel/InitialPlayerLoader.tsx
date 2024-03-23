@@ -25,11 +25,8 @@ function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
 
             /* console.log('checking player state ...', allReady); */
             if (allReady) {
-                console.log('All players are ready. Loading preset state...', presetState);
-
                 playerHolder.holders.forEach((holder, idx) => {
                     if (holder.player) {
-                        console.log('Setting player', idx, 'volume to', presetState.players[idx].volume);
                         localVolumesDispatch({
                             type: 'setVolume',
                             index: idx,

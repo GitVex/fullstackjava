@@ -107,7 +107,6 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
     const [presetState, presetDispatch] = useReducer(playerStateReducer, initialPresetState);
 
     useEffect(() => {
-        console.log('loading preset: ', loadPersistPreset());
         presetDispatch({
             type: 'setPreset',
             payload: loadPersistPreset(),
@@ -116,7 +115,6 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
     const handleBeforeUnload = useCallback(
         (e: BeforeUnloadEvent) => {
-            console.log('saving preset:', presetState);
             savePersistPreset(presetState);
             e.preventDefault();
             e.returnValue = '';
