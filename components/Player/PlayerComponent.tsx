@@ -1,58 +1,46 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
 import { motion } from 'framer-motion';
 import IFPlayer from '../utils/IFPlayer';
 import VolumeSlider from '../utils/VolumeSlider';
 import { useDebounceCallback } from 'usehooks-ts';
-import { fadeIn, fadeOut, fadeTo } from '../utils/fadeFunctions';
-import { PlayerState, PlayerStateAction } from './states';
+import { fadeIn, fadeOut, fadeTo, FadeOptions } from '../utils/fadeFunctions';
+import { PlayerStateAction, presetControlType } from '../contexts/states';
 import { transformToTarget } from '../utils/utils';
+import { fadeIntervalControlType, localVolumeControlType } from './states';
 
 interface PlayerComponentProps {
     playerId: number;
     masterVolumeModifier: number;
-    player: PlayerState;
-    dispatch: React.Dispatch<PlayerStateAction>;
-    pCurrentFadeInterval?: NodeJS.Timeout | null;
-    pSetCurrentFadeInterval?: React.Dispatch<NodeJS.Timeout | null>;
-    volume: number;
-    setVolume: React.Dispatch<number>;
+    presetControls: presetControlType;
+    fadeIntervalControl: fadeIntervalControlType;
+    localVolumeControl: localVolumeControlType;
 }
 
 function fadeInputHandler(
     e: React.KeyboardEvent<HTMLInputElement>,
-    framePlayer: IFPlayer | null,
-    setVolume: React.Dispatch<number>,
-    volume: number,
-    currentFadeInterval: NodeJS.Timeout | null,
-    setCurrentFadeInterval: React.Dispatch<NodeJS.Timeout | null>
+    { framePlayer, localVolumeControl, savedVolumeControl, fadeIntervalControl }: FadeOptions
 ) {
-    const field = e.target as HTMLInputElement;
-    if (!framePlayer) return;
-    if (e.key !== 'Enter' || !field.value) return;
+    // Early return if no framePlayer or if the event key is not 'Enter'
+    if (!framePlayer || e.key !== 'Enter') return;
 
-    if (framePlayer.getPlayerState() !== 1) {
-        fadeIn({
-            framePlayer,
-            setVolume,
-            volume,
-            currentFadeInterval,
-            setCurrentFadeInterval,
-            pLimit: parseInt(field.value),
-        });
-        return;
-    }
-    fadeTo(
-        {
-            framePlayer,
-            setVolume,
-            volume,
-            currentFadeInterval,
-            setCurrentFadeInterval,
-            pLimit: parseInt(field.value),
-        },
-        parseInt(field.value)
-    );
+    const inputValue = e.currentTarget.value; // Directly access the input's value
+    const targetVolume = parseInt(inputValue); // Parse once, ensuring we're working with a number
+
+    // Further validation to proceed only if inputValue is a valid number
+    if (isNaN(targetVolume)) return;
+
+    // Define a callback to handle fading, choosing between fadeIn and fadeTo based on player state
+    const fadeAction = framePlayer.getPlayerState() !== 1 ? fadeIn : fadeTo;
+
+    // Execute the fading action with the provided parameters
+    fadeAction({
+        framePlayer,
+        localVolumeControl,
+        savedVolumeControl,
+        fadeIntervalControl,
+        pLimit: targetVolume,
+    });
 }
 
 export function loadNewVideo(
@@ -83,52 +71,53 @@ export function loadNewVideo(
     }, 1000);
 }
 
-function PlayerComponent({
-    playerId,
-    masterVolumeModifier,
-    player,
-    dispatch,
-    pCurrentFadeInterval,
-    pSetCurrentFadeInterval,
-    volume,
-    setVolume,
-}: PlayerComponentProps) {
-    const ID = `player${playerId}`;
-    const framePlayer = usePlayerHolderById(playerId).player as IFPlayer;
-    const debouncedDispatch = useDebounceCallback(dispatch, 750);
+function PlayerComponent(props: PlayerComponentProps) {
+    const ID = `player${props.playerId}`;
+    const { playerId } = props;
+    const playerInPreset = props.presetControls.presetState.players[playerId];
+    const framePlayer = usePlayerHolderById(props.playerId).player as IFPlayer;
 
-    const savedVolume = player?.savedVolume ?? { hasSaved: false, prevVol: 0 };
-    const setSavedVolume = (value: { hasSaved: boolean; prevVol?: number }) => {
-        debouncedDispatch?.({
-            type: 'setSavedVolume',
+    const debouncedPresetDispatch = useDebounceCallback(props.presetControls.presetDispatch, 750);
+
+    const [savedVolume, setSavedVolume] = useState({ hasSaved: false, prevVol: 0 });
+
+    const currentFadeInterval = props.fadeIntervalControl.currentFadeInterval;
+    const setCurrentFadeInterval = (interval: NodeJS.Timeout | null) =>
+        props.fadeIntervalControl.currentFadeIntervalDispatch({
+            type: 'setCurrentFadeInterval',
             index: playerId,
-            payload: value,
+            payload: interval,
         });
-    };
 
-    const selected = player?.selected ?? false;
+    const selected = playerInPreset?.selected ?? false;
     const setSelected = () => {
-        debouncedDispatch?.({
-            type: player?.selected ? 'deselect' : 'select',
+        debouncedPresetDispatch?.({
+            type: playerInPreset?.selected ? 'deselect' : 'select',
             index: playerId,
         });
     };
 
-    const currentFadeInterval = pCurrentFadeInterval ?? null;
-    const setCurrentFadeInterval = pSetCurrentFadeInterval ?? (() => {});
+    const localVolume = props.localVolumeControl.localVolume;
+    const setLocalVolume = (vol: number) => {
+        console.log('setting volume to', vol);
+        if (!framePlayer) return;
 
-    useEffect(() => {
-        framePlayer?.setVolume(volume * masterVolumeModifier);
-        //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [volume, masterVolumeModifier]);
-
-    useEffect(() => {
-        debouncedDispatch({
+        props.localVolumeControl.localVolumeDispatch({
             type: 'setVolume',
             index: playerId,
-            payload: volume,
+            payload: vol,
         });
-    }, [volume, debouncedDispatch, playerId]);
+        debouncedPresetDispatch({
+            type: 'setVolume',
+            index: playerId,
+            payload: localVolume,
+        });
+    };
+
+    useEffect(() => {
+        framePlayer?.setVolume(localVolume * props.masterVolumeModifier);
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [localVolume, props.masterVolumeModifier]);
 
     return (
         <motion.div
@@ -155,11 +144,12 @@ function PlayerComponent({
             >
                 <div className="rounded" id={ID} />
                 <VolumeSlider
+                    volumeControl={{
+                        localVolume,
+                        setLocalVolume,
+                    }}
                     className="rounded border-2 border-darknavy-400/25 p-2"
                     textBgColor="bg-darknavy-500"
-                    player={framePlayer}
-                    setVolume={setVolume}
-                    volume={volume}
                 />
             </div>
             <div className="flex w-full flex-row items-center justify-center gap-2">
@@ -171,25 +161,21 @@ function PlayerComponent({
                         if (e.key !== 'Enter') return;
                         loadNewVideo(
                             playerId,
-                            dispatch,
+                            debouncedPresetDispatch,
                             framePlayer,
                             (e.target as HTMLInputElement).value,
-                            volume * masterVolumeModifier
+                            localVolume * props.masterVolumeModifier
                         );
                     }}
                 />
                 <button
                     className="w-1/5 rounded bg-gray-800/50 p-1 disabled:opacity-50"
-                    onClick={e => {
+                    onClick={() => {
                         fadeIn({
                             framePlayer,
-                            setVolume,
-                            volume,
-                            savedVolume,
-                            setSavedVolume,
-                            currentFadeInterval,
-                            setCurrentFadeInterval,
-                            pLimit: volume,
+                            localVolumeControl: { localVolume, setLocalVolume },
+                            savedVolumeControl: { savedVolume, setSavedVolume },
+                            fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
                         });
                     }}
                     disabled={framePlayer ? false : true}
@@ -201,27 +187,23 @@ function PlayerComponent({
                     className=" w-1/5 rounded bg-gray-800/50 p-1"
                     placeholder="Volume"
                     onKeyDown={e => {
-                        fadeInputHandler(
-                            e,
+                        fadeInputHandler(e, {
                             framePlayer,
-                            setVolume,
-                            volume,
-                            currentFadeInterval,
-                            setCurrentFadeInterval
-                        );
+                            localVolumeControl: { localVolume, setLocalVolume },
+                            savedVolumeControl: { savedVolume, setSavedVolume },
+                            fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
+                        });
                     }}
                 />
                 <button
                     className="w-2/6 rounded bg-gray-800/50 p-1 disabled:opacity-50"
-                    onClick={e => {
+                    onClick={() => {
                         fadeOut({
                             framePlayer,
-                            setVolume,
-                            volume,
-                            savedVolume,
-                            setSavedVolume,
-                            currentFadeInterval,
-                            setCurrentFadeInterval,
+                            localVolumeControl: { localVolume, setLocalVolume },
+                            savedVolumeControl: { savedVolume, setSavedVolume },
+                            fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
+                            pLimit: 0,
                         });
                     }}
                     disabled={framePlayer ? false : true}

@@ -12,10 +12,9 @@ export interface PlayerState {
     id: number;
     selected: boolean;
     volume: number;
-    savedVolume: { hasSaved: boolean; prevVol?: number };
+    savedVolume: { hasSaved: boolean; prevVol: number };
     pausedAt: number;
     videoId: string;
-    framePlayer?: IFPlayer;
 }
 
 export type PlayerStateAction =
@@ -24,7 +23,6 @@ export type PlayerStateAction =
     | SetIdAction
     | SelectAction
     | SetTitleAction
-    | SetFramePlayerAction
     | SetPresetAction;
 
 type VolumeAction = SetVolumeAction | SetSavedVolumeAction | SetMasterVolumeAction;
@@ -38,7 +36,7 @@ interface SetVolumeAction {
 interface SetSavedVolumeAction {
     type: 'setSavedVolume';
     index: number;
-    payload: { hasSaved: boolean; prevVol?: number };
+    payload: { hasSaved: boolean; prevVol: number };
 }
 
 interface SetMasterVolumeAction {
@@ -66,12 +64,6 @@ interface SetTitleAction {
 interface SelectAction {
     type: 'select' | 'deselect';
     index: number;
-}
-
-interface SetFramePlayerAction {
-    type: 'setFramePlayer';
-    index: number;
-    payload: IFPlayer;
 }
 
 interface SetPresetAction {
@@ -127,11 +119,6 @@ export const playerStateReducer = (state: PresetState, action: PlayerStateAction
                 ...state,
                 masterVolume: action.payload,
             };
-        case 'setFramePlayer':
-            return {
-                ...state,
-                players: updatePlayerAtIndex(state.players, action.index, { framePlayer: action.payload }),
-            };
         default:
             throw new Error();
     }
@@ -181,3 +168,10 @@ export const playerHolderReducer = (state: PlayerHolderState, action: PlayerHold
             throw new Error();
     }
 };
+
+// ------------------- CONTROL STATES -------------------
+
+export interface presetControlType {
+    presetState: PresetState;
+    presetDispatch: React.Dispatch<PlayerStateAction>;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react';
+import React, { useCallback, useEffect, useContext, useReducer } from 'react';
 import IFPlayer from '../utils/IFPlayer';
 import {
     PresetState,
@@ -12,6 +12,13 @@ import {
 import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
 
 const maxPlayers = 8;
+
+// YT.PlayerState.PLAYING = 1;
+// YT.PlayerState.PAUSED = 2;
+// YT.PlayerState.ENDED = 0;
+// YT.PlayerState.CUED = 5;
+// YT.PlayerState.BUFFERING = 3;
+// YT.PlayerState.UNSTARTED = -1;
 
 // ----------------- CONTEXT DECLARATION -----------------
 
@@ -39,7 +46,6 @@ const initialPresetState: PresetState = {
             savedVolume: { hasSaved: false, prevVol: DEFAULT_VOLUME },
             pausedAt: Date.now(),
             videoId: DEFAULT_VIDEOID,
-            framePlayer: undefined,
         })),
     masterVolume: 100,
 };
@@ -108,22 +114,23 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
         });
     }, []);
 
-    useEffect(() => {
-        window.removeEventListener('beforeunload', (e: BeforeUnloadEvent) => {});
-
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    const handleBeforeUnload = useCallback(
+        (e: BeforeUnloadEvent) => {
             console.log('saving preset:', presetState);
             savePersistPreset(presetState);
             e.preventDefault();
             e.returnValue = '';
-        };
+        },
+        [presetState]
+    );
 
+    useEffect(() => {
         window.addEventListener('beforeunload', handleBeforeUnload);
 
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [presetState]);
+    }, [handleBeforeUnload]);
 
     // ------- PAUSED TIMER -------
 
@@ -182,7 +189,6 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
                 setPausedAt(playerIdx, 9999999999999);
             } else if (changedState === YT.PlayerState.ENDED) {
                 player.seekTo(0, true);
-                player.pauseVideo();
             }
         }
 
@@ -200,10 +206,10 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
                 player.pauseVideo();
                 player.setVolume(50);
 
-				dispatchPlayerHolder({
-					type: 'setReady',
-					index: playerIdx,
-				});
+                dispatchPlayerHolder({
+                    type: 'setReady',
+                    index: playerIdx,
+                });
             }, 500);
         }
 
@@ -240,9 +246,9 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
         console.log('presetState changed', presetState);
     }, [presetState]); */
 
-	useEffect(() => {
+    /* useEffect(() => {
         console.log('playerHolder changed', playerHolder);
-    }, [playerHolder]);
+    }, [playerHolder]); */
 
     return (
         <PresetStateContext.Provider value={{ presetState, presetDispatch }}>
