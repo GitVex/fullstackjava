@@ -1,80 +1,43 @@
 import React, { useState } from 'react';
-import IFPlayer from './IFPlayer';
 import { motion } from 'framer-motion';
+import { localVolumeControlEndType } from '../Player/states';
 
 interface VolumeSliderProps {
-	className?: string;
-	textBgColor?: string;
-	player?: IFPlayer | null | undefined;
-	setVolume: React.Dispatch<number>;
-	volume: number;
-	height?: number;
-	userOnChange?: (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.FormEvent<HTMLInputElement>
-	) => void;
-	userOnInput?: (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.FormEvent<HTMLInputElement>
-	) => void;
+    volumeControl: localVolumeControlEndType;
+    className?: string;
+    textBgColor?: string;
+    height?: number;
 }
 
-function sliderInputHandler(
-	e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
-	setVolumeFunc: React.Dispatch<number>,
-) {
-	const field = e.target as HTMLInputElement;
-	setVolumeFunc(parseInt(field.value));
-}
+function VolumeSlider(props: VolumeSliderProps) {
+    // Generate a unique ID for each instance
+    const uniqueId = `volumeSlider${Math.floor(Math.random() * 1000000)}`;
+    const { volumeControl, className = '', textBgColor = '', height = 100 } = props;
 
-const VolumeSlider: React.FC<VolumeSliderProps> = ({
-	className,
-	textBgColor,
-	player,
-	setVolume,
-	volume,
-	height = 100,
-	userOnChange,
-	userOnInput,
-}) => {
-	// Generate a unique ID for each instance
-	const [uniqueId] = useState(
-		`volumeSlider${Math.floor(Math.random() * 1000000)}`
-	);
+    const { localVolume, setLocalVolume } = volumeControl;
 
-	return (
-		<div className={'flex w-10 flex-row items-center gap-4 ' + className}>
-			<input
-				id={uniqueId}
-				type='range'
-				min='0'
-				max='100'
-				step='1'
-				// @ts-ignore
-				orient='vertical'
-				value={volume}
-				onChange={
-					userOnChange
-						? userOnChange
-						: (e) => sliderInputHandler(e, setVolume)
-				}
-				onInput={
-					userOnInput
-						? userOnInput
-						: (e) => sliderInputHandler(e, setVolume)
-				}
-			/>
-			<style>
-				{`
+    return (
+        <div className={'flex w-10 flex-row items-center gap-4 ' + className}>
+            <input
+                id={uniqueId}
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                // @ts-ignore
+                orient="vertical"
+                value={localVolume}
+                onChange={e => {
+                    setLocalVolume(parseInt(e.currentTarget.value));
+                }}
+            />
+            <style>
+                {`
                     #${uniqueId} {
                         -webkit-appearance: none;
                         appearance: none;
                         width: 5px;
-                        height: ${
-							typeof height === 'number' ? `${height}px` : height
-						};
+                        height: ${typeof height === 'number' ? `${height}px` : height};
                     }
 
                     #${uniqueId}::-webkit-slider-thumb {
@@ -98,19 +61,19 @@ const VolumeSlider: React.FC<VolumeSliderProps> = ({
                         transition: .2s ease-in-out;
                     }
                 `}
-			</style>
-			<div style={{ height: height }}>
-				<motion.p
-					className={textBgColor}
-					animate={{
-						y: height * (1 - volume / 100) + 0.12 * volume - 20,
-					}}
-				>
-					{volume}
-				</motion.p>
-			</div>
-		</div>
-	);
-};
+            </style>
+            <div style={{ height: height }}>
+                <motion.p
+                    className={textBgColor}
+                    animate={{
+                        y: height * (1 - localVolume / 100) + 0.12 * localVolume - 20,
+                    }}
+                >
+                    {localVolume}
+                </motion.p>
+            </div>
+        </div>
+    );
+}
 
 export default VolumeSlider;

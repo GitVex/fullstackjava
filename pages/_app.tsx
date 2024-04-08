@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps, NextWebVitalsMetric } from "next/app";
-import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { WindowSizeProvider } from "../components/contexts/WindowSizeProvider";
 
 if (process.env.NODE_ENV !== "development") {
@@ -16,7 +16,6 @@ export default function App({ Component, pageProps }: AppProps) {
 			<WindowSizeProvider>
 				<Component {...pageProps} />
 			</WindowSizeProvider>
-			<Analytics />
 		</>
 	);
 }
