@@ -1,34 +1,31 @@
 import { useCallback } from 'react';
-import { usePausedTimer } from '../contexts/PlayerHolderProvider';
+import { usePresetState } from '../contexts/PlayerHolderProvider';
 import { usePlayerHolder } from '../contexts/PlayerHolderProvider';
 import { loadNewVideo } from '../Player/PlayerComponent';
 import { argMin } from './utils';
 
 export const useLoadVideoInLongestPausedPlayer = () => {
-	const pausedTimers = usePausedTimer();
 	const playerHolder = usePlayerHolder();
+	const { presetState, presetDispatch } = usePresetState();
 
 	const loadVideo = useCallback(
 		(url: string) => {
 			// Find the index of the longest paused player
-			const longestPausedIndex = argMin(pausedTimers.pausedAt);
+			const longestPausedIndex = argMin(presetState.players.map(player => player.pausedAt));
 
 			// Retrieve the player using the index
-			const holder = playerHolder.find(
-				(h) => h.id === longestPausedIndex
+			const holder = playerHolder.holders.find(
+				(h, idx) => idx === longestPausedIndex
 			);
 
 			if (holder && holder.player) {
 				// Load the video into the player
-				console.log(
-					`Loading video into player ${holder.id} with url ${url}`
-				);
-				loadNewVideo(holder.player, url, undefined, holder.player.getVolume());
+				loadNewVideo(longestPausedIndex, presetDispatch, holder.player, url, holder.player.getVolume());
 			} else {
 				console.error('Player not found for the given index.');
 			}
 		},
-		[pausedTimers, playerHolder]
+		[presetState, presetDispatch, playerHolder]
 	);
 
 	return loadVideo;
