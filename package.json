@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@material-tailwind/react": "^2.1.5",
     "@prisma/client": "^4.13.0",
     "@types/node": "18.11.15",
     "@types/react": "18.0.26",
