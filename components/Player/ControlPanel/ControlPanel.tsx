@@ -3,8 +3,7 @@ import SelectionsViewer from './SelectionsViewer';
 import GroupFadeControl from './GroupFadeControl';
 import InitialPlayerLoader from './InitialPlayerLoader';
 import { localVolumesControlType, fadeIntervalsControlType } from '../states';
-import { PresetState, PlayerStateAction, presetControlType } from '../../contexts/states';
-import { usePresetState } from '../../contexts/PlayerHolderProvider';
+import { presetControlType } from '../../contexts/states';
 
 interface ControlPanelProps {
     presetControls: presetControlType;
@@ -28,7 +27,7 @@ function ControlPanel(props: ControlPanelProps) {
                 <InitialPlayerLoader
                     onLoaded={onLoaded}
                     localVolumesControls={props.localVolumesControls}
-                    presetConstrols={props.presetControls}
+                    presetControls={props.presetControls}
                 />
             )}
         </div>

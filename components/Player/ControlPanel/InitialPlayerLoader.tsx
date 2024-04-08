@@ -7,11 +7,11 @@ import { presetControlType } from '../../contexts/states';
 interface InitialPlayerLoaderProps {
     onLoaded: () => void;
     localVolumesControls: localVolumesControlType;
-    presetConstrols: presetControlType;
+    presetControls: presetControlType;
 }
 
 function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
-    const { presetState, presetDispatch } = props.presetConstrols;
+    const { presetState, presetDispatch } = props.presetControls;
     const { localVolumes, localVolumesDispatch } = props.localVolumesControls;
     const { onLoaded } = props;
 
