@@ -21,7 +21,7 @@
     "eslint-config-next": "13.0.6",
     "framer-motion": "^7.10.0",
     "jimp": "^0.22.8",
-    "next": "13.0.6",
+    "next": "13.5.1",
     "openai": "^3.1.0",
     "postgres": "^3.3.3",
     "react": "18.2.0",
