@@ -13,12 +13,12 @@ import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
 
 const maxPlayers = 8;
 
+// YT.PlayerState.UNSTARTED = -1;
+// YT.PlayerState.ENDED = 0;
 // YT.PlayerState.PLAYING = 1;
 // YT.PlayerState.PAUSED = 2;
-// YT.PlayerState.ENDED = 0;
-// YT.PlayerState.CUED = 5;
 // YT.PlayerState.BUFFERING = 3;
-// YT.PlayerState.UNSTARTED = -1;
+// YT.PlayerState.CUED = 5;
 
 // ----------------- CONTEXT DECLARATION -----------------
 
@@ -182,6 +182,8 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
             const changedState = player.getPlayerState();
 
             if (changedState === YT.PlayerState.PAUSED) {
+                setPausedAt(playerIdx, Date.now());
+            } else if (changedState === YT.PlayerState.UNSTARTED) {
                 setPausedAt(playerIdx, Date.now());
             } else if (changedState === YT.PlayerState.PLAYING) {
                 setPausedAt(playerIdx, 9999999999999);
