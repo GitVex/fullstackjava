@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import ScrollTitle from './ScrollTitle';
 import { motion } from 'framer-motion';
 import { track } from '@prisma/client';
 import NotificationButton from '../utils/NotificationButton';
 import { useLoadVideoInLongestPausedPlayer } from '../utils/AddHandler';
 
-function ListItem({ item }: { item: track & { tags: any } }) {
+interface ListItemProps {
+    item: track & { tags: any };
+}
+
+function ListItem({ item }: ListItemProps) {
     const loadVideo = useLoadVideoInLongestPausedPlayer();
     const [showTags, setShowTags] = useState(false);
 
@@ -18,7 +23,7 @@ function ListItem({ item }: { item: track & { tags: any } }) {
         >
             <div className="flex w-3/5 flex-1 flex-col">
                 <div className="w-full truncate" style={{ maxWidth: '100%' }}>
-                    <p className="rounded">{item.title}</p>
+                    <ScrollTitle title={item.title} />
                     <div>
                         <p className="truncate text-slate-600">
                             <em>{!showTags && item.artist}</em>
