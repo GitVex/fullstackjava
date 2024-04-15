@@ -20,6 +20,8 @@ const maxPlayers = 8;
 // YT.PlayerState.BUFFERING = 3;
 // YT.PlayerState.CUED = 5;
 
+// https://developers.google.com/youtube/iframe_api_reference?
+
 // ----------------- CONTEXT DECLARATION -----------------
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
@@ -222,6 +224,11 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
                     height: 128,
                     width: 256,
                     videoId: DEFAULT_VIDEOID,
+                    playerVars: {
+                        fs: 0,
+                        enablejsapi: 1,
+                        origin: 'bardicinspiration.cc',
+                    },
                     events: {
                         onStateChange: onPlayerStateChange,
                         onReady: onPlayerReady,
