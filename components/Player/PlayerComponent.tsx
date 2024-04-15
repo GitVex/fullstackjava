@@ -57,6 +57,7 @@ export function loadNewVideo(
 
     framePlayer.setVolume(volume ?? framePlayer.getVolume());
     framePlayer.loadVideoById(target);
+    framePlayer.pauseVideo();
 
     dispatch({
         type: 'setId',
