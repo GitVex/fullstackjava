@@ -24,8 +24,8 @@ function fadeInputHandler(
     // Early return if no framePlayer or if the event key is not 'Enter'
     if (!framePlayer || e.key !== 'Enter') return;
 
-    const inputValue = e.currentTarget.value; // Directly access the input's value
-    const targetVolume = parseInt(inputValue); // Parse once, ensuring we're working with a number
+    const inputValue = parseInt(e.currentTarget.value); // Directly access the input's value
+    const targetVolume = inputValue > 100 ? 100 : inputValue; // check input to not go over 100
 
     // Further validation to proceed only if inputValue is a valid number
     if (isNaN(targetVolume)) return;

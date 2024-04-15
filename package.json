@@ -1,6 +1,6 @@
 {
-  "name": "fullstackjava",
-  "version": "0.1.0",
+  "name": "bardicinspiration",
+  "version": "3.5.1",
   "private": true,
   "scripts": {
     "dev": "next dev",

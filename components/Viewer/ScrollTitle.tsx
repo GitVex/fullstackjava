@@ -7,6 +7,23 @@ interface ScrollTitleProps {
 
 function ScrollTitle({ title }: ScrollTitleProps) {
     const titleRef = useRef<HTMLParagraphElement>(null);
+    const needsScroll = useRef<boolean>(false);
+
+    const handleMouseEnter = (needsScroll: boolean) => {
+        if (needsScroll) {
+            const textElement = titleRef.current;
+            if (textElement !== null) {
+                textElement.classList.add(styles.scroll_text);
+            }
+        }
+    }
+
+    const handleMouseLeave = () => {
+        const textElement = titleRef.current;
+        if (textElement !== null) {
+            textElement.classList.remove(styles.scroll_text);
+        }
+    }
 
     useEffect(() => {
         const textElement = titleRef.current;
@@ -14,16 +31,16 @@ function ScrollTitle({ title }: ScrollTitleProps) {
             if (textElement.scrollWidth > textElement.clientWidth) {
                 const translateValue = -(textElement.scrollWidth - textElement.clientWidth + 10) + 'px';
                 textElement.style.setProperty('--translateX', translateValue);
-                textElement.classList.add(styles.scroll_text);
+                needsScroll.current = true;
             } else {
                 textElement.style.setProperty('--translateX', '0px');
-                textElement.classList.remove(styles.scroll_text);
+                needsScroll.current = false;
             }
         }
     }, [title, titleRef]);
 
     return (
-        <p ref={titleRef} className={styles.scrollText}>
+        <p ref={titleRef} onMouseEnter={() => handleMouseEnter(needsScroll.current)} onMouseLeave={handleMouseLeave}>
             {title}
         </p>
     );
