@@ -1,156 +1,132 @@
 import IFPlayer from './IFPlayer';
-
-const DEFAULT_FADE_INTERVAL = 75;
-const DEFAULT_FADE_STEP = 1;
-const DEFAULT_EASE = (x: number, limit: number) =>
-	limit * (1 - Math.cos(((x / limit) * Math.PI) / 2));
+import { DEFAULT_EASE, DEFAULT_FADE_INTERVAL, DEFAULT_FADE_STEP } from './DEFAULTS';
+import { fadeIntervalControlEndType, localVolumeControlEndType } from '../Player/states';
 
 export interface FadeOptions {
-	player: IFPlayer | null;
-	setVolume: React.Dispatch<number>;
-	volume: number;
-	savedVolume?: {hasSaved: boolean, prevVol: number};
-	setSavedVolume?: React.Dispatch<{hasSaved: boolean, prevVol?: number}>;
-	currentFadeInterval: NodeJS.Timeout | null;
-	setCurrentFadeInterval: React.Dispatch<NodeJS.Timeout | null>;
-	pLimit?: number;
-	fadeStep?: number;
-	fadeInterval?: number;
-	ease?: (x: number, limit: number) => number;
-	inverse?: boolean
+    framePlayer: IFPlayer | null;
+    localVolumeControl: localVolumeControlEndType;
+    fadeIntervalControl: fadeIntervalControlEndType;
+    pLimit?: number;
+    inverse?: boolean;
+    savedVolumeControl?: {
+        savedVolume: { hasSaved: boolean; prevVol: number };
+        setSavedVolume: (savedVolume: { hasSaved: boolean; prevVol: number }) => void;
+    };
 }
 
 function fade({
-	player,
-	setVolume,
-	volume,
-	savedVolume,
-	setSavedVolume,
-	fadeStep = DEFAULT_FADE_STEP,
-	fadeInterval = DEFAULT_FADE_INTERVAL,
-	ease = DEFAULT_EASE,
-	currentFadeInterval,
-	setCurrentFadeInterval,
-	pLimit,
-	inverse,
+    framePlayer,
+    localVolumeControl,
+    fadeIntervalControl,
+    pLimit,
+    inverse = false,
+    savedVolumeControl,
 }: FadeOptions) {
-	if (!player) return;
+    if (!framePlayer) return;
 
-	// Clear any existing interval
-	if (currentFadeInterval) {
-		clearInterval(currentFadeInterval);
-		setCurrentFadeInterval(null);
-	}
+    const { localVolume: volume, setLocalVolume: setVolume } = localVolumeControl;
+    const { currentFadeInterval, setCurrentFadeInterval } = fadeIntervalControl;
+    const { savedVolume, setSavedVolume } = savedVolumeControl ?? {};
 
-	// If hasSaved is true, then use the savedVolume as the limit
-	let limit = 0;
-	if (savedVolume?.hasSaved) {
-		limit = savedVolume?.prevVol ?? 0;
-	} else {
-		limit = pLimit ?? (volume === 0 ? 50 : volume);
-	}
+    // Clear any existing interval
+    if (currentFadeInterval) {
+        clearInterval(currentFadeInterval);
+        setCurrentFadeInterval(null);
+    }
 
-	const startVolume = inverse ? volume : 1;
-	let currentVolume = inverse ? volume : 1;
+    // Define the limit for volume change
+    let limit = savedVolume?.hasSaved ? savedVolume.prevVol : pLimit ?? (volume === 0 ? 50 : volume);
+    console.log('Fading', inverse ? 'out' : 'in', inverse ? 'from' : 'to', limit);
 
-	if (!inverse) {
-		player.playVideo();
-		setVolume(1);
-	}
+    // Initialize starting based on fading direction
+    const startVolume = inverse ? volume : 1;
 
-	let runner = startVolume;
+    // Play video if not fading out
+    if (!inverse) {
+        framePlayer.playVideo();
+    }
 
-	let intervalId = setInterval(() => {
-		try {
-			if (inverse) {
-				if (currentVolume > 0) {
-					currentVolume = ease(runner, currentVolume);
-					setVolume(Math.floor(currentVolume));
-					runner -= fadeStep;
-				} else {
-					endFade(0, player);
-					setSavedVolume?.({ hasSaved: true, prevVol: startVolume }); // Might produce problems if intervals are cancelled
-				}
-			} else {
-				if (currentVolume < limit) {
-					currentVolume = ease(runner, limit);
-					setVolume(Math.floor(currentVolume));
-					runner += fadeStep;
-				} else {
-					endFade(limit, player);
-				}
-			}
-		} catch (error) {
-			clearInterval(intervalId);
-		}
-	}, fadeInterval);
+    const x = { hasSaved: true, prevVol: startVolume };
+    // Save the current volume if fading out
+    if (inverse) {
+        console.log(setSavedVolume);
+        setSavedVolume?.(x);
+        console.log('saving Volume:', x);
+    }
 
-	setCurrentFadeInterval(intervalId);
+    function endFade(finalVolume: number) {
+        setVolume(finalVolume);
+        if (finalVolume === 0) framePlayer?.pauseVideo();
+        clearInterval(intervalId);
+        setCurrentFadeInterval(null);
+    }
 
-	function endFade(volume: number, player: IFPlayer | null = null) {
-		setVolume(volume);
-		if (volume === 0) {
-			player?.pauseVideo();
-		}
-		clearInterval(intervalId);
-		setCurrentFadeInterval(null);
-	}
+    let runner = startVolume;
+    function step() {
+        // Calculate next volume based on direction
+        let nextVolume = inverse
+            ? Math.floor(DEFAULT_EASE(runner, startVolume))
+            : Math.floor(DEFAULT_EASE(runner, limit));
+
+        // Update volume and adjust runner based on fade direction
+        setVolume(nextVolume);
+        runner += inverse ? -DEFAULT_FADE_STEP : DEFAULT_FADE_STEP;
+
+        // Check if the runner has reached or passed its limit
+        if ((inverse && runner <= 0) || (!inverse && runner >= limit)) {
+            endFade(inverse ? 0 : limit);
+        }
+    }
+
+    const intervalId = setInterval(step, DEFAULT_FADE_INTERVAL);
+    setCurrentFadeInterval(intervalId);
 }
 
 export function fadeIn(options: FadeOptions) {
-	fade({ ...options, inverse: false, });
+    fade({ ...options });
 }
 
 export function fadeOut(options: FadeOptions) {
-	fade({ ...options, inverse: true, });
+    fade({ ...options, inverse: true });
 }
 
-export function fadeTo(
-	{
-		player,
-		setVolume,
-		volume,
-		fadeStep = DEFAULT_FADE_STEP,
-		fadeInterval = DEFAULT_FADE_INTERVAL,
-		currentFadeInterval,
-		setCurrentFadeInterval,
-		pLimit,
-	}: FadeOptions,
-	targetVolume: number
-) {
-	if (!player) return;
+export function fadeTo({ framePlayer, localVolumeControl, fadeIntervalControl, pLimit = 50 }: FadeOptions) {
+    if (!framePlayer) return;
 
-	// Clear any existing interval
-	if (currentFadeInterval) {
-		clearInterval(currentFadeInterval);
-		setCurrentFadeInterval(null);
-	}
+    const { localVolume: volume, setLocalVolume: setVolume } = localVolumeControl;
+    const { currentFadeInterval, setCurrentFadeInterval } = fadeIntervalControl;
 
-	let currentVolume = volume;
+    // Clear any existing interval
+    if (currentFadeInterval) {
+        clearInterval(currentFadeInterval);
+        setCurrentFadeInterval(null);
+    }
 
-	let intervalId = setInterval(() => {
-		try {
-			if (currentVolume > targetVolume) {
-				currentVolume -= fadeStep;
-				setVolume(currentVolume);
-			} else if (currentVolume < targetVolume) {
-				currentVolume += fadeStep;
-				setVolume(currentVolume);
-			} else {
-				endFade(targetVolume);
-			}
-		} catch (error) {
-			clearInterval(intervalId);
-		}
-	}, fadeInterval);
+    let currentVolume = volume;
 
-	setCurrentFadeInterval(intervalId);
+    let intervalId = setInterval(() => {
+        try {
+            if (currentVolume > pLimit) {
+                currentVolume -= DEFAULT_FADE_STEP;
+                setVolume(currentVolume);
+            } else if (currentVolume < pLimit) {
+                currentVolume += DEFAULT_FADE_STEP;
+                setVolume(currentVolume);
+            } else {
+                endFade(pLimit);
+            }
+        } catch (error) {
+            clearInterval(intervalId);
+        }
+    }, DEFAULT_FADE_INTERVAL);
 
-	function endFade(volume: number) {
-		setVolume(volume);
-		clearInterval(intervalId);
-		setCurrentFadeInterval(null);
-	}
+    setCurrentFadeInterval(intervalId);
+
+    function endFade(volume: number) {
+        setVolume(volume);
+        clearInterval(intervalId);
+        setCurrentFadeInterval(null);
+    }
 }
 
-/* TO BE IMPLEMTNED: Crossfade two players */
+/* TO BE IMPLEMTNED: Crossfade two framePlayers */

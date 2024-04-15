@@ -1,169 +1,267 @@
-import React, { useState, useEffect, useContext, useReducer, use } from 'react';
+import React, { useCallback, useEffect, useContext, useReducer } from 'react';
 import IFPlayer from '../utils/IFPlayer';
-import { PausedTimerState, pausedTimerReducer } from '../Player/states';
+import {
+    PresetState,
+    PlayerStateAction,
+    playerStateReducer,
+    PlayerHolderState,
+    PlayerHolderAction,
+    playerHolderReducer,
+} from './states';
 
-const defaultVideoID = 'NpEaa2P7qZI'; // 'video placeholder' by Tristan Behaut
+import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
+
 const maxPlayers = 8;
+
+// YT.PlayerState.UNSTARTED = -1;
+// YT.PlayerState.ENDED = 0;
+// YT.PlayerState.PLAYING = 1;
+// YT.PlayerState.PAUSED = 2;
+// YT.PlayerState.BUFFERING = 3;
+// YT.PlayerState.CUED = 5;
+
+// https://developers.google.com/youtube/iframe_api_reference?
+
+// ----------------- CONTEXT DECLARATION -----------------
 
 // Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
 // This is a workaround for the fact that the youtube iframe api only allows one player per page
-const PlayerHolderContext = React.createContext(
-	[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
-);
-const PasuedTimerContext = React.createContext({} as { pausedAt: number[] });
+const PlayerHolderContext = React.createContext({} as PlayerHolderState);
 
-const InitialPausedTimerState: PausedTimerState = {
-	pausedAt: Array(maxPlayers).fill(Date.now()),
+const PresetStateContext = React.createContext(
+    {} as {
+        presetState: PresetState;
+        presetDispatch: React.Dispatch<PlayerStateAction>;
+    }
+);
+
+// ----------------- INITIAL STATES -----------------
+
+const initialPresetState: PresetState = {
+    title: 'New Preset',
+    players: Array(8)
+        .fill(null)
+        .map((_, index) => ({
+            id: index,
+            selected: false,
+            volume: DEFAULT_VOLUME,
+            savedVolume: { hasSaved: false, prevVol: DEFAULT_VOLUME },
+            pausedAt: Date.now(),
+            videoId: DEFAULT_VIDEOID,
+        })),
+    masterVolume: 100,
 };
 
+const initialPlayerHolderState: PlayerHolderState = {
+    holders: Array(8)
+        .fill(null)
+        .map((_, index) => ({
+            id: index,
+            player: null,
+            isReady: false,
+        })),
+};
+
+// ----------------- HOOKS -----------------
+
 export function usePlayerHolder() {
-	const context = useContext(PlayerHolderContext);
-	if (context === undefined) {
-		throw new Error(
-			'usePausedTimer must be used within a PausedTimerProvider'
-		);
-	}
-	return context;
+    const context = useContext(PlayerHolderContext);
+    if (context === undefined) {
+        throw new Error('usePlayerHolder must be used within a PlayerHolderProvider');
+    }
+    return context;
 }
 
-export function usePausedTimer() {
-	const context = useContext(PasuedTimerContext);
-	if (context === undefined) {
-		throw new Error(
-			'usePausedTimer must be used within a PausedTimerProvider'
-		);
-	}
-	return context;
+export function usePresetState() {
+    const context = useContext(PresetStateContext);
+    if (context === undefined) {
+        throw new Error('usePresetState must be used within a PresetStateContext');
+    }
+    return context;
 }
 
 export function usePlayerHolderById(id: number) {
-	const playerHolder = useContext(PlayerHolderContext);
+    const playerHolder = useContext(PlayerHolderContext);
 
-	const holder = playerHolder.find((holder) => holder.id === id);
+    const holder = playerHolder.holders.find((holder, index) => index === id);
 
-	if (!holder) {
-		return { id: -1, player: null, isAvailable: false };
-	}
+    if (!holder) {
+        return { id: -1, player: null, isReady: false };
+    }
 
-	return holder;
+    return holder;
 }
 
+// ----------------- PROVIDER -----------------
+
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
-	const [pauseTimers, pauseTimerDispatch] = useReducer(
-		pausedTimerReducer,
-		InitialPausedTimerState
-	);
-	const setPausedAt = (pIndex: number, pPayload: number) => {
-		pauseTimerDispatch({
-			type: 'setPausedAt',
-			index: pIndex,
-			payload: pPayload,
-		});
-	};
+    // ------- PRESET STATE PERSISTENCE -------
 
-	useEffect(() => {
-		console.log('Updated pauseTimers:', pauseTimers);
-	}, [pauseTimers]);
+    const loadPersistPreset = (): PresetState => {
+        const savedState = localStorage.getItem('presetState');
+        if (savedState) return JSON.parse(savedState);
+        return initialPresetState;
+    };
+    const savePersistPreset = (state: PresetState) => {
+        localStorage.setItem('presetState', JSON.stringify(state));
+    };
 
-	const [playerHolder, setPlayerHolder] = useState(
-		[] as { id: number; player: IFPlayer; isAvailable: boolean }[]
-	);
+    const [presetState, presetDispatch] = useReducer(playerStateReducer, initialPresetState);
 
-	useEffect(() => {
-		let playerHolderTemp = [] as {
-			id: number;
-			player: any;
-			isAvailable: boolean;
-		}[];
+    useEffect(() => {
+        presetDispatch({
+            type: 'setPreset',
+            payload: loadPersistPreset(),
+        });
+    }, []);
 
-		const container = document.createElement('div');
-		container.setAttribute('id', 'playerHolder');
-		container.setAttribute('style', 'display: none');
-		document.body.appendChild(container);
+    const handleBeforeUnload = useCallback(
+        (e: BeforeUnloadEvent) => {
+            savePersistPreset(presetState);
+            e.preventDefault();
+            e.returnValue = '';
+        },
+        [presetState]
+    );
 
-		for (let i = 0; i < maxPlayers; i++) {
-			const div = document.createElement('div');
-			div.setAttribute('id', `player${i}`);
-			container.appendChild(div);
+    useEffect(() => {
+        window.addEventListener('beforeunload', handleBeforeUnload);
 
-			playerHolderTemp.push({
-				id: i,
-				player: div,
-				isAvailable: true,
-			});
-		}
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [handleBeforeUnload]);
 
-		const tag = document.createElement('script');
-		tag.src = 'https://www.youtube.com/iframe_api';
-		document.body.appendChild(tag);
+    // ------- PAUSED TIMER -------
 
-		// paused state: 2, playing state: 1
-		function onPlayerStateChange(e: any) {
-			const player = e.target;
-			const playerIdx = parseInt(
-				player.g.id.charAt(player.g.id.length - 1)
-			);
-			const changedState = player.getPlayerState();
+    const setPausedAt = (pIndex: number, pPayload: number) => {
+        presetDispatch({
+            type: 'setPausedAt',
+            index: pIndex,
+            payload: pPayload,
+        });
+    };
 
-			console.log('playerIdx:', playerIdx, 'changedState:', changedState);
+    // ------- YT IFRAME API INIT -------
 
-			console.log('registered state change in Player:', playerIdx, player.getPlayerState());
-			if (changedState === YT.PlayerState.PAUSED) {
-				setPausedAt(playerIdx, Date.now());
-			} else if (changedState === YT.PlayerState.PLAYING) {
-				setPausedAt(playerIdx, 9999999999999);
-			} else if (changedState === YT.PlayerState.ENDED) {
-				player.seekTo(0, true);
-				player.pauseVideo();
-			}
-		}
+    const [playerHolder, dispatchPlayerHolder] = useReducer(playerHolderReducer, initialPlayerHolderState);
 
-		function onPlayerReady(e: any) {
-			const player = e.target as IFPlayer;
+    useEffect(() => {
+        let playerHolderTemp = [] as {
+            id: number;
+            player: any;
+            isReady: boolean;
+        }[];
 
-			player.setVolume(0);
-			player.playVideo();
-			setTimeout(() => {
-				player.seekTo(0, true);
-				player.pauseVideo();
-				player.setVolume(50);
-			}, 500);
-		}
+        const container = document.createElement('div');
+        container.setAttribute('id', 'playerHolder');
+        container.setAttribute('style', 'display: none');
+        document.body.appendChild(container);
 
-		//@ts-ignore
-		window.onYouTubeIframeAPIReady = function () {
-			playerHolderTemp = playerHolderTemp.map((holder) => ({
-				...holder,
-				// @ts-ignore
-				player: new YT.Player(holder.player.id, {
-					height: 128,
-					width: 256,
-					videoId:
-						process.env.NODE_ENV !== 'development'
-							? defaultVideoID
-							: 'P2NVJSJVGVQ',
-					events: {
-						onStateChange: onPlayerStateChange,
-						onReady: onPlayerReady,
-					},
-				}),
-			}));
+        for (let i = 0; i < maxPlayers; i++) {
+            const div = document.createElement('div');
+            div.setAttribute('id', `player${i}`);
+            container.appendChild(div);
 
-			setPlayerHolder(playerHolderTemp);
-		};
+            playerHolderTemp.push({
+                id: i,
+                player: div,
+                isReady: false,
+            });
+        }
 
-		return () => {
-			document.body.removeChild(container);
-		};
-	}, []);
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.body.appendChild(tag);
 
-	return (
-		<PasuedTimerContext.Provider value={pauseTimers}>
-			<PlayerHolderContext.Provider value={playerHolder}>
-				{children}
-			</PlayerHolderContext.Provider>
-		</PasuedTimerContext.Provider>
-	);
+        // paused state: 2, playing state: 1
+        function onPlayerStateChange(e: any) {
+            const player = e.target as IFPlayer;
+            const playerIdx = parseInt(
+                //@ts-ignore
+                player.g.id.charAt(player.g.id.length - 1)
+            );
+            const changedState = player.getPlayerState();
+
+            if (changedState === YT.PlayerState.PAUSED) {
+                setPausedAt(playerIdx, Date.now());
+            } else if (changedState === YT.PlayerState.UNSTARTED) {
+                setPausedAt(playerIdx, Date.now());
+            } else if (changedState === YT.PlayerState.PLAYING) {
+                setPausedAt(playerIdx, 9999999999999);
+            } else if (changedState === YT.PlayerState.ENDED) {
+                player.seekTo(0, true);
+            }
+        }
+
+        function onPlayerReady(e: any) {
+            const player = e.target as IFPlayer;
+            const playerIdx = parseInt(
+                //@ts-ignore
+                player.g.id.charAt(player.g.id.length - 1)
+            );
+
+            player.setVolume(0);
+            player.playVideo();
+            setTimeout(() => {
+                player.seekTo(0, true);
+                player.pauseVideo();
+                player.setVolume(50);
+
+                dispatchPlayerHolder({
+                    type: 'setReady',
+                    index: playerIdx,
+                });
+            }, 500);
+        }
+
+        //@ts-ignore
+        window.onYouTubeIframeAPIReady = function () {
+            playerHolderTemp = playerHolderTemp.map(holder => ({
+                ...holder,
+                // @ts-ignore
+                player: new YT.Player(holder.player.id, {
+                    height: 128,
+                    width: 256,
+                    videoId: DEFAULT_VIDEOID,
+                    playerVars: {
+                        fs: 0,
+                        enablejsapi: 1,
+                        origin: 'bardicinspiration.cc',
+                    },
+                    events: {
+                        onStateChange: onPlayerStateChange,
+                        onReady: onPlayerReady,
+                    },
+                }),
+            }));
+
+            dispatchPlayerHolder({
+                type: 'init',
+                payload: { holders: playerHolderTemp },
+            });
+        };
+
+        return () => {
+            document.body.removeChild(container);
+        };
+    }, []);
+
+    // ------- LISTENERS -------
+
+    /* useEffect(() => {
+        console.log('presetState changed', presetState);
+    }, [presetState]); */
+
+    /* useEffect(() => {
+        console.log('playerHolder changed', playerHolder);
+    }, [playerHolder]); */
+
+    return (
+        <PresetStateContext.Provider value={{ presetState, presetDispatch }}>
+            <PlayerHolderContext.Provider value={playerHolder}>{children}</PlayerHolderContext.Provider>
+        </PresetStateContext.Provider>
+    );
 }
 
 export default PlayerHolderProvider;

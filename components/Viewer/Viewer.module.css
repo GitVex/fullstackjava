@@ -1,0 +1,22 @@
+.scroll_text {
+    display: block;
+    white-space: nowrap;
+    overflow: visible;
+    max-width: 100%;
+    position: relative;
+    cursor: pointer;
+}
+
+@keyframes scroll-left {
+    0%,
+    100% {
+        transform: translateX(0%);
+    }
+    50% {
+        transform: translateX(var(--translateX));
+    }
+}
+
+.scroll_text:hover {
+    animation: scroll-left 10s ease-in-out 1s infinite; /* Slower, more smooth animation */
+}

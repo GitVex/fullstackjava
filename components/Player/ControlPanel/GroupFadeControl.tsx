@@ -1,157 +1,98 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePlayerHolder } from '../../contexts/PlayerHolderProvider';
-import { motion } from 'framer-motion';
-import {
-	FadeOptions,
-	fadeIn,
-	fadeOut,
-	fadeTo,
-} from '../../utils/fadeFunctions';
-import { usePlayerHolderById } from '../../contexts/PlayerHolderProvider';
-import {
-	SelectionsState,
-	VolumesState,
-	VolumesAction,
-	FadeIntervalsState,
-	FadeIntervalsAction,
-} from '../states';
+import { fadeIn, fadeOut } from '../../utils/fadeFunctions';
+import { localVolumesControlType, fadeIntervalsControlType } from '../states';
+import { presetControlType } from '../../contexts/states';
 import IFPlayer from '../../utils/IFPlayer';
 
 interface GroupFadeControlProps {
-	selections: SelectionsState;
-	volumes: VolumesState;
-	volumeDispatch: React.Dispatch<VolumesAction>;
-	fadeIntervals: FadeIntervalsState;
-	fadeIntervalDispatch: React.Dispatch<FadeIntervalsAction>;
+    localVolumeControls: localVolumesControlType;
+    fadeIntervalsControls: fadeIntervalsControlType;
+    presetControls: presetControlType;
 }
 
-function GroupFadeInHandler({
-	players,
-	selections,
-	volumes,
-	volumeDispatch,
-	fadeIntervals,
-	fadeIntervalDispatch,
-}: GroupFadeControlProps & {
-	players: { id: number; player: IFPlayer; isAvailable: boolean }[];
-}) {
-	const selected_players = players.filter((player) => {
-		if (!player) return false;
-		if (!selections.selected[player.id]) return false;
-		return selections.selected[player.id].selected;
-	});
+const handleGroupFade = (
+    direction: 'in' | 'out',
+    framedPlayers: (IFPlayer | null)[],
+    localVolumeControl: localVolumesControlType,
+    fadeIntervalsControls: fadeIntervalsControlType,
+    presetControls: presetControlType
+) => {
+    // Early exit if any framedPlayers are null
+    if (framedPlayers.some(framePlayer => framePlayer === null)) return;
 
-	selected_players.forEach((player) => {
-		if (!player) return;
-		fadeIn({
-			player: player.player,
-			volume: volumes.volume[player.id],
-			setVolume: (volume) => {
-				volumeDispatch({
-					type: 'setVolume',
-					index: player.id,
-					payload: volume,
-				});
-			},
-			currentFadeInterval: fadeIntervals.fadeIntervals[player.id],
-			setCurrentFadeInterval: (interval) => {
-				fadeIntervalDispatch({
-					type: 'setCurrentFadeInterval',
-					index: player.id,
-					payload: interval,
-				});
-			},
-		});
-	});
-}
+    // Determine the fade action based on the direction
+    const fadeAction = direction === 'in' ? fadeIn : fadeOut;
 
-function GroupFadeOutHandler({
-	players,
-	selections,
-	volumes,
-	volumeDispatch,
-	fadeIntervals,
-	fadeIntervalDispatch,
-}: GroupFadeControlProps & {
-	players: { id: number; player: IFPlayer; isAvailable: boolean }[];
-}) {
-	const selected_players = players.filter((player) => {
-		if (!player) return false;
-		if (!selections.selected[player.id]) return false;
-		return selections.selected[player.id].selected;
-	});
+    presetControls.presetState.players.forEach((player, idx) => {
+        if (!player.selected || !framedPlayers[idx]) return;
 
-	selected_players.forEach((player) => {
-		if (!player) return;
-		fadeOut({
-			player: player.player,
-			volume: volumes.volume[player.id],
-			setVolume: (volume) => {
-				volumeDispatch({
-					type: 'setVolume',
-					index: player.id,
-					payload: volume,
-				});
-			},
-			currentFadeInterval: fadeIntervals.fadeIntervals[player.id],
-			setCurrentFadeInterval: (interval) => {
-				fadeIntervalDispatch({
-					type: 'setCurrentFadeInterval',
-					index: player.id,
-					payload: interval,
-				});
-			},
-		});
-	});
-}
+        const targetVolume = direction === 'in' ? localVolumeControl.localVolumes[idx] : 0;
+        const setVolume = (vol: number) => {
+            localVolumeControl.localVolumesDispatch({ type: 'setVolume', index: idx, payload: vol });
+        };
+        const setCurrentFadeInterval = (interval: NodeJS.Timeout | null) => {
+            fadeIntervalsControls.currentFadeIntervalDispatch({
+                type: 'setCurrentFadeInterval',
+                index: idx,
+                payload: interval,
+            });
+        };
+        const setSavedVolume = (savedVolume: { hasSaved: boolean; prevVol: number }) => {
+            presetControls.presetDispatch({
+                type: 'setSavedVolume',
+                index: idx,
+                payload: savedVolume,
+            });
+        };
 
-function GroupFadeControl({
-	selections,
-	volumes,
-	volumeDispatch,
-	fadeIntervals,
-	fadeIntervalDispatch,
-}: GroupFadeControlProps) {
-	const players = usePlayerHolder();
+        fadeAction({
+            framePlayer: framedPlayers[idx],
+            localVolumeControl: { localVolume: localVolumeControl.localVolumes[idx], setLocalVolume: setVolume },
+            fadeIntervalControl: {
+                currentFadeInterval: fadeIntervalsControls.currentFadeIntervals[idx],
+                setCurrentFadeInterval,
+            },
+            savedVolumeControl: { savedVolume: player.savedVolume, setSavedVolume },
+            pLimit: targetVolume,
+            inverse: direction === 'out',
+        });
+    });
+};
+function GroupFadeControl({ localVolumeControls, fadeIntervalsControls, presetControls }: GroupFadeControlProps) {
+    const [disable, setDisable] = useState(true);
+    const playerHolder = usePlayerHolder();
+    const framedPlayers = playerHolder.holders.map(holder => holder.player);
 
-	return (
-		<div>
-			<div className='flex flex-row gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-2'>
-				<button
-					className='w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50'
-					onClick={(e) => {
-						GroupFadeInHandler({
-							players: players,
-							selections: selections,
-							volumes: volumes,
-							volumeDispatch: volumeDispatch,
-							fadeIntervals: fadeIntervals,
-							fadeIntervalDispatch: fadeIntervalDispatch,
-						});
-					}}
-					/* disabled={player ? false : true} */
-				>
-					Fade In
-				</button>
-				<button
-					className='w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50'
-					onClick={(e) => {
-						GroupFadeOutHandler({
-							players: players,
-							selections: selections,
-							volumes: volumes,
-							volumeDispatch: volumeDispatch,
-							fadeIntervals: fadeIntervals,
-							fadeIntervalDispatch: fadeIntervalDispatch,
-						});
-					}}
-					/* disabled={player ? false : true} */
-				>
-					Fade Out
-				</button>
-			</div>
-		</div>
-	);
+    useEffect(() => {
+        const allReady = playerHolder.holders.every(holder => holder.isReady);
+        setDisable(!allReady);
+    }, [playerHolder.holders]);
+
+    return (
+        <div>
+            <div className="flex flex-row gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-2">
+                <button
+                    className="w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50"
+                    onClick={() =>
+                        handleGroupFade('in', framedPlayers, localVolumeControls, fadeIntervalsControls, presetControls)
+                    }
+                    disabled={disable}
+                >
+                    Fade In
+                </button>
+                <button
+                    className="w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50"
+                    onClick={() =>
+                        handleGroupFade('out', framedPlayers, localVolumeControls, fadeIntervalsControls, presetControls)
+                    }
+                    disabled={disable}
+                >
+                    Fade Out
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default GroupFadeControl;
