@@ -1,6 +1,7 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useMemo, useCallback } from 'react';
 import { localVolumeControlEndType } from '../Player/states';
+import { motion } from 'framer-motion';
+import styles from './VolumeSlider.module.css';
 
 interface VolumeSliderProps {
     volumeControl: localVolumeControlEndType;
@@ -9,64 +10,38 @@ interface VolumeSliderProps {
     height?: number;
 }
 
-function VolumeSlider(props: VolumeSliderProps) {
-    // Generate a unique ID for each instance
-    const uniqueId = `volumeSlider${Math.floor(Math.random() * 1000000)}`;
-    const { volumeControl, className = '', textBgColor = '', height = 100 } = props;
-
+const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height = 100 }: VolumeSliderProps) => {
+    const uniqueId = useMemo(() => `volumeSlider${Math.floor(Math.random() * 1000000)}`, []);
     const { localVolume, setLocalVolume } = volumeControl;
 
+    const handleVolumeChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setLocalVolume(parseInt(e.currentTarget.value));
+        },
+        [setLocalVolume]
+    );
+
     return (
-        <div className={'flex w-10 flex-row items-center gap-4 ' + className}>
+        <div className={`${styles.container} ${className}`}>
             <input
                 id={uniqueId}
+                className={styles.slider}
                 type="range"
                 min="0"
                 max="100"
                 step="1"
-                // @ts-ignore
+                //@ts-ignore
                 orient="vertical"
                 value={localVolume}
-                onChange={e => {
-                    setLocalVolume(parseInt(e.currentTarget.value));
-                }}
+                onChange={handleVolumeChange}
+                style={{ height: `${height}px` }} // Inline style for dynamic height
             />
-            <style>
-                {`
-                    #${uniqueId} {
-                        -webkit-appearance: none;
-                        appearance: none;
-                        width: 5px;
-                        height: ${typeof height === 'number' ? `${height}px` : height};
-                    }
-
-                    #${uniqueId}::-webkit-slider-thumb {
-                        -webkit-appearance: none;
-                        appearance: none;
-                        width: 15px;
-                        height: 15px;
-                        background-color: #f50;
-                        border-radius: 50%;
-                        border: none;
-                        transition: .2s ease-in-out;
-                    }
-
-                    #${uniqueId}::-moz-range-thumb {
-                        appearance: none;
-                        width: 15px;
-                        height: 15px;
-                        background-color: rgb(255 0 0);
-                        border-radius: 50%;
-                        border: none;
-                        transition: .2s ease-in-out;
-                    }
-                `}
-            </style>
-            <div style={{ height: height }}>
+            <div style={{ height }}>
                 <motion.p
                     className={textBgColor}
                     animate={{
                         y: height * (1 - localVolume / 100) + 0.12 * localVolume - 20,
+                        transition: { ease: 'easeOut', duration: .5 },
                     }}
                 >
                     {localVolume}
@@ -74,6 +49,6 @@ function VolumeSlider(props: VolumeSliderProps) {
             </div>
         </div>
     );
-}
+};
 
 export default VolumeSlider;
