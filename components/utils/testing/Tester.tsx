@@ -1,24 +1,14 @@
-import React from 'react';
-import { useLocalStorage } from 'usehooks-ts';
+import React, { useState } from 'react';
+import VolumeSlider from '../VolumeSlider';
 
 function Tester() {
-	const [count, setCount] = useLocalStorage('count', 0, {
-		initializeWithValue: false,
-	});
+    const [localVolume, setLocalVolume] = useState(50);
 
-	return (
-		<div
-			className={`flex h-screen w-screen place-content-center items-center text-2xl`}
-		>
-			<button
-				className={`m-2 rounded-md bg-blue-500 p-2 text-white`}
-				onClick={() => setCount(count + 1)}
-			>
-				Increment
-			</button>
-			<div>{count}</div>
-		</div>
-	);
+    return (
+        <div className={`flex h-screen w-screen place-content-center items-center text-2xl`}>
+            <VolumeSlider height={350} volumeControl={{ localVolume: localVolume, setLocalVolume: vol => setLocalVolume(vol) }} />
+        </div>
+    );
 }
 
 export default Tester;
