@@ -1,10 +1,15 @@
-import React from 'react'
-import PageComponent from '../components/PageComponent'
+import React from 'react';
+import PageComponent from '../components/PageComponent';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 function second() {
     return (
-        <PageComponent />
-    )
+/*         <div className={inter.className}>
+ */            <PageComponent />
+/*         </div>
+ */    );
 }
 
-export default second
+export default second;
