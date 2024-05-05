@@ -2,6 +2,31 @@ import React, { useMemo, useCallback } from 'react';
 import { localVolumeControlEndType } from '../Player/states';
 import { motion } from 'framer-motion';
 import styles from './VolumeSlider.module.css';
+import Slider from '@mui/material/Slider';
+import { createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { AnyMxRecord } from 'dns';
+
+const theme = createTheme({
+    components: {
+        MuiSlider: {
+            styleOverrides: {
+                root: {
+                    color: '#FF0000',
+                },
+                thumb: {
+                    backgroundColor: 'red',
+                },
+                track: {
+                    color: 'red',
+                },
+                rail: {
+                    color: '#8B0F2A',
+                },
+            },
+        },
+    },
+});
 
 interface VolumeSliderProps {
     volumeControl: localVolumeControlEndType;
@@ -14,34 +39,40 @@ const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height 
     const uniqueId = useMemo(() => `volumeSlider${Math.floor(Math.random() * 1000000)}`, []);
     const { localVolume, setLocalVolume } = volumeControl;
 
-    const handleVolumeChange = useCallback(
+    /* const handleVolumeChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             setLocalVolume(parseInt(e.currentTarget.value));
+        },
+        [setLocalVolume]
+    ); */
+    const handleVolumeChangeMui = useCallback(
+        (e: any, value: number | number[], activeThumb: number) => {
+            setLocalVolume(value as number);
         },
         [setLocalVolume]
     );
 
     return (
         <div className={`${styles.container} ${className}`}>
-            <input
-                id={uniqueId}
-                className={styles.slider}
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                //@ts-ignore
-                orient="vertical"
-                value={localVolume}
-                onChange={handleVolumeChange}
-                style={{ height: `${height}px` }} // Inline style for dynamic height
-            />
+            <ThemeProvider theme={theme}>
+                <Slider
+                    orientation="vertical"
+                    value={localVolume}
+                    onChange={(e, val, thumb) => {
+                        handleVolumeChangeMui(e, val, thumb);
+                    }}
+                    aria-labelledby="vertical-slider"
+                    style={{ height: `${height}px` }}
+                    size="small"
+                />
+            </ThemeProvider>
+
             <div style={{ height }}>
                 <motion.p
                     className={textBgColor}
                     animate={{
                         y: height * (1 - localVolume / 100) + 0.12 * localVolume - 20,
-                        transition: { ease: 'easeOut', duration: .5 },
+                        transition: { ease: 'easeOut', duration: 0.5 },
                     }}
                 >
                     {localVolume}
