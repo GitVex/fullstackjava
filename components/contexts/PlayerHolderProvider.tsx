@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect, useContext, useReducer } from 'react';
+import React, { useCallback, useContext, useEffect, useReducer } from 'react';
 import IFPlayer from '../utils/IFPlayer';
 import {
-    PresetState,
-    PlayerStateAction,
-    playerStateReducer,
     PlayerHolderState,
-    PlayerHolderAction,
+    PlayerStateAction,
+    PresetState,
     playerHolderReducer,
+    playerStateReducer
 } from './states';
 
-import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
+import { DEFAULT_VIDEOID, DEFAULT_VOLUME } from '../utils/DEFAULTS';
 
 const maxPlayers = 8;
 

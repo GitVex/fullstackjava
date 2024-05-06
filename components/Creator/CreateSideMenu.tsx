@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import { motion } from 'framer-motion';
+import { useContext, useState } from 'react';
 import WindowWidthContext from '../contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
-import { motion } from 'framer-motion';
 import CreateUI from './CreateUI';
 
 const menuWidth = 500;

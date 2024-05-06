@@ -1,5 +1,5 @@
 // Context to manage the state of the filter and update when new tags are selected
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 const FilterStateContext = React.createContext([] as string[]);
 export const FilterStateUpdateContext = React.createContext(

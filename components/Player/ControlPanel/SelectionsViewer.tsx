@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { PlayerState, PlayerStateAction, PresetState } from '../../contexts/states';
+import React from 'react';
+import { PlayerStateAction, PresetState } from '../../contexts/states';
 
 interface SelectionsViewerProps {
     presetControls: { presetState: PresetState; presetDispatch: React.Dispatch<PlayerStateAction> };

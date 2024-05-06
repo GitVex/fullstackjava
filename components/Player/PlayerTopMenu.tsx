@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import PlayerUI from './PlayerUI';
-import { breakpoints } from '../utils/breakpoints';
+import { useContext, useEffect, useState } from 'react';
 import WindowSizeContext from '../contexts/WindowSizeProvider';
+import { breakpoints } from '../utils/breakpoints';
+import PlayerUI from './PlayerUI';
 
 let DEFAULT_ISOPENPLAYER_STATE: boolean;
 if (process.env.NODE_ENV === 'development') {

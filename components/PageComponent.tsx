@@ -1,13 +1,13 @@
-import React, { useContext, useReducer, useMemo } from 'react';
-import WindowSizeContext from './contexts/WindowSizeProvider';
-import PlayerHolderProvider from './contexts/PlayerHolderProvider';
-import { breakpoints } from './utils/breakpoints';
-import FilterSideMenu from './Filter/FilterSideMenu';
-import { Viewer } from './Viewer/Viewer';
-import { ViewColumn } from './Viewer/ViewColumn';
-import FilterStateProvider from './contexts/RebuiltFilterStateProvider';
+import React, { useContext, useMemo } from 'react';
 import CreateSideMenu from './Creator/CreateSideMenu';
+import FilterSideMenu from './Filter/FilterSideMenu';
 import PlayerTopMenu from './Player/PlayerTopMenu';
+import { ViewColumn } from './Viewer/ViewColumn';
+import { Viewer } from './Viewer/Viewer';
+import PlayerHolderProvider from './contexts/PlayerHolderProvider';
+import FilterStateProvider from './contexts/RebuiltFilterStateProvider';
+import WindowSizeContext from './contexts/WindowSizeProvider';
+import { breakpoints } from './utils/breakpoints';
 
 function PageComponent() {
 	const context = useContext(WindowSizeContext);

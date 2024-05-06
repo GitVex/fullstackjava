@@ -1,11 +1,9 @@
-import React, { useMemo, useCallback } from 'react';
-import { localVolumeControlEndType } from '../Player/states';
-import { motion } from 'framer-motion';
-import styles from './VolumeSlider.module.css';
 import Slider from '@mui/material/Slider';
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@mui/material/styles';
-import { AnyMxRecord } from 'dns';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { motion } from 'framer-motion';
+import { useCallback, useMemo } from 'react';
+import { localVolumeControlEndType } from '../Player/states';
+import styles from './VolumeSlider.module.css';
 
 const theme = createTheme({
     components: {

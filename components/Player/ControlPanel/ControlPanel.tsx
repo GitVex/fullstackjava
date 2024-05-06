@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import SelectionsViewer from './SelectionsViewer';
+import { useState } from 'react';
+import { presetControlType } from '../../contexts/states';
+import { fadeIntervalsControlType, localVolumesControlType } from '../states';
 import GroupFadeControl from './GroupFadeControl';
 import InitialPlayerLoader from './InitialPlayerLoader';
-import { localVolumesControlType, fadeIntervalsControlType } from '../states';
-import { presetControlType } from '../../contexts/states';
+import SelectionsViewer from './SelectionsViewer';
 
 interface ControlPanelProps {
     presetControls: presetControlType;
