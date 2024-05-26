@@ -94,8 +94,8 @@ export function usePlayerHolderById(id: number) {
 // ----------------- PROVIDER -----------------
 
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
+    
     // ------- PRESET STATE PERSISTENCE -------
-
     const loadPersistPreset = (): PresetState => {
         const savedState = localStorage.getItem('presetState');
         if (savedState) return JSON.parse(savedState);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePlayerHolder } from '../../contexts/PlayerHolderProvider';
 import { presetControlType } from '../../contexts/states';
 import { loadNewVideo } from '../../utils/utils';
@@ -16,12 +16,13 @@ function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
     const { onLoaded } = props;
 
     const playerHolder = usePlayerHolder();
+    const [allPlayersReady, setAllPlayersReady] = useState(false);
 
     const allReady = useCallback(() => playerHolder.holders.every(holder => holder.isReady), [playerHolder.holders]);
 
     const checkAllPlayersReady = useCallback(() => {
-        /* console.log('checking player state ...', allReady); */
-        if (allReady()) {
+        if (allReady() && !allPlayersReady) {
+            setAllPlayersReady(true);
             playerHolder.holders.forEach((holder, idx) => {
                 if (holder.player) {
                     localVolumesDispatch({
@@ -36,17 +37,25 @@ function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
 
             setTimeout(() => onLoaded(), 100);
         }
-    }, [allReady, playerHolder, presetDispatch, localVolumesDispatch, presetState.players, onLoaded]);
+    }, [
+        allReady,
+        allPlayersReady,
+        playerHolder.holders,
+        presetDispatch,
+        localVolumesDispatch,
+        presetState.players,
+        onLoaded,
+    ]);
 
     useEffect(() => {
-        const intervalId = setInterval(checkAllPlayersReady, 500);
+        const intervalId = setInterval(checkAllPlayersReady, 1000); // Increased interval to 1000ms (1 second)
 
         return () => {
             clearInterval(intervalId);
         };
     }, [checkAllPlayersReady]);
 
-    return <></>;
+    return null;
 }
 
 export default InitialPlayerLoader;

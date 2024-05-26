@@ -1,7 +1,6 @@
-import { prisma } from './prismaClientProvider';
-import { track } from '@prisma/client';
 import Jimp from 'jimp';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { prisma } from './prismaClientProvider';
 
 function rgbToHex(rgb: {r: number, g: number, b: number, a?: number}) {
     let r = rgb.r.toString(16);
