@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	useFilterState,
 	useFilterStateUpdate,
 } from '../contexts/RebuiltFilterStateProvider';
 import TagItem from './TagItem';
-import { useQuery } from 'react-query';
 
 function FilterUI() {
 	const filterState = useFilterState();

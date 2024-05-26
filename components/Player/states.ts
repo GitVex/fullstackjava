@@ -60,13 +60,11 @@ export const localVolumesReducer = (state: LocalVolumesState, action: SetLocalVo
         case 'setVolume':
             return {
                 ...state,
-                volume: state.volume.map((vol, index) => {
-                    if (index === action.index) {
-                        return action.payload;
-                    } else {
-                        return vol;
-                    }
-                }),
+                volume: [
+                    ...state.volume.slice(0, action.index), // Keep volumes before the updated one
+                    action.payload, // Update the volume at the specified index
+                    ...state.volume.slice(action.index + 1) // Keep volumes after the updated one
+                ],
             };
         default:
             throw new Error();

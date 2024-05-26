@@ -1,14 +1,12 @@
-import React, { useContext, useState, useMemo, useReducer, useEffect } from 'react';
-
-import PlayerComponent from './PlayerComponent';
-import WindowSizeContext from '../contexts/WindowSizeProvider';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import { usePresetState } from '../contexts/PlayerHolderProvider';
+import WindowSizeContext from '../contexts/WindowSizeProvider';
 import VolumeSlider from '../utils/VolumeSlider';
-import { FadeIntervalsState, fadeIntervalsReducer, LocalVolumesState, localVolumesReducer } from './states';
 import ControlPanel from './ControlPanel/ControlPanel';
-
-import { DEFAULT_VOLUME } from '../utils/DEFAULTS';
+import PlayerComponent from './PlayerComponent';
+import { FadeIntervalsState, LocalVolumesState, fadeIntervalsReducer, localVolumesReducer } from './states';
 import { useDebounceCallback } from 'usehooks-ts';
+import { DEFAULT_VOLUME } from '../utils/DEFAULTS';
 
 const initialFadeIntervals: FadeIntervalsState = {
     fadeIntervals: Array(9).fill(null),

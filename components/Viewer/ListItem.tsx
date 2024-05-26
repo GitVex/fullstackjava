@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import ScrollTitle from './ScrollTitle';
-import { motion } from 'framer-motion';
 import { track } from '@prisma/client';
-import NotificationButton from '../utils/NotificationButton';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useLoadVideoInLongestPausedPlayer } from '../utils/AddHandler';
+import NotificationButton from '../utils/NotificationButton';
+import ScrollTitle from './ScrollTitle';
 
 interface ListItemProps {
     item: track & { tags: any };

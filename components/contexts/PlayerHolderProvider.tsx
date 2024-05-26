@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect, useContext, useReducer } from 'react';
+import React, { useCallback, useContext, useEffect, useReducer } from 'react';
 import IFPlayer from '../utils/IFPlayer';
 import {
-    PresetState,
-    PlayerStateAction,
-    playerStateReducer,
     PlayerHolderState,
-    PlayerHolderAction,
+    PlayerStateAction,
+    PresetState,
     playerHolderReducer,
+    playerStateReducer
 } from './states';
 
-import { DEFAULT_VOLUME, DEFAULT_VIDEOID } from '../utils/DEFAULTS';
+import { DEFAULT_VIDEOID, DEFAULT_VOLUME } from '../utils/DEFAULTS';
 
 const maxPlayers = 8;
 
@@ -95,8 +94,8 @@ export function usePlayerHolderById(id: number) {
 // ----------------- PROVIDER -----------------
 
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
+    
     // ------- PRESET STATE PERSISTENCE -------
-
     const loadPersistPreset = (): PresetState => {
         const savedState = localStorage.getItem('presetState');
         if (savedState) return JSON.parse(savedState);

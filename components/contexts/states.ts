@@ -73,7 +73,11 @@ interface SetPresetAction {
 
 export const playerStateReducer = (state: PresetState, action: PlayerStateAction): PresetState => {
     function updatePlayerAtIndex(players: PlayerState[], index: number, update: Partial<PlayerState>): PlayerState[] {
-        return players.map((player, i) => (i === index ? { ...player, ...update } : player));
+        return [
+            ...players.slice(0, index), // Keep players before the updated one
+            { ...players[index], ...update }, // Update the player at the specified index
+            ...players.slice(index + 1), // Keep players after the updated one
+        ];
     }
 
     switch (action.type) {
@@ -152,15 +156,21 @@ export const playerHolderReducer = (state: PlayerHolderState, action: PlayerHold
     switch (action.type) {
         case 'setPlayer':
             return {
-                holders: state.holders.map((holder, index) =>
-                    index === action.index ? { player: action.payload, isReady: holder.isReady } : holder
-                ),
+                ...state,
+                holders: [
+                    ...state.holders.slice(0, action.index), // Keep holders before the updated one
+                    { player: action.payload, isReady: state.holders[action.index].isReady }, // Update the holder at the specified index
+                    ...state.holders.slice(action.index + 1), // Keep holders after the updated one
+                ],
             };
         case 'setReady':
             return {
-                holders: state.holders.map((holder, index) =>
-                    index === action.index ? { player: holder.player, isReady: true } : holder
-                ),
+                ...state,
+                holders: [
+                    ...state.holders.slice(0, action.index), // Keep holders before the updated one
+                    { player: state.holders[action.index].player, isReady: true }, // Update the holder at the specified index
+                    ...state.holders.slice(action.index + 1), // Keep holders after the updated one
+                ],
             };
         case 'init':
             return action.payload;

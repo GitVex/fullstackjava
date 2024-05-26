@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePlayerHolder } from '../../contexts/PlayerHolderProvider';
-import { localVolumesControlType, localVolumeControlEndType } from '../states';
-import { loadNewVideo } from '../PlayerComponent';
 import { presetControlType } from '../../contexts/states';
+import { loadNewVideo } from '../../utils/utils';
+import { localVolumesControlType } from '../states';
 
 interface InitialPlayerLoaderProps {
     onLoaded: () => void;
@@ -16,39 +16,46 @@ function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
     const { onLoaded } = props;
 
     const playerHolder = usePlayerHolder();
+    const [allPlayersReady, setAllPlayersReady] = useState(false);
 
-    useEffect(() => {
-        const checkAllPlayersReady = () => {
-            const allReady = playerHolder.holders.every(holder => {
-                return holder.isReady;
+    const allReady = useCallback(() => playerHolder.holders.every(holder => holder.isReady), [playerHolder.holders]);
+
+    const checkAllPlayersReady = useCallback(() => {
+        if (allReady() && !allPlayersReady) {
+            setAllPlayersReady(true);
+            playerHolder.holders.forEach((holder, idx) => {
+                if (holder.player) {
+                    localVolumesDispatch({
+                        type: 'setVolume',
+                        index: idx,
+                        payload: presetState.players[idx].volume,
+                    });
+
+                    loadNewVideo(idx, presetDispatch, holder.player, presetState.players[idx].videoId);
+                }
             });
 
-            /* console.log('checking player state ...', allReady); */
-            if (allReady) {
-                playerHolder.holders.forEach((holder, idx) => {
-                    if (holder.player) {
-                        localVolumesDispatch({
-                            type: 'setVolume',
-                            index: idx,
-                            payload: presetState.players[idx].volume,
-                        });
+            setTimeout(() => onLoaded(), 100);
+        }
+    }, [
+        allReady,
+        allPlayersReady,
+        playerHolder.holders,
+        presetDispatch,
+        localVolumesDispatch,
+        presetState.players,
+        onLoaded,
+    ]);
 
-                        loadNewVideo(idx, presetDispatch, holder.player, presetState.players[idx].videoId);
-                    }
-                });
-
-                setTimeout(() => onLoaded(), 100);
-            }
-        };
-
-        const intervalId = setInterval(checkAllPlayersReady, 500);
+    useEffect(() => {
+        const intervalId = setInterval(checkAllPlayersReady, 1000); // Increased interval to 1000ms (1 second)
 
         return () => {
             clearInterval(intervalId);
         };
-    }, [playerHolder, onLoaded, presetDispatch, localVolumesDispatch, presetState.players]);
+    }, [checkAllPlayersReady]);
 
-    return <></>;
+    return null;
 }
 
 export default InitialPlayerLoader;
