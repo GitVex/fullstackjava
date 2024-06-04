@@ -3,14 +3,6 @@ import { PlayerStateAction } from '../contexts/states';
 import IFPlayer from './IFPlayer';
 import { FadeOptions, fadeIn, fadeTo } from './fadeFunctions';
 
-export function sleep(milliseconds: number) {
-	const date = Date.now();
-	let currentDate = null;
-	do {
-		currentDate = Date.now();
-	} while (currentDate - date < milliseconds);
-}
-
 function findExtremeIndex(
 	array: number[],
 	compare: (a: number, b: number) => boolean

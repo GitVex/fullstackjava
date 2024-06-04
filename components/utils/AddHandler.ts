@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
 import { usePresetState } from '../contexts/PlayerHolderProvider';
 import { usePlayerHolder } from '../contexts/PlayerHolderProvider';
-import { loadNewVideo } from '../Player/PlayerComponent';
+import { loadNewVideo } from './utils';
 import { argMin } from './utils';
 
 export const useLoadVideoInLongestPausedPlayer = () => {
 	const playerHolder = usePlayerHolder();
 	const { presetState, presetDispatch } = usePresetState();
 
-	const loadVideo = useCallback(
+	return useCallback(
 		(url: string) => {
 			// Find the index of the longest paused player
 			const longestPausedIndex = argMin(presetState.players.map(player => player.pausedAt));
@@ -27,6 +27,4 @@ export const useLoadVideoInLongestPausedPlayer = () => {
 		},
 		[presetState, presetDispatch, playerHolder]
 	);
-
-	return loadVideo;
 };

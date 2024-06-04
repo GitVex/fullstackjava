@@ -1,6 +1,5 @@
 // ------------------- SELECTIONS REDUCER -------------------
-
-import { VoidExpression } from "typescript";
+import React from 'react';
 
 export interface SelectionsState {
     selected: { id: number; selected: boolean }[];

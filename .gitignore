@@ -44,3 +44,5 @@ docker-compose.debug.yml
 .dockerignore
 launch.json
 tasks.json
+# Million Lint
+.million

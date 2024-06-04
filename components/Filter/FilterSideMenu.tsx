@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import React, { useContext, useState } from 'react';
-import WindowWidthContext from '../contexts/WindowSizeProvider';
+import React, { useState } from 'react';
+import { useWindowSize } from '../contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import FilterUI from './FilterUI';
 
@@ -25,11 +25,10 @@ const FilterIconVariants = {
     },
 };
 
-export default function FilterSideMenu({ children }: { children?: React.ReactNode }) {
+export default function FilterSideMenu() {
     const [isOpenFilter, setIsOpenFilter] = useState(false);
 
-    const context = useContext(WindowWidthContext);
-    const windowWidth = context?.windowWidth;
+    const { windowWidth } = useWindowSize()
 
     return (
         <motion.div

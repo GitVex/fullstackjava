@@ -8,6 +8,7 @@ import VolumeSlider from '../utils/VolumeSlider';
 import { fadeIn, fadeOut } from '../utils/fadeFunctions';
 import { fadeInputHandler, loadNewVideo } from '../utils/utils';
 import { fadeIntervalControlType, localVolumeControlType } from './states';
+
 interface PlayerComponentProps {
     playerId: number;
     masterVolumeModifier: number;
@@ -18,17 +19,17 @@ interface PlayerComponentProps {
 
 function PlayerComponent(props: PlayerComponentProps) {
     const ID = `player${props.playerId}`;
-    const { playerId } = props;
-    const playerInPreset = props.presetControls.presetState.players[playerId];
-    const framePlayer = usePlayerHolderById(props.playerId).player as IFPlayer;
+    const { playerId, masterVolumeModifier, presetControls, fadeIntervalControl, localVolumeControl } = props;
+    const playerInPreset = presetControls.presetState.players[playerId];
+    const framePlayer = usePlayerHolderById(playerId).player as IFPlayer;
 
-    const debouncedPresetDispatch = useDebounceCallback(props.presetControls.presetDispatch, 750);
+    const debouncedPresetDispatch = useDebounceCallback(presetControls.presetDispatch, 750);
 
     const [savedVolume, setSavedVolume] = useState({ hasSaved: false, prevVol: 0 });
 
-    const currentFadeInterval = props.fadeIntervalControl.currentFadeInterval;
+    const currentFadeInterval = fadeIntervalControl.currentFadeInterval;
     const setCurrentFadeInterval = (interval: NodeJS.Timeout | null) =>
-        props.fadeIntervalControl.currentFadeIntervalDispatch({
+        fadeIntervalControl.currentFadeIntervalDispatch({
             type: 'setCurrentFadeInterval',
             index: playerId,
             payload: interval,
@@ -37,16 +38,16 @@ function PlayerComponent(props: PlayerComponentProps) {
     const selected = playerInPreset?.selected ?? false;
     const setSelected = () => {
         debouncedPresetDispatch?.({
-            type: playerInPreset?.selected ? 'deselect' : 'select',
+            type: selected ? 'deselect' : 'select',
             index: playerId,
         });
     };
 
-    const localVolume = props.localVolumeControl.localVolume;
+    const localVolume = localVolumeControl.localVolume;
     const setLocalVolume = (vol: number) => {
         if (!framePlayer) return;
 
-        props.localVolumeControl.localVolumeDispatch({
+        localVolumeControl.localVolumeDispatch({
             type: 'setVolume',
             index: playerId,
             payload: vol,
@@ -54,20 +55,20 @@ function PlayerComponent(props: PlayerComponentProps) {
         debouncedPresetDispatch({
             type: 'setVolume',
             index: playerId,
-            payload: localVolume,
+            payload: vol,
         });
     };
 
     useEffect(() => {
-        framePlayer?.setVolume(localVolume * props.masterVolumeModifier);
-        //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [localVolume, props.masterVolumeModifier]);
+        if (!framePlayer) {
+            return;
+        }
+        framePlayer?.setVolume(localVolume * masterVolumeModifier);
+    }, [localVolume, masterVolumeModifier]);
 
     return (
         <motion.div
-            className={
-                'flex h-[180px] w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1'
-            }
+            className="flex h-44 sm:h-56 w-full sm:w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1"
             animate={{
                 boxShadow: selected ? '0 0 8px 1px #f00' : '0 0 0 0px #fff',
             }}
@@ -79,13 +80,7 @@ function PlayerComponent(props: PlayerComponentProps) {
                 setSelected();
             }}
         >
-            <div
-                className="flex w-full flex-row justify-around"
-                onClick={e => {
-                    if (e.currentTarget !== e.target) return;
-                    setSelected();
-                }}
-            >
+            <div className="flex w-full flex-row justify-around" onClick={e => e.stopPropagation()}>
                 <div className="rounded" id={ID} />
                 <VolumeSlider
                     volumeControl={{
@@ -96,7 +91,7 @@ function PlayerComponent(props: PlayerComponentProps) {
                     textBgColor="bg-darknavy-500"
                 />
             </div>
-            <div className="flex w-full flex-row items-center justify-center gap-2">
+            <div className="flex w-full flex-row items-center justify-center gap-2" onClick={e => e.stopPropagation()}>
                 <input
                     type="text"
                     className="w-2/5 rounded bg-gray-800/50 p-1"
@@ -108,7 +103,7 @@ function PlayerComponent(props: PlayerComponentProps) {
                             debouncedPresetDispatch,
                             framePlayer,
                             (e.target as HTMLInputElement).value,
-                            localVolume * props.masterVolumeModifier
+                            localVolume * masterVolumeModifier,
                         );
                     }}
                 />
@@ -122,7 +117,7 @@ function PlayerComponent(props: PlayerComponentProps) {
                             fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
                         });
                     }}
-                    disabled={framePlayer ? false : true}
+                    disabled={!framePlayer}
                 >
                     Fade In
                 </button>
@@ -150,7 +145,7 @@ function PlayerComponent(props: PlayerComponentProps) {
                             pLimit: 0,
                         });
                     }}
-                    disabled={framePlayer ? false : true}
+                    disabled={!framePlayer}
                 >
                     Fade Out
                 </button>

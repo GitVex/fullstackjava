@@ -1,6 +1,6 @@
-import { useContext, useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { usePresetState } from '../contexts/PlayerHolderProvider';
-import WindowSizeContext from '../contexts/WindowSizeProvider';
+import { useWindowSize } from '../contexts/WindowSizeProvider';
 import VolumeSlider from '../utils/VolumeSlider';
 import ControlPanel from './ControlPanel/ControlPanel';
 import PlayerComponent from './PlayerComponent';
@@ -17,9 +17,7 @@ const initialVolumes: LocalVolumesState = {
 };
 
 function PlayerUI() {
-    const windowSizeContext = useContext(WindowSizeContext);
-    const windowHeight: number | undefined | null = windowSizeContext?.windowHeight;
-    const windowWidth: number | undefined | null = windowSizeContext?.windowWidth;
+    const { windowHeight, windowWidth } = useWindowSize()
 
     const presetControls = usePresetState();
     const { presetState, presetDispatch } = presetControls;

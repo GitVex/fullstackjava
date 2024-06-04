@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { useContext, useEffect, useState } from 'react';
-import WindowSizeContext from '../contexts/WindowSizeProvider';
+import { useEffect, useState } from 'react';
+import { useWindowSize } from '../contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import PlayerUI from './PlayerUI';
 
@@ -12,9 +12,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 function PlayerTopMenu() {
-    const context = useContext(WindowSizeContext);
-    const windowHeight = context?.windowHeight;
-    const windowWidth = context?.windowWidth;
+    const { windowWidth, windowHeight } = useWindowSize()
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
@@ -26,10 +24,10 @@ function PlayerTopMenu() {
     const [isOpenPlayer, setIsOpenPlayer] = useState(DEFAULT_ISOPENPLAYER_STATE);
     const yInit = windowHeight ? windowHeight * -1 : -1000;
 
-    // create a listener that listens for the spacebar keypress
-    // if the spacebar is pressed, then toggle the isOpenPlayer state
+    // create a listener that listens for the space bar keypress
+    // if the space bar is pressed, then toggle the isOpenPlayer state
     const handleKeyPress = (e: KeyboardEvent) => {
-        // ignore the spacebar keypress if the user is typing in an input field
+        // ignore the space bar keypress if the user is typing in an input field
         if (e.target instanceof HTMLInputElement) return;
 
         if (e.code === 'Space') {

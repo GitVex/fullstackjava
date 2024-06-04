@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { useContext, useState } from 'react';
-import WindowWidthContext from '../contexts/WindowSizeProvider';
+import { useState } from 'react';
+import { useWindowSize } from '../contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import CreateUI from './CreateUI';
 
@@ -27,8 +27,7 @@ const PlusVariants = {
 function CreateSideMenu({ className }: { className?: string }) {
 	const [isOpenCreate, setIsOpenCreate] = useState(false);
 
-	const context = useContext(WindowWidthContext);
-	const windowWidth = context?.windowWidth;
+	const { windowWidth } = useWindowSize()
 
 	return windowWidth !== undefined &&
 		windowWidth !== null &&

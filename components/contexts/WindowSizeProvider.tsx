@@ -1,43 +1,45 @@
-// WindowSizeContext.tsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface WindowSizeContextType {
-	windowWidth: number | null;
-	windowHeight: number | null;
+    windowWidth: number;
+    windowHeight: number;
 }
 
-const WindowSizeContext = createContext<WindowSizeContextType | null>(null);
+const WindowSizeContext = createContext<WindowSizeContextType>({
+    windowWidth: 0,
+    windowHeight: 0,
+});
 
 interface WindowSizeProviderProps {
-	children: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export const WindowSizeProvider: React.FC<WindowSizeProviderProps> = ({
-	children,
-}) => {
-	const [windowWidth, setWindowWidth] = useState<number | null>(null);
-	const [windowHeight, setWindowHeight] = useState<number | null>(null);
+export const WindowSizeProvider: React.FC<WindowSizeProviderProps> = ({ children }) => {
+    const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
+    const [windowHeight, setWindowHeight] = useState<number>(typeof window !== 'undefined' ? window.innerHeight : 0);
 
-	useEffect(() => {
-		const handleResize = () => {
-			setWindowWidth(window.innerWidth);
-			setWindowHeight(window.innerHeight);
-		};
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+            setWindowHeight(window.innerHeight);
+        };
 
-		handleResize(); // Set initial values on mount
-		window.addEventListener('resize', handleResize);
+        handleResize(); // Set initial values on mount
+        window.addEventListener('resize', handleResize);
 
-		// Cleanup function: remove the event listener when the component unmounts
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	}, []);
+        // Cleanup function: remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
-	return (
-		<WindowSizeContext.Provider value={{ windowWidth, windowHeight }}>
-			{children}
-		</WindowSizeContext.Provider>
-	);
+    return <WindowSizeContext.Provider value={{ windowWidth, windowHeight }}>{children}</WindowSizeContext.Provider>;
 };
 
-export default WindowSizeContext;
+export const useWindowSize = (): WindowSizeContextType => {
+    const context = useContext(WindowSizeContext);
+    if (!context) {
+        throw new Error('useWindowSize must be used within a WindowSizeProvider');
+    }
+    return context;
+};
