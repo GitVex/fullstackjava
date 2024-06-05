@@ -28,7 +28,7 @@ function PageComponent() {
     const { windowWidth, windowHeight } = useWindowSize();
 
     const renderDivs = useMemo(() => {
-        if (windowWidth === undefined || windowHeight === undefined) {
+        if (windowWidth === 0 || windowHeight === 0) {
             return null; // Handle the case where context values are not available
         }
 

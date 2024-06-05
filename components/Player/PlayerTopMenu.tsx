@@ -44,7 +44,7 @@ function PlayerTopMenu() {
         },
     };
 
-    return windowWidth !== undefined && windowWidth !== null && windowWidth >= breakpoints.lg ? (
+    return windowWidth !== 0 && windowWidth >= breakpoints.lg ? (
         <>
             <motion.div
                 className="relative z-20 flex justify-center"

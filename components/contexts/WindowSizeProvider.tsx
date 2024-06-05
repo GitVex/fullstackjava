@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface WindowSizeContextType {
-    windowWidth: number;
-    windowHeight: number;
+    windowWidth: number | null;
+    windowHeight: number | null;
 }
 
 const WindowSizeContext = createContext<WindowSizeContextType>({
-    windowWidth: 0,
-    windowHeight: 0,
+    windowWidth: null,
+    windowHeight: null,
 });
 
 interface WindowSizeProviderProps {
@@ -15,8 +15,8 @@ interface WindowSizeProviderProps {
 }
 
 export const WindowSizeProvider: React.FC<WindowSizeProviderProps> = ({ children }) => {
-    const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
-    const [windowHeight, setWindowHeight] = useState<number>(typeof window !== 'undefined' ? window.innerHeight : 0);
+    const [windowWidth, setWindowWidth] = useState<number | null>(null);
+    const [windowHeight, setWindowHeight] = useState<number | null>(null);
 
     useEffect(() => {
         const handleResize = () => {
