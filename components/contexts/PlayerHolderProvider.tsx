@@ -7,6 +7,7 @@ import {
     playerHolderReducer,
     playerStateReducer
 } from './states';
+import { useWindowSize } from './WindowSizeProvider';
 
 import { DEFAULT_VIDEOID, DEFAULT_VOLUME } from '../utils/DEFAULTS';
 
@@ -144,6 +145,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
     // ------- YT IFRAME API INIT -------
 
     const [playerHolder, dispatchPlayerHolder] = useReducer(playerHolderReducer, initialPlayerHolderState);
+    const { windowHeight, windowWidth } = useWindowSize();
 
     useEffect(() => {
         let playerHolderTemp = [] as {
@@ -220,8 +222,10 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
                 ...holder,
                 // @ts-ignore
                 player: new YT.Player(holder.player.id, {
-                    height: 128,
-                    width: 256,
+                    // initialize player with a height of innerHeight / 7.58
+                    // and a width of innerWidth / 7.40
+                    height: windowHeight ? windowHeight / 7.58 : 144,
+                    width: windowWidth ? windowWidth / 7.40 : 192,
                     videoId: DEFAULT_VIDEOID,
                     playerVars: {
                         fs: 0,
@@ -244,7 +248,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
         return () => {
             document.body.removeChild(container);
         };
-    }, []);
+    }, [windowHeight, windowWidth]);
 
     // ------- LISTENERS -------
 

@@ -68,7 +68,7 @@ function PlayerComponent(props: PlayerComponentProps) {
 
     return (
         <motion.div
-            className="flex flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1"
+            className="flex flex-col h-full justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1"
             animate={{
                 boxShadow: selected ? '0 0 8px 1px #f00' : '0 0 0 0px #fff',
             }}
@@ -80,16 +80,15 @@ function PlayerComponent(props: PlayerComponentProps) {
                 setSelected();
             }}
         >
-            <div className="flex w-full h-full flex-row justify-around" onClick={e => e.stopPropagation()}>
-                <div className="rounded h-4/5" id={ID} />
+            <div className="flex w-full h-4/5 flex-row justify-around" onClick={e => e.stopPropagation()}>
+                <div className="rounded" id={ID} />
                 <VolumeSlider
                     volumeControl={{
                         localVolume,
                         setLocalVolume,
                     }}
-                    className="rounded border-2 border-darknavy-400/25"
-                    textBgColor="bg-darknavy-500"
-                    height={'80%'}
+                    height={'90%'}
+                    opaque={true}
                 />
             </div>
             <div className="flex h-1/5 w-full flex-row items-center justify-center gap-2" onClick={e => e.stopPropagation()}>

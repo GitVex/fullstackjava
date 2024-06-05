@@ -31,10 +31,10 @@ interface VolumeSliderProps {
     className?: string;
     textBgColor?: string;
     height?: number | string;
+    opaque?: boolean;
 }
 
-const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height = 100 }: VolumeSliderProps) => {
-    /*const uniqueId = useMemo(() => `volumeSlider${Math.floor(Math.random() * 1000000)}`, []);*/
+const VolumeSlider = ({ volumeControl, height, opaque = false }: VolumeSliderProps) => {
     const { localVolume, setLocalVolume } = volumeControl;
 
     const componentRef = useRef<HTMLDivElement>(null);
@@ -42,17 +42,12 @@ const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height 
 
     useEffect(() => {
         if (componentRef.current) {
-            setComponentHeight(componentRef.current.clientWidth);
+            setComponentHeight(componentRef.current.clientHeight);
+            console.log(componentRef.current.clientHeight);
         }
     }, [componentRef]);
 
-    /* const handleVolumeChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            setLocalVolume(parseInt(e.currentTarget.value));
-        },
-        [setLocalVolume]
-    ); */
-    const handleVolumeChangeMui = useCallback(
+    const handleVolumeChange = useCallback(
         (e: any, value: number | number[], activeThumb: number) => {
             setLocalVolume(value as number);
         },
@@ -60,26 +55,26 @@ const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height 
     );
 
     return (
-        <div className={`${styles.container} ${className}`}>
+        <div className={`${styles.container} rounded border-2 border-darknavy-400/25`} style={{ height: height ?? '80%' }}>
             <ThemeProvider theme={theme}>
                 <Slider
                     ref={componentRef}
                     orientation="vertical"
                     value={localVolume}
                     onChange={(e, val, thumb) => {
-                        handleVolumeChangeMui(e, val, thumb);
+                        handleVolumeChange(e, val, thumb);
                     }}
+                    style={{ height: '90%' }}
                     aria-labelledby="vertical-slider"
-                    style={{ height: `${typeof height === 'number' ? `${height}px` : height}` }}
                     size="small"
                 />
             </ThemeProvider>
 
-            <div style={{ height: `${typeof height === 'number' ? `${height}px` : height}` }}>
+            <div style={{ height: `80%` }}>
                 <motion.p
-                    className={textBgColor}
+                    className={`absolute ${ opaque ? 'bg-darknavy-500' : '' } min-w-[26px]`}
                     animate={{
-                        y: componentHeight * (1 - localVolume / 100) + 0.12 * localVolume - 20,
+                        y: componentHeight * (1 - localVolume / 100) + 0.12 * localVolume - 22,
                         transition: { ease: 'easeOut', duration: 0.5 },
                     }}
                 >

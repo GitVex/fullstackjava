@@ -5,6 +5,7 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
+    height: 100%;
 }
 
 /* Styles for the slider input element */

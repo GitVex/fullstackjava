@@ -41,7 +41,7 @@ function PlayerUI() {
             /* @ts-ignore */
             style={{ width: windowWidth, height: windowHeight }}
         >
-            <div className="flex h-full w-fit flex-row items-center gap-4">
+            <div className="flex flex-row items-center gap-4">
                 <div className="flex w-full flex-col items-center">
                     <div className="grid grid-cols-2 grid-rows-4 gap-2">
                         {[0, 1, 2, 3, 4, 5, 6, 7].map(id => (
@@ -65,14 +65,14 @@ function PlayerUI() {
                         ))}
                     </div>
                 </div>
-                <div className="flex w-28 flex-col items-center gap-4 rounded border-2 border-darknavy-700/50 bg-darknavy-500/50 p-1">
+                <div className="flex w-28 h-full flex-col items-center gap-4 rounded border-2 border-darknavy-700/50 bg-darknavy-500/50 p-1">
                     <p className="text-center">Master Volume</p>
                     <VolumeSlider
                         volumeControl={{
                             localVolume: masterVolume,
                             setLocalVolume: (vol: number) => setMasterVolume(vol),
                         }}
-                        height={500}
+                        height={'500px'}
                     />
                 </div>
             </div>
