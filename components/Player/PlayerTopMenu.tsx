@@ -5,11 +5,7 @@ import { breakpoints } from '../utils/breakpoints';
 import PlayerUI from './PlayerUI';
 
 let DEFAULT_ISOPENPLAYER_STATE: boolean;
-if (process.env.NODE_ENV === 'development') {
-    DEFAULT_ISOPENPLAYER_STATE = false;
-} else {
-    DEFAULT_ISOPENPLAYER_STATE = false;
-}
+DEFAULT_ISOPENPLAYER_STATE = process.env.NODE_ENV === 'development';
 
 function PlayerTopMenu() {
     const { windowWidth, windowHeight } = useWindowSize()
@@ -44,7 +40,7 @@ function PlayerTopMenu() {
         },
     };
 
-    return windowWidth !== 0 && windowWidth >= breakpoints.lg ? (
+    return windowWidth !== null && windowWidth >= breakpoints.lg ? (
         <>
             <motion.div
                 className="relative z-20 flex justify-center"

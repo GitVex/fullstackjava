@@ -60,15 +60,15 @@ function PlayerComponent(props: PlayerComponentProps) {
     };
 
     useEffect(() => {
-        if (!framePlayer) {
+        if (!framePlayer || framePlayer?.setVolume === undefined) {
             return;
         }
-        framePlayer?.setVolume(localVolume * masterVolumeModifier);
-    }, [localVolume, masterVolumeModifier]);
+        framePlayer.setVolume(localVolume * masterVolumeModifier);
+    }, [framePlayer, localVolume, masterVolumeModifier]);
 
     return (
         <motion.div
-            className="flex h-44 sm:h-56 w-full sm:w-96 flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1"
+            className="flex flex-col justify-around gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-1"
             animate={{
                 boxShadow: selected ? '0 0 8px 1px #f00' : '0 0 0 0px #fff',
             }}
@@ -80,18 +80,19 @@ function PlayerComponent(props: PlayerComponentProps) {
                 setSelected();
             }}
         >
-            <div className="flex w-full flex-row justify-around" onClick={e => e.stopPropagation()}>
-                <div className="rounded" id={ID} />
+            <div className="flex w-full h-full flex-row justify-around" onClick={e => e.stopPropagation()}>
+                <div className="rounded h-4/5" id={ID} />
                 <VolumeSlider
                     volumeControl={{
                         localVolume,
                         setLocalVolume,
                     }}
-                    className="rounded border-2 border-darknavy-400/25 p-2"
+                    className="rounded border-2 border-darknavy-400/25"
                     textBgColor="bg-darknavy-500"
+                    height={'80%'}
                 />
             </div>
-            <div className="flex w-full flex-row items-center justify-center gap-2" onClick={e => e.stopPropagation()}>
+            <div className="flex h-1/5 w-full flex-row items-center justify-center gap-2" onClick={e => e.stopPropagation()}>
                 <input
                     type="text"
                     className="w-2/5 rounded bg-gray-800/50 p-1"

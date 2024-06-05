@@ -1,7 +1,7 @@
 import Slider from '@mui/material/Slider';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import { useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { localVolumeControlEndType } from '../Player/states';
 import styles from './VolumeSlider.module.css';
 
@@ -30,12 +30,21 @@ interface VolumeSliderProps {
     volumeControl: localVolumeControlEndType;
     className?: string;
     textBgColor?: string;
-    height?: number;
+    height?: number | string;
 }
 
 const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height = 100 }: VolumeSliderProps) => {
-    const uniqueId = useMemo(() => `volumeSlider${Math.floor(Math.random() * 1000000)}`, []);
+    /*const uniqueId = useMemo(() => `volumeSlider${Math.floor(Math.random() * 1000000)}`, []);*/
     const { localVolume, setLocalVolume } = volumeControl;
+
+    const componentRef = useRef<HTMLDivElement>(null);
+    const [componentHeight, setComponentHeight] = useState(0);
+
+    useEffect(() => {
+        if (componentRef.current) {
+            setComponentHeight(componentRef.current.clientWidth);
+        }
+    }, [componentRef]);
 
     /* const handleVolumeChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,29 +56,30 @@ const VolumeSlider = ({ volumeControl, className = '', textBgColor = '', height 
         (e: any, value: number | number[], activeThumb: number) => {
             setLocalVolume(value as number);
         },
-        [setLocalVolume]
+        [setLocalVolume],
     );
 
     return (
         <div className={`${styles.container} ${className}`}>
             <ThemeProvider theme={theme}>
                 <Slider
+                    ref={componentRef}
                     orientation="vertical"
                     value={localVolume}
                     onChange={(e, val, thumb) => {
                         handleVolumeChangeMui(e, val, thumb);
                     }}
                     aria-labelledby="vertical-slider"
-                    style={{ height: `${height}px` }}
+                    style={{ height: `${typeof height === 'number' ? `${height}px` : height}` }}
                     size="small"
                 />
             </ThemeProvider>
 
-            <div style={{ height }}>
+            <div style={{ height: `${typeof height === 'number' ? `${height}px` : height}` }}>
                 <motion.p
                     className={textBgColor}
                     animate={{
-                        y: height * (1 - localVolume / 100) + 0.12 * localVolume - 20,
+                        y: componentHeight * (1 - localVolume / 100) + 0.12 * localVolume - 20,
                         transition: { ease: 'easeOut', duration: 0.5 },
                     }}
                 >

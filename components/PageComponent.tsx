@@ -28,7 +28,7 @@ function PageComponent() {
     const { windowWidth, windowHeight } = useWindowSize();
 
     const renderDivs = useMemo(() => {
-        if (windowWidth === 0 || windowHeight === 0) {
+        if (windowWidth === null || windowHeight === null) {
             return null; // Handle the case where context values are not available
         }
 
@@ -54,7 +54,7 @@ function PageComponent() {
 
     return (
         <main className="h-screen overflow-hidden">
-            <div className="flex h-full flex-col gap-6 p-6 bg-darknavy-900">
+            <div className="flex h-full flex-col gap-6 p-6 bg-darknavy-900 text-gray-200">
                 <PlayerHolderProvider>
                     <FilterStateProvider>
                         <div className="flex w-full flex-row justify-between">
