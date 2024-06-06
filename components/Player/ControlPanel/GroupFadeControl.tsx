@@ -16,7 +16,7 @@ const handleGroupFade = (
     framedPlayers: (IFPlayer | null)[],
     localVolumeControl: localVolumesControlType,
     fadeIntervalsControls: fadeIntervalsControlType,
-    presetControls: presetControlType
+    presetControls: presetControlType,
 ) => {
     // Early exit if any framedPlayers are null
     if (framedPlayers.some(framePlayer => framePlayer === null)) return;
@@ -59,6 +59,7 @@ const handleGroupFade = (
         });
     });
 };
+
 function GroupFadeControl({ localVolumeControls, fadeIntervalsControls, presetControls }: GroupFadeControlProps) {
     const [disable, setDisable] = useState(true);
     const playerHolder = usePlayerHolder();

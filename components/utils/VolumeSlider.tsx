@@ -27,7 +27,8 @@ const theme = createTheme({
                 },
                 valueLabel: {
                     backgroundColor: 'transparent',
-                }
+                    transform: 'translateX(20px)',
+                },
             },
         },
     },
@@ -44,7 +45,20 @@ interface VolumeSliderProps {
 const VolumeSlider = ({ volumeControl, height, opaque = false }: VolumeSliderProps) => {
     const { localVolume, setLocalVolume } = volumeControl;
     const { windowHeight } = useWindowSize();
-    const componentHeight = typeof height === 'number' ? height : (windowHeight ? windowHeight / 7.58 : 0);
+
+    const [labelHeight, setLabelHeight] = useState(0);
+    const sliderRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (sliderRef.current) {
+            const thumbRef = sliderRef.current.querySelector('.MuiSlider-thumb') as HTMLDivElement;
+            const thumbRect = thumbRef.getBoundingClientRect();
+
+            const sliderRect = sliderRef.current.getBoundingClientRect();
+
+            setLabelHeight(thumbRect.y - sliderRect.y + thumbRect.height / 2 - 12);
+        }
+    }, [localVolume]);
 
     const handleVolumeChange = useCallback(
         (value: number) => {
@@ -66,21 +80,22 @@ const VolumeSlider = ({ volumeControl, height, opaque = false }: VolumeSliderPro
                     style={{ height: '90%' }}
                     aria-labelledby="vertical-slider"
                     size="small"
-                    valueLabelDisplay={'on'}
+                    // valueLabelDisplay={'on'}
+                    ref={sliderRef}
                 />
             </ThemeProvider>
 
-            {/* <div style={{ height: `90%` }}>
+            <div style={{ height: `90%` }}>
                 <motion.p
                     className={`absolute ${opaque ? 'bg-darknavy-500' : ''} min-w-[26px]`}
                     animate={{
-                        y: componentHeight * (1 - localVolume / 100) + 0.12 * localVolume - 22,
+                        y: labelHeight,
                         transition: { ease: 'easeOut', duration: 0.5 },
                     }}
                 >
                     {localVolume}
                 </motion.p>
-            </div> */}
+            </div>
         </div>
     );
 };
