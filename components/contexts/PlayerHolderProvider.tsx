@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useEffect, useReducer } from 'react';
+import React, { useCallback, useContext, useEffect, useReducer, useState } from 'react';
 import IFPlayer from '../utils/IFPlayer';
 import {
     PlayerHolderState,
     PlayerStateAction,
     PresetState,
     playerHolderReducer,
-    playerStateReducer
+    playerStateReducer,
 } from './states';
 import { useWindowSize } from './WindowSizeProvider';
 
@@ -32,7 +32,7 @@ const PresetStateContext = React.createContext(
     {} as {
         presetState: PresetState;
         presetDispatch: React.Dispatch<PlayerStateAction>;
-    }
+    },
 );
 
 // ----------------- INITIAL STATES -----------------
@@ -95,7 +95,7 @@ export function usePlayerHolderById(id: number) {
 // ----------------- PROVIDER -----------------
 
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
-    
+
     // ------- PRESET STATE PERSISTENCE -------
     const loadPersistPreset = (): PresetState => {
         const savedState = localStorage.getItem('presetState');
@@ -121,7 +121,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
             e.preventDefault();
             e.returnValue = '';
         },
-        [presetState]
+        [presetState],
     );
 
     useEffect(() => {
@@ -146,8 +146,13 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
     const [playerHolder, dispatchPlayerHolder] = useReducer(playerHolderReducer, initialPlayerHolderState);
     const { windowHeight, windowWidth } = useWindowSize();
+    const [firstLoadDone, setFirstLoadDone] = useState(false);
 
     useEffect(() => {
+
+        if (typeof window === 'undefined') return;
+        if (firstLoadDone) return;
+
         let playerHolderTemp = [] as {
             id: number;
             player: any;
@@ -180,7 +185,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
             const player = e.target as IFPlayer;
             const playerIdx = parseInt(
                 //@ts-ignore
-                player.g.id.charAt(player.g.id.length - 1)
+                player.g.id.charAt(player.g.id.length - 1),
             );
             const changedState = player.getPlayerState();
 
@@ -199,7 +204,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
             const player = e.target as IFPlayer;
             const playerIdx = parseInt(
                 //@ts-ignore
-                player.g.id.charAt(player.g.id.length - 1)
+                player.g.id.charAt(player.g.id.length - 1),
             );
 
             player.setVolume(0);
@@ -217,15 +222,15 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
         }
 
         //@ts-ignore
-        window.onYouTubeIframeAPIReady = function () {
+        window.onYouTubeIframeAPIReady = function() {
             playerHolderTemp = playerHolderTemp.map(holder => ({
                 ...holder,
                 // @ts-ignore
                 player: new YT.Player(holder.player.id, {
                     // initialize player with a height of innerHeight / 7.58
                     // and a width of innerWidth / 7.40
-                    height: windowHeight ? windowHeight / 7.58 : 144,
-                    width: windowWidth ? windowWidth / 7.40 : 192,
+                    height: windowHeight ? windowHeight / 7.58 : 0,
+                    width: windowWidth ? windowWidth / 7.40 : 0,
                     videoId: DEFAULT_VIDEOID,
                     playerVars: {
                         fs: 0,
@@ -243,6 +248,8 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
                 type: 'init',
                 payload: { holders: playerHolderTemp },
             });
+
+            setFirstLoadDone(true);
         };
 
         return () => {
