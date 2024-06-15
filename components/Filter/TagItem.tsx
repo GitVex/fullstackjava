@@ -8,9 +8,9 @@ interface TagItemProps {
 
 function TagItem({ tag, index, globalDisable = false, onChangeCallback, isInFilter = false }: TagItemProps) {
 	return (
-		<p key={index} className='flex flex-row gap-1 bg-indigo-900/50 rounded px-1 text-white'>
+		<p key={index} className='bg-indigo-900/50 rounded px-1 text-white'>
 			<input type='checkbox' name={tag} id={tag + 'Box'} disabled={globalDisable} onChange={onChangeCallback} checked={isInFilter} />
-			<label htmlFor={tag + 'Box'} className='w-full truncate'>
+			<label htmlFor={tag + 'Box'} className='ml-1 w-full'>
                 {tag}
 			</label>
 		</p>

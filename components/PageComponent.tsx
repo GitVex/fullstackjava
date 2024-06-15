@@ -5,7 +5,7 @@ import PlayerTopMenu from './Player/PlayerTopMenu';
 import { ViewColumn } from './Viewer/ViewColumn';
 import { Viewer } from './Viewer/Viewer';
 import PlayerHolderProvider from './contexts/PlayerHolderProvider';
-import FilterStateProvider from './contexts/RebuiltFilterStateProvider';
+import FilterStateProvider from './contexts/FilterStateProvider';
 import { useWindowSize } from './contexts/WindowSizeProvider';
 import { breakpoints } from './utils/breakpoints';
 

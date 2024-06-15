@@ -1,4 +1,4 @@
-import { track } from '@prisma/client';
+import { track, tag } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useLoadVideoInLongestPausedPlayer } from '../utils/AddHandler';
@@ -6,7 +6,7 @@ import NotificationButton from '../utils/NotificationButton';
 import ScrollTitle from './ScrollTitle';
 
 interface ListItemProps {
-    item: track & { tags: any };
+    item: track & { tags: tag[] };
 }
 
 function ListItem({ item }: ListItemProps) {
@@ -17,7 +17,7 @@ function ListItem({ item }: ListItemProps) {
         <div
             className="flex flex-row items-center gap-2 rounded-lg bg-indigo-600/10 p-2 text-sm duration-100 hover:border-l-8"
             //@ts-ignore
-            style={{ 'border-inline-color': item.color }}
+            style={{ 'borderInlineColor': item.color }}
             onMouseEnter={() => setShowTags(true)}
             onMouseLeave={() => setShowTags(false)}
         >

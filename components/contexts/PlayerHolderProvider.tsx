@@ -9,7 +9,7 @@ import {
 } from './states';
 import { useWindowSize } from './WindowSizeProvider';
 
-import { DEFAULT_VIDEOID, DEFAULT_VOLUME } from '../utils/DEFAULTS';
+import { DEFAULT_VIDEO_ID, DEFAULT_VOLUME } from '../utils/DEFAULTS';
 
 const maxPlayers = 8;
 
@@ -47,7 +47,7 @@ const initialPresetState: PresetState = {
             volume: DEFAULT_VOLUME,
             savedVolume: { hasSaved: false, prevVol: DEFAULT_VOLUME },
             pausedAt: Date.now(),
-            videoId: DEFAULT_VIDEOID,
+            videoId: DEFAULT_VIDEO_ID,
         })),
     masterVolume: 100,
 };
@@ -231,7 +231,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
                     // and a width of innerWidth / 7.40
                     height: windowHeight ? windowHeight / 7.58 : 0,
                     width: windowWidth ? windowWidth / 7.40 : 0,
-                    videoId: DEFAULT_VIDEOID,
+                    videoId: DEFAULT_VIDEO_ID,
                     playerVars: {
                         fs: 0,
                         enablejsapi: 1,

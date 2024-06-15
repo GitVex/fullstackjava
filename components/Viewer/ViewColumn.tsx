@@ -1,90 +1,42 @@
 // ViewColumn.tsx
-// @ts-nocheck
-import { track } from '@prisma/client';
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import { useFilterState } from '../contexts/RebuiltFilterStateProvider';
+import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { useItems } from './hooks/useItems';
 import LoadingAnim from '../utils/LoadingAnimDismount';
 import ListItem from './ListItem';
 
-export function ViewColumn({
-    children,
-    className,
-    style,
-    type = 'list',
-}: {
-    children?: React.ReactNode;
+interface ViewColumnProps {
     className?: string;
     style?: React.CSSProperties;
     type?: string;
-}) {
-    const filterState = useFilterState();
+
+}
+
+export function ViewColumn({ className, style, type = 'list' }: ViewColumnProps) {
     const [search, setSearch] = useState('');
-
-    let route = '/api/list';
-    if (type === 'new') {
-        route = '/api/new';
-    } else if (type === 'trend') {
-        route = '/api/list';
-    } else if (type === 'filter') {
-        route = '/api/filter';
-    } else if (type === 'owned') {
-        route = '/api/list';
-    } else {
-        route = '/api/list';
-    }
-
-    const { isLoading, error, data, refetch } = useQuery<track[], Error>(['items', type], fetchData, {
-        enabled: route === '/api/filter' ? false : true,
-        refetchInterval: 1000 * 60 * 20,
-        refetchOnWindowFocus: false,
-    });
-
-    async function fetchData(): Promise<track[]> {
-        const response = await fetch(route, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                filter: filterState,
-                origin: type,
-            }),
-        });
-        const res = await response.json();
-        // console.log(res);
-
-        return res;
-    }
-
-    useEffect(() => {
-        if (route === '/api/filter') {
-            refetch();
-        }
-    }, [filterState, refetch, route]);
+    const { data: items, isError, isLoading } = useItems(type);
 
     return (
         <div className={className} style={style}>
             <AnimatePresence mode="wait">
-                {isLoading ? (
+                {isError && (<p>Error: {isError.message}</p>)}
+                {isLoading && (
                     <motion.div key="loader" className="self-center">
                         <LoadingAnim />
                     </motion.div>
-                ) : error ? (
-                    <p>Error: {error.message}</p>
-                ) : data ? (
+                )}
+                {items && (
                     <div className="flex flex-col gap-2">
                         <input
                             type="text"
-                            className=" rounded bg-transparent p-1"
+                            className="rounded bg-transparent p-1"
                             placeholder="Search ..."
-                            onChange={e => {
+                            onChange={(e) => {
                                 setSearch(e.target.value);
                             }}
                         />
-                        <ul className=" flex max-h-full flex-col gap-2">
-                            {data?.map(item => {
+                        <ul className="flex max-h-full flex-col gap-2">
+                            {items.map((item: any) => {
                                 if (
                                     item.title.toLowerCase().includes(search.toLowerCase()) ||
                                     item.artist.toLowerCase().includes(search.toLowerCase())
@@ -100,8 +52,6 @@ export function ViewColumn({
                             })}
                         </ul>
                     </div>
-                ) : (
-                    <p>no data</p>
                 )}
             </AnimatePresence>
         </div>
