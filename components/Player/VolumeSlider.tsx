@@ -1,10 +1,9 @@
 import Slider from '@mui/material/Slider';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
-import { localVolumeControlEndType } from '../Player/states';
+import { useEffect, useCallback, useRef, useState } from 'react';
+import { localVolumeControlEndType } from './types/states';
 import styles from './VolumeSlider.module.css';
-import { useWindowSize } from '../contexts/WindowSizeProvider';
 
 const theme = createTheme({
     components: {
@@ -44,7 +43,6 @@ interface VolumeSliderProps {
 
 const VolumeSlider = ({ volumeControl, height, opaque = false }: VolumeSliderProps) => {
     const { localVolume, setLocalVolume } = volumeControl;
-    const { windowHeight } = useWindowSize();
 
     const [labelHeight, setLabelHeight] = useState(0);
     const sliderRef = useRef<HTMLDivElement | null>(null);

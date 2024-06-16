@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useReducer, useState } from 'react';
-import IFPlayer from '../utils/IFPlayer';
+import IFPlayer from '../Player/types/IFPlayer';
 import {
     PlayerHolderState,
     PlayerStateAction,
@@ -255,7 +255,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
         return () => {
             document.body.removeChild(container);
         };
-    }, [windowHeight, windowWidth]);
+    }, [firstLoadDone, windowHeight, windowWidth]);
 
     // ------- LISTENERS -------
 

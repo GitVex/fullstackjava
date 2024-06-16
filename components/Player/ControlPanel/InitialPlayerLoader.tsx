@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { usePlayerHolder } from '../../contexts/PlayerHolderProvider';
 import { presetControlType } from '../../contexts/states';
 import { loadNewVideo } from '../../utils/utils';
-import { localVolumesControlType } from '../states';
+import { localVolumesControlType } from '../types/states';
 
 interface InitialPlayerLoaderProps {
     onLoaded: () => void;
@@ -12,7 +12,7 @@ interface InitialPlayerLoaderProps {
 
 function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
     const { presetState, presetDispatch } = props.presetControls;
-    const { localVolumes, localVolumesDispatch } = props.localVolumesControls;
+    const { localVolumesDispatch } = props.localVolumesControls;
     const { onLoaded } = props;
 
     const playerHolder = usePlayerHolder();

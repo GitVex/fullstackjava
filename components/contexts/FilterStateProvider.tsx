@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type FilterStateContextType = {
-    filterState: string[];
-    setFilterState: React.Dispatch<React.SetStateAction<string[]>>;
+    filter: string[];
+    setFilter: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const FilterStateContext = createContext<FilterStateContextType | undefined>(undefined);
 
-export function useFilterState() {
+export function useFilter() {
     const context = useContext(FilterStateContext);
     if (!context) {
         throw new Error('useFilterState must be used within a FilterStateProvider');
@@ -16,9 +16,9 @@ export function useFilterState() {
 }
 
 function FilterStateProvider({ children }: { children: ReactNode }) {
-    const [filterState, setFilterState] = useState<string[]>([]);
+    const [filter, setFilter] = useState<string[]>([]);
 
-    const value = { filterState, setFilterState };
+    const value = { filter, setFilter };
 
     return (
         <FilterStateContext.Provider value={value}>

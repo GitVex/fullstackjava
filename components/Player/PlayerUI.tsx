@@ -1,10 +1,10 @@
 import { useEffect, useReducer, useState } from 'react';
 import { usePresetState } from '../contexts/PlayerHolderProvider';
 import { useWindowSize } from '../contexts/WindowSizeProvider';
-import VolumeSlider from '../utils/VolumeSlider';
+import VolumeSlider from './VolumeSlider';
 import ControlPanel from './ControlPanel/ControlPanel';
 import PlayerComponent from './PlayerComponent';
-import { FadeIntervalsState, LocalVolumesState, fadeIntervalsReducer, localVolumesReducer } from './states';
+import { FadeIntervalsState, LocalVolumesState, fadeIntervalsReducer, localVolumesReducer } from './types/states';
 import { useDebounceCallback } from 'usehooks-ts';
 import { DEFAULT_VOLUME } from '../utils/DEFAULTS';
 

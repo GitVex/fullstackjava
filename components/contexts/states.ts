@@ -1,4 +1,4 @@
-import IFPlayer from '../utils/IFPlayer';
+import IFPlayer from '../Player/types/IFPlayer';
 
 // ------------------- PLAYER STATE REDUCER -------------------
 

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { usePlayerHolder } from '../../contexts/PlayerHolderProvider';
 import { presetControlType } from '../../contexts/states';
-import IFPlayer from '../../utils/IFPlayer';
-import { fadeIn, fadeOut } from '../../utils/fadeFunctions';
-import { fadeIntervalsControlType, localVolumesControlType } from '../states';
+import IFPlayer from '../types/IFPlayer';
+import { fadeIn, fadeOut } from '../fadeFunctions';
+import { fadeIntervalsControlType, localVolumesControlType } from '../types/states';
 
 interface GroupFadeControlProps {
     localVolumeControls: localVolumesControlType;

@@ -1,5 +1,5 @@
-import useSWR, { mutate } from 'swr';
-import { useFilterState } from '../../contexts/FilterStateProvider';
+import useSWR from 'swr';
+import { useFilter } from '../../contexts/FilterStateProvider';
 
 const fetcher = (url: string, filterState: string[]) =>
     fetch(url, {
@@ -12,9 +12,9 @@ const fetcher = (url: string, filterState: string[]) =>
 
 function useTags() {
 
-    const { filterState } = useFilterState();
+    const { filter } = useFilter();
 
-    const { data, error, isLoading } = useSWR(['/api/tags', filterState], () => fetcher('/api/tags', filterState));
+    const { data, error, isLoading } = useSWR(['/api/viewer/tags', filter], () => fetcher('/api/viewer/tags', filter));
 
     return {
         tags: data,

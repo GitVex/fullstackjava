@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { useFilterState } from '../contexts/FilterStateProvider';
+import { useFilter } from '../contexts/FilterStateProvider';
 import TagItem from './TagItem';
 import useTags from './hooks/useTags';
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingAnim from '../utils/LoadingAnimDismount';
 
 function FilterUI() {
-    const { filterState, setFilterState } = useFilterState();
+    const { filter, setFilter } = useFilter();
     const { tags, isLoading, isError } = useTags();
 
     const [search, setSearch] = useState('');
-    const globalDisable = false;
+    const globalDisable = isLoading;
 
     const onChangeCallback = (e: any) => {
         const { checked, name } = e.target;
 
-        setFilterState((prev) => {
+        setFilter((prev) => {
             if (checked) {
                 return [...prev, name];
             } else {
@@ -50,13 +50,13 @@ function FilterUI() {
                                 return (
                                     (tag.includes(search) ||
                                         search === '' ||
-                                        filterState.includes(tag)) && (
+                                        filter.includes(tag)) && (
                                         <TagItem
                                             tag={tag}
                                             index={index}
                                             globalDisable={globalDisable}
                                             onChangeCallback={onChangeCallback}
-                                            isInFilter={filterState.includes(tag)}
+                                            isInFilter={filter.includes(tag)}
                                         />
                                     )
                                 );
