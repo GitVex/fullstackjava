@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
 import { presetControlType } from '../contexts/states';
-import IFPlayer from '../utils/IFPlayer';
-import VolumeSlider from '../utils/VolumeSlider';
-import { fadeIn, fadeOut } from '../utils/fadeFunctions';
+import IFPlayer from './types/IFPlayer';
+import VolumeSlider from './VolumeSlider';
+import { fadeIn, fadeOut } from './fadeFunctions';
 import { fadeInputHandler, loadNewVideo } from '../utils/utils';
-import { fadeIntervalControlType, localVolumeControlType } from './states';
+import { fadeIntervalControlType, localVolumeControlType } from './types/states';
 
 interface PlayerComponentProps {
     playerId: number;

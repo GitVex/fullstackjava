@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import VolumeSlider from '../VolumeSlider';
+import VolumeSlider from '../../Player/VolumeSlider';
 
 function Tester() {
     const [localVolume, setLocalVolume] = useState(50);

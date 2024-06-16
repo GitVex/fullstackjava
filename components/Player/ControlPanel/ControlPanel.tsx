@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { presetControlType } from '../../contexts/states';
-import { fadeIntervalsControlType, localVolumesControlType } from '../states';
+import { fadeIntervalsControlType, localVolumesControlType } from '../types/states';
 import GroupFadeControl from './GroupFadeControl';
 import InitialPlayerLoader from './InitialPlayerLoader';
 import SelectionsViewer from './SelectionsViewer';

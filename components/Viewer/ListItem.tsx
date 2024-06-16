@@ -1,8 +1,8 @@
 import { track, tag } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { useLoadVideoInLongestPausedPlayer } from '../utils/AddHandler';
-import NotificationButton from '../utils/NotificationButton';
+import { useLoadVideoInLongestPausedPlayer } from './hooks/useLoadVideoInLongestPausedPlayer';
+import NotificationButton from './NotificationButton';
 import ScrollTitle from './ScrollTitle';
 
 interface ListItemProps {
@@ -12,6 +12,7 @@ interface ListItemProps {
 function ListItem({ item }: ListItemProps) {
     const loadVideo = useLoadVideoInLongestPausedPlayer();
     const [showTags, setShowTags] = useState(false);
+    const tagString = item.tags.map((tag) => tag.name).join(', ');
 
     return (
         <div
@@ -32,18 +33,11 @@ function ListItem({ item }: ListItemProps) {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: showTags ? 1 : 0 }}
-                        transition={{ duration: 0.35 }}
+                        transition={{ duration: 0.25 }}
                     >
                         <p className="truncate text-slate-600">
                             <em>
-                                {showTags &&
-                                    //@ts-ignore
-                                    item.tags.map((tag, index) => (
-                                        <span key={tag.id}>
-                                            {tag.name}
-                                            {index < item.tags.length - 1 ? ', ' : ''}
-                                        </span>
-                                    ))}
+                                {showTags && tagString}
                             </em>
                         </p>
                     </motion.div>

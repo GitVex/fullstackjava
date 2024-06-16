@@ -1,6 +1,6 @@
-import IFPlayer from './IFPlayer';
-import { DEFAULT_EASE, DEFAULT_FADE_INTERVAL, DEFAULT_FADE_STEP } from './DEFAULTS';
-import { fadeIntervalControlEndType, localVolumeControlEndType } from '../Player/states';
+import IFPlayer from './types/IFPlayer';
+import { DEFAULT_EASE, DEFAULT_FADE_INTERVAL, DEFAULT_FADE_STEP } from '../utils/DEFAULTS';
+import { fadeIntervalControlEndType, localVolumeControlEndType } from './types/states';
 
 export interface FadeOptions {
     framePlayer: IFPlayer | null;

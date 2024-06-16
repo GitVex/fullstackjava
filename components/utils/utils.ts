@@ -1,7 +1,7 @@
 import React from 'react';
 import { PlayerStateAction } from '../contexts/states';
-import IFPlayer from './IFPlayer';
-import { FadeOptions, fadeIn, fadeTo } from './fadeFunctions';
+import IFPlayer from '../Player/types/IFPlayer';
+import { FadeOptions, fadeIn, fadeTo } from '../Player/fadeFunctions';
 
 function findExtremeIndex(
 	array: number[],
