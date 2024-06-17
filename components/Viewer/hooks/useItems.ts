@@ -26,15 +26,20 @@ export function useItems(type: string) {
         route = '/api/viewer/list';
     }
 
-    const regFetcher = (route: string) => (() => fetcher(route));
+    const regularFilter = (route: string) => (() => fetcher(route));
     const FilteredFetcher = (route: string, filter: string[]) => (() => fetcher(route, { filter: filter }));
 
-    const { data, error, isLoading, mutate } = useSWR<track & { tags: tag[] }[], Error>(
-        type === 'filter' ? ['/api/viewer/filter', filter] : route,
-        type === 'filter' ? FilteredFetcher(route, filter) : regFetcher(route),
+    const key = type === 'filter' ? ['/api/viewer/filter', filter] : route;
+    const fetcherConfig = type === 'filter' ? FilteredFetcher(route, filter) : regularFilter(route);
+
+    const {
+        data,
+        error,
+        isLoading, mutate,
+    } = useSWR<track & { tags: tag[] }[], Error>(key, fetcherConfig,
         {
             revalidateOnFocus: false,
-            refreshInterval: 1000 * 60 * 20,
+            refreshInterval: 1000 * 60 * 5,
         },
     );
 
