@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
-import { usePlayerHolder } from '../../contexts/PlayerHolderProvider';
-import { presetControlType } from '../../contexts/states';
+import { usePlayerHolder } from '../../Contexts/PlayerHolderProvider';
 import { loadNewVideo } from '../../utils/utils';
-import { localVolumesControlType } from '../types/states';
+import { usePlayerControls } from '../Contexts/PlayerControlsProvider';
 
 interface InitialPlayerLoaderProps {
     onLoaded: () => void;
-    localVolumesControls: localVolumesControlType;
-    presetControls: presetControlType;
 }
 
-function InitialPlayerLoader(props: InitialPlayerLoaderProps) {
-    const { presetState, presetDispatch } = props.presetControls;
-    const { localVolumesDispatch } = props.localVolumesControls;
-    const { onLoaded } = props;
+function InitialPlayerLoader({ onLoaded }: InitialPlayerLoaderProps) {
+
+    const {
+        presetState,
+        presetDispatch,
+        localVolumesDispatch,
+    } = usePlayerControls();
 
     const playerHolder = usePlayerHolder();
     const [allPlayersReady, setAllPlayersReady] = useState(false);

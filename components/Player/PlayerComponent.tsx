@@ -1,70 +1,19 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { useDebounceCallback } from 'usehooks-ts';
-import { usePlayerHolderById } from '../contexts/PlayerHolderProvider';
-import { presetControlType } from '../contexts/states';
-import IFPlayer from './types/IFPlayer';
 import VolumeSlider from './VolumeSlider';
 import { fadeIn, fadeOut } from './fadeFunctions';
 import { fadeInputHandler, loadNewVideo } from '../utils/utils';
-import { fadeIntervalControlType, localVolumeControlType } from './types/states';
+import { usePlayerLocalControls } from './Contexts/PlayerLocalControlsProvider';
+import { usePlayerControls } from './Contexts/PlayerControlsProvider';
 
-interface PlayerComponentProps {
-    playerId: number;
-    masterVolumeModifier: number;
-    presetControls: presetControlType;
-    fadeIntervalControl: fadeIntervalControlType;
-    localVolumeControl: localVolumeControlType;
-}
-
-function PlayerComponent(props: PlayerComponentProps) {
-    const ID = `player${props.playerId}`;
-    const { playerId, masterVolumeModifier, presetControls, fadeIntervalControl, localVolumeControl } = props;
-    const playerInPreset = presetControls.presetState.players[playerId];
-    const framePlayer = usePlayerHolderById(playerId).player as IFPlayer;
-
-    const debouncedPresetDispatch = useDebounceCallback(presetControls.presetDispatch, 750);
-
-    const [savedVolume, setSavedVolume] = useState({ hasSaved: false, prevVol: 0 });
-
-    const currentFadeInterval = fadeIntervalControl.currentFadeInterval;
-    const setCurrentFadeInterval = (interval: NodeJS.Timeout | null) =>
-        fadeIntervalControl.currentFadeIntervalDispatch({
-            type: 'setCurrentFadeInterval',
-            index: playerId,
-            payload: interval,
-        });
-
-    const selected = playerInPreset?.selected ?? false;
-    const setSelected = () => {
-        debouncedPresetDispatch?.({
-            type: selected ? 'deselect' : 'select',
-            index: playerId,
-        });
-    };
-
-    const localVolume = localVolumeControl.localVolume;
-    const setLocalVolume = (vol: number) => {
-        if (!framePlayer) return;
-
-        localVolumeControl.localVolumeDispatch({
-            type: 'setVolume',
-            index: playerId,
-            payload: vol,
-        });
-        debouncedPresetDispatch({
-            type: 'setVolume',
-            index: playerId,
-            payload: vol,
-        });
-    };
-
-    useEffect(() => {
-        if (!framePlayer || framePlayer?.setVolume === undefined) {
-            return;
-        }
-        framePlayer.setVolume(localVolume * masterVolumeModifier);
-    }, [framePlayer, localVolume, masterVolumeModifier]);
+function PlayerComponent() {
+    const {
+        selected,
+        setSelected,
+        playerId,
+        localVolume,
+        setLocalVolume,
+    } = usePlayerLocalControls();
+    const ID = `player${playerId}`;
 
     return (
         <motion.div
@@ -91,67 +40,121 @@ function PlayerComponent(props: PlayerComponentProps) {
                     opaque={true}
                 />
             </div>
-            <div className="flex h-1/5 w-full flex-row items-center justify-center gap-2" onClick={e => e.stopPropagation()}>
-                <input
-                    type="text"
-                    className="w-2/5 rounded bg-gray-800/50 p-1"
-                    placeholder="Video ID"
-                    onKeyDown={e => {
-                        if (e.key !== 'Enter') return;
-                        loadNewVideo(
-                            playerId,
-                            debouncedPresetDispatch,
-                            framePlayer,
-                            (e.target as HTMLInputElement).value,
-                            localVolume * masterVolumeModifier,
-                        );
-                    }}
-                />
-                <button
-                    className="w-1/5 rounded bg-gray-800/50 p-1 disabled:opacity-50"
-                    onClick={() => {
-                        fadeIn({
-                            framePlayer,
-                            localVolumeControl: { localVolume, setLocalVolume },
-                            savedVolumeControl: { savedVolume, setSavedVolume },
-                            fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
-                        });
-                    }}
-                    disabled={!framePlayer}
-                >
-                    Fade In
-                </button>
-                <input
-                    type="text"
-                    className=" w-1/5 rounded bg-gray-800/50 p-1"
-                    placeholder="Volume"
-                    onKeyDown={e => {
-                        fadeInputHandler(e, {
-                            framePlayer,
-                            localVolumeControl: { localVolume, setLocalVolume },
-                            savedVolumeControl: { savedVolume, setSavedVolume },
-                            fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
-                        });
-                    }}
-                />
-                <button
-                    className="w-2/6 rounded bg-gray-800/50 p-1 disabled:opacity-50"
-                    onClick={() => {
-                        fadeOut({
-                            framePlayer,
-                            localVolumeControl: { localVolume, setLocalVolume },
-                            savedVolumeControl: { savedVolume, setSavedVolume },
-                            fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
-                            pLimit: 0,
-                        });
-                    }}
-                    disabled={!framePlayer}
-                >
-                    Fade Out
-                </button>
+            <div className="flex h-1/5 w-full flex-row items-center justify-center gap-2"
+                 onClick={e => e.stopPropagation()}>
+                <LoadVideoInput />
+                <FadeInButton />
+                <FadeToInput />
+                <FadeOutButton />
             </div>
         </motion.div>
     );
 }
 
 export default PlayerComponent;
+
+function LoadVideoInput() {
+    const { playerId, framePlayer, localVolume } = usePlayerLocalControls();
+    const { debouncedPresetDispatch, masterVolumeModifier } = usePlayerControls();
+
+    const handleKeyDown = (e: any) => {
+        if (e.key !== 'Enter') return;
+        if (!framePlayer) return;
+        loadNewVideo(
+            playerId,
+            debouncedPresetDispatch,
+            framePlayer,
+            (e.target as HTMLInputElement).value,
+            localVolume * masterVolumeModifier,
+        );
+    };
+
+    return <input
+        type="text"
+        className="w-2/5 rounded bg-gray-800/50 p-1"
+        placeholder="Video ID"
+        onKeyDown={handleKeyDown}
+    />;
+}
+
+function FadeInButton() {
+    const {
+        framePlayer,
+        localVolume,
+        setLocalVolume,
+        savedVolume,
+        setSavedVolume,
+        currentFadeInterval,
+        setCurrentFadeInterval,
+    } = usePlayerLocalControls();
+
+    return <button
+        className="w-1/5 rounded bg-gray-800/50 p-1 disabled:opacity-50"
+        onClick={() => {
+            fadeIn({
+                framePlayer,
+                localVolumeControl: { localVolume, setLocalVolume },
+                savedVolumeControl: { savedVolume, setSavedVolume },
+                fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
+            });
+        }}
+        disabled={!framePlayer}
+    >
+        Fade In
+    </button>;
+}
+
+function FadeToInput() {
+    const {
+        framePlayer,
+        localVolume,
+        setLocalVolume,
+        savedVolume,
+        setSavedVolume,
+        currentFadeInterval,
+        setCurrentFadeInterval,
+    } = usePlayerLocalControls();
+
+    return <input
+        type="text"
+        className=" w-1/5 rounded bg-gray-800/50 p-1"
+        placeholder="Volume"
+        onKeyDown={e => {
+            fadeInputHandler(e, {
+                framePlayer,
+                localVolumeControl: { localVolume, setLocalVolume },
+                savedVolumeControl: { savedVolume, setSavedVolume },
+                fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
+            });
+        }}
+        disabled={!framePlayer}
+    />;
+}
+
+function FadeOutButton() {
+    const {
+        framePlayer,
+        localVolume,
+        setLocalVolume,
+        savedVolume,
+        setSavedVolume,
+        currentFadeInterval,
+        setCurrentFadeInterval,
+    } = usePlayerLocalControls();
+
+    return <button
+        className="w-2/6 rounded bg-gray-800/50 p-1 disabled:opacity-50"
+        onClick={() => {
+            fadeOut({
+                framePlayer,
+                localVolumeControl: { localVolume, setLocalVolume },
+                savedVolumeControl: { savedVolume, setSavedVolume },
+                fadeIntervalControl: { currentFadeInterval, setCurrentFadeInterval },
+                pLimit: 0,
+            });
+        }}
+        disabled={!framePlayer}
+    >
+        Fade Out
+    </button>;
+}

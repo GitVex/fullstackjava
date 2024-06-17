@@ -1,39 +1,13 @@
-import { useEffect, useReducer, useState } from 'react';
-import { usePresetState } from '../contexts/PlayerHolderProvider';
-import { useWindowSize } from '../contexts/WindowSizeProvider';
+import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import VolumeSlider from './VolumeSlider';
 import ControlPanel from './ControlPanel/ControlPanel';
 import PlayerComponent from './PlayerComponent';
-import { FadeIntervalsState, LocalVolumesState, fadeIntervalsReducer, localVolumesReducer } from './types/states';
-import { useDebounceCallback } from 'usehooks-ts';
-import { DEFAULT_VOLUME } from '../utils/DEFAULTS';
-
-const initialFadeIntervals: FadeIntervalsState = {
-    fadeIntervals: Array(9).fill(null),
-};
-
-const initialVolumes: LocalVolumesState = {
-    volume: Array(8).fill(DEFAULT_VOLUME),
-};
+import { PlayerLocalControlsProvider } from './Contexts/PlayerLocalControlsProvider';
+import { usePlayerControls } from './Contexts/PlayerControlsProvider';
 
 function PlayerUI() {
-    const { windowHeight, windowWidth } = useWindowSize()
-
-    const presetControls = usePresetState();
-    const { presetState, presetDispatch } = presetControls;
-    const debouncedPresetDispatch = useDebounceCallback(presetDispatch, 1000);
-
-    const [localVolumes, localVolumesDispatch] = useReducer(localVolumesReducer, initialVolumes);
-
-    const [masterVolume, setMasterVolume] = useState(presetState.masterVolume);
-    const [masterVolumeModifier, setMasterVolumeModifier] = useState(presetState.masterVolume / 100);
-
-    const [fadeIntervals, fadeIntervalDispatch] = useReducer(fadeIntervalsReducer, initialFadeIntervals);
-
-    useEffect(() => {
-        setMasterVolumeModifier(masterVolume / 100);
-        debouncedPresetDispatch({ type: 'setMasterVolume', payload: masterVolume });
-    }, [masterVolume, debouncedPresetDispatch]);
+    const { windowHeight, windowWidth } = useWindowSize();
+    const { masterVolume, setMasterVolume } = usePlayerControls();
 
     return (
         <div
@@ -45,27 +19,14 @@ function PlayerUI() {
                 <div className="flex w-full flex-col items-center">
                     <div className="grid grid-cols-2 grid-rows-4 gap-2">
                         {[0, 1, 2, 3, 4, 5, 6, 7].map(id => (
-                            <PlayerComponent
-                                key={id}
-                                playerId={id}
-                                masterVolumeModifier={masterVolumeModifier}
-                                presetControls={{
-                                    presetState,
-                                    presetDispatch,
-                                }}
-                                fadeIntervalControl={{
-                                    currentFadeInterval: fadeIntervals.fadeIntervals[id],
-                                    currentFadeIntervalDispatch: fadeIntervalDispatch,
-                                }}
-                                localVolumeControl={{
-                                    localVolume: localVolumes.volume[id],
-                                    localVolumeDispatch: localVolumesDispatch,
-                                }}
-                            />
+                            <PlayerLocalControlsProvider playerId={id} key={id}>
+                                <PlayerComponent />
+                            </PlayerLocalControlsProvider>
                         ))}
                     </div>
                 </div>
-                <div className="flex w-28 h-full flex-col items-center gap-4 rounded border-2 border-darknavy-700/50 bg-darknavy-500/50 p-1">
+                <div
+                    className="flex w-28 h-full flex-col items-center gap-4 rounded border-2 border-darknavy-700/50 bg-darknavy-500/50 p-1">
                     <p className="text-center">Master Volume</p>
                     <VolumeSlider
                         volumeControl={{
@@ -77,14 +38,7 @@ function PlayerUI() {
                 </div>
             </div>
 
-            <ControlPanel
-                presetControls={presetControls}
-                fadeIntervalsControls={{
-                    currentFadeIntervals: fadeIntervals.fadeIntervals,
-                    currentFadeIntervalDispatch: fadeIntervalDispatch,
-                }}
-                localVolumesControls={{ localVolumes: localVolumes.volume, localVolumesDispatch }}
-            />
+            <ControlPanel />
         </div>
     );
 }

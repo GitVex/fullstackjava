@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayerStateAction } from '../contexts/states';
+import { PlayerStateAction } from '../Contexts/states';
 import IFPlayer from '../Player/types/IFPlayer';
 import { FadeOptions, fadeIn, fadeTo } from '../Player/fadeFunctions';
 

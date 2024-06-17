@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useFilter } from '../../contexts/FilterStateProvider';
+import { useFilter } from '../../Contexts/FilterStateProvider';
 
 const fetcher = (url: string, filterState: string[]) =>
     fetch(url, {

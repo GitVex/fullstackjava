@@ -15,13 +15,13 @@ export interface FadeOptions {
 }
 
 function fade({
-    framePlayer,
-    localVolumeControl,
-    fadeIntervalControl,
-    pLimit,
-    inverse = false,
-    savedVolumeControl,
-}: FadeOptions) {
+                  framePlayer,
+                  localVolumeControl,
+                  fadeIntervalControl,
+                  pLimit,
+                  inverse = false,
+                  savedVolumeControl,
+              }: FadeOptions) {
     if (!framePlayer) return;
 
     const { localVolume: volume, setLocalVolume: setVolume } = localVolumeControl;
@@ -62,6 +62,7 @@ function fade({
     }
 
     let runner = startVolume;
+
     function step() {
         // Calculate next volume based on direction
         let nextVolume = inverse

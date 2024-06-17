@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { useWindowSize } from '../contexts/WindowSizeProvider';
+import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import CreateUI from './CreateUI';
 

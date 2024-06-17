@@ -4,9 +4,9 @@ import FilterSideMenu from './Filter/FilterSideMenu';
 import PlayerTopMenu from './Player/PlayerTopMenu';
 import { ViewColumn } from './Viewer/ViewColumn';
 import { Viewer } from './Viewer/Viewer';
-import PlayerHolderProvider from './contexts/PlayerHolderProvider';
-import FilterStateProvider from './contexts/FilterStateProvider';
-import { useWindowSize } from './contexts/WindowSizeProvider';
+import PlayerHolderProvider from './Contexts/PlayerHolderProvider';
+import FilterStateProvider from './Contexts/FilterStateProvider';
+import { useWindowSize } from './Contexts/WindowSizeProvider';
 import { breakpoints } from './utils/breakpoints';
 
 function renderViewColumn(widthClass: string, type: string, windowHeight: number) {

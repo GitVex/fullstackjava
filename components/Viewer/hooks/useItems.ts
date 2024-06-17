@@ -1,7 +1,7 @@
 // useItems.ts
 import useSWR from 'swr';
 import { track, tag } from '@prisma/client';
-import { useFilter } from '../../contexts/FilterStateProvider';
+import { useFilter } from '../../Contexts/FilterStateProvider';
 
 const fetcher = (url: string, body?: any) =>
     fetch(url, {

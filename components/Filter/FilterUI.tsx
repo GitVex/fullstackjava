@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useFilter } from '../contexts/FilterStateProvider';
+import { useFilter } from '../Contexts/FilterStateProvider';
 import TagItem from './TagItem';
 import useTags from './hooks/useTags';
 import { AnimatePresence, motion } from 'framer-motion';

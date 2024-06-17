@@ -1,4 +1,4 @@
-import { usePlayerHolder, usePresetState } from '../../contexts/PlayerHolderProvider';
+import { usePlayerHolder, usePresetState } from '../../Contexts/PlayerHolderProvider';
 import { argMin, loadNewVideo } from '../../utils/utils';
 
 export const useLoadVideoInLongestPausedPlayer = () => {

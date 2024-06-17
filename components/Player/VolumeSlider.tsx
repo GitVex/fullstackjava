@@ -11,6 +11,9 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     color: '#FF0000',
+                    '&.Mui-active': {
+                        color: '#FF0000',
+                    },
                 },
                 thumb: {
                     backgroundColor: 'red',
@@ -20,9 +23,6 @@ const theme = createTheme({
                 },
                 rail: {
                     color: '#8B0F2A',
-                },
-                active: {
-                    color: 'red',
                 },
                 valueLabel: {
                     backgroundColor: 'transparent',

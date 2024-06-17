@@ -69,12 +69,12 @@ export interface LocalVolumesState {
 }
 
 /**
- * @typedef SetLocalVolumesAction
+ * @typedef LocalVolumesAction
  * @property {'setVolume'} type - The type of action to be performed.
  * @property {number} index - The index of the volume to be set.
  * @property {number} payload - The new volume level.
  */
-export interface SetLocalVolumesAction {
+export interface LocalVolumesAction {
     type: 'setVolume';
     index: number;
     payload: number;
@@ -83,10 +83,10 @@ export interface SetLocalVolumesAction {
 /**
  * Reducer function for local volumes.
  * @param {LocalVolumesState} state - The current state.
- * @param {SetLocalVolumesAction} action - The action to be performed.
+ * @param {LocalVolumesAction} action - The action to be performed.
  * @returns {LocalVolumesState} - The new state.
  */
-export const localVolumesReducer = (state: LocalVolumesState, action: SetLocalVolumesAction): LocalVolumesState => {
+export const localVolumesReducer = (state: LocalVolumesState, action: LocalVolumesAction): LocalVolumesState => {
     switch (action.type) {
         case 'setVolume':
             return {
@@ -245,21 +245,21 @@ export const playerUrlReducer = (state: PlayerUrlState, action: PlayerUrlAction)
 /**
  * @typedef localVolumesControlType
  * @property {number[]} localVolumes - An array of local volumes.
- * @property {React.Dispatch<SetLocalVolumesAction>} localVolumesDispatch - Dispatch function for local volumes.
+ * @property {React.Dispatch<LocalVolumesAction>} localVolumesDispatch - Dispatch function for local volumes.
  */
 export interface localVolumesControlType {
     localVolumes: number[];
-    localVolumesDispatch: React.Dispatch<SetLocalVolumesAction>;
+    localVolumesDispatch: React.Dispatch<LocalVolumesAction>;
 }
 
 /**
  * @typedef localVolumeControlType
  * @property {number} localVolume - The local volume.
- * @property {React.Dispatch<SetLocalVolumesAction>} localVolumeDispatch - Dispatch function for local volume.
+ * @property {React.Dispatch<LocalVolumesAction>} localVolumeDispatch - Dispatch function for local volume.
  */
 export interface localVolumeControlType {
     localVolume: number;
-    localVolumeDispatch: React.Dispatch<SetLocalVolumesAction>;
+    localVolumeDispatch: React.Dispatch<LocalVolumesAction>;
 }
 
 /**

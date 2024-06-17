@@ -1,14 +1,16 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useWindowSize } from '../contexts/WindowSizeProvider';
+import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import PlayerUI from './PlayerUI';
+
+import { PlayerControlsProvider } from './Contexts/PlayerControlsProvider';
 
 let DEFAULT_ISOPENPLAYER_STATE: boolean;
 DEFAULT_ISOPENPLAYER_STATE = process.env.NODE_ENV === 'development';
 
 function PlayerTopMenu() {
-    const { windowWidth, windowHeight } = useWindowSize()
+    const { windowWidth, windowHeight } = useWindowSize();
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
@@ -68,7 +70,9 @@ function PlayerTopMenu() {
                 className="absolute top-0 left-0"
             >
                 {/* @ts-ignore */}
-                <PlayerUI />
+                <PlayerControlsProvider>
+                    <PlayerUI />
+                </PlayerControlsProvider>
             </motion.div>
         </>
     ) : (
