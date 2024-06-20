@@ -9,7 +9,7 @@ import {
 } from './states';
 import { useWindowSize } from './WindowSizeProvider';
 
-import { DEFAULT_VIDEO_ID, DEFAULT_VOLUME } from '../utils/DEFAULTS';
+import { DEFAULT_VIDEO_ID, DEFAULT_VOLUME, GLOBAL_DISABLE_SAVE_PRESET } from '../utils/DEFAULTS';
 
 const maxPlayers = 8;
 
@@ -117,6 +117,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
     const handleBeforeUnload = useCallback(
         (e: BeforeUnloadEvent) => {
+            if (GLOBAL_DISABLE_SAVE_PRESET /* || disablePreset */) return;
             savePersistPreset(presetState);
             e.preventDefault();
             e.returnValue = '';

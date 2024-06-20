@@ -1,7 +1,7 @@
 // useItems.ts
 import useSWR from 'swr';
-import { track, tag } from '@prisma/client';
 import { useFilter } from '../../Contexts/FilterStateProvider';
+import TItem from '../types/TItem';
 
 const fetcher = (url: string, body?: any) =>
     fetch(url, {
@@ -36,10 +36,10 @@ export function useItems(type: string) {
         data,
         error,
         isLoading, mutate,
-    } = useSWR<track & { tags: tag[] }[], Error>(key, fetcherConfig,
+    } = useSWR<TItem[], Error>(key, fetcherConfig,
         {
             revalidateOnFocus: false,
-            refreshInterval: 1000 * 60 * 5,
+            refreshInterval: 1000 * 60 * 10,
         },
     );
 

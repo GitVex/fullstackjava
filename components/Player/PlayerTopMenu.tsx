@@ -2,12 +2,10 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
+import { DEFAULT_ISOPENPLAYER_STATE } from '../utils/DEFAULTS';
 import PlayerUI from './PlayerUI';
 
 import { PlayerControlsProvider } from './Contexts/PlayerControlsProvider';
-
-let DEFAULT_ISOPENPLAYER_STATE: boolean;
-DEFAULT_ISOPENPLAYER_STATE = process.env.NODE_ENV === 'development';
 
 function PlayerTopMenu() {
     const { windowWidth, windowHeight } = useWindowSize();
@@ -67,7 +65,7 @@ function PlayerTopMenu() {
                 initial={{ y: yInit }}
                 animate={isOpenPlayer ? { y: 0 } : { y: yInit }}
                 transition={{ duration: 1, ease: 'easeInOut' }}
-                className="absolute top-0 left-0"
+                className="absolute z-20 top-0 left-0"
             >
                 {/* @ts-ignore */}
                 <PlayerControlsProvider>

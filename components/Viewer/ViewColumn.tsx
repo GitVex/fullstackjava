@@ -4,20 +4,19 @@ import React, { useState } from 'react';
 import { useItems } from './hooks/useItems';
 import LoadingAnim from '../utils/LoadingAnimDismount';
 import ListItem from './ListItem';
+import { Virtuoso } from 'react-virtuoso';
+import TItem from './types/TItem';
 
 interface ViewColumnProps {
-    className?: string;
-    style?: React.CSSProperties;
     type?: string;
-
 }
 
-export function ViewColumn({ className, style, type = 'list' }: ViewColumnProps) {
+export function ViewColumn({ type = 'list' }: ViewColumnProps) {
     const [search, setSearch] = useState('');
     const { data: items, isError, isLoading } = useItems(type);
 
     return (
-        <div className={className} style={style}>
+        <div className="h-full">
             <AnimatePresence mode="wait">
                 {isError && (<p>Error: {isError.message}</p>)}
                 {isLoading && (
@@ -26,7 +25,7 @@ export function ViewColumn({ className, style, type = 'list' }: ViewColumnProps)
                     </motion.div>
                 )}
                 {items && (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 h-full">
                         <input
                             type="text"
                             className="rounded bg-transparent p-1"
@@ -35,22 +34,14 @@ export function ViewColumn({ className, style, type = 'list' }: ViewColumnProps)
                                 setSearch(e.target.value);
                             }}
                         />
-                        <ul className="flex max-h-full flex-col gap-2">
-                            {items.map((item: any) => {
-                                if (
-                                    item.title.toLowerCase().includes(search.toLowerCase()) ||
-                                    item.artist.toLowerCase().includes(search.toLowerCase())
-                                ) {
-                                    return (
-                                        <li key={item.id}>
-                                            <ListItem item={item} />
-                                        </li>
-                                    );
-                                } else {
-                                    return null;
-                                }
-                            })}
-                        </ul>
+                        <Virtuoso
+                            data={items.filter((item: TItem) =>
+                                item.title.toLowerCase().includes(search.toLowerCase()) ||
+                                item.artist.toLowerCase().includes(search.toLowerCase()),
+                            )}
+                            itemContent={(index, item) => <ListItem item={item} />}
+                            style={{ position:'relative', zIndex: '0' , height: '100%', width: '100%' }}
+                        />
                     </div>
                 )}
             </AnimatePresence>

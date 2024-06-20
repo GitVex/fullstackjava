@@ -46,7 +46,7 @@ function CreateSideMenu() {
 
     return (
         <motion.div
-            className={`relative`}
+            className={`relative z-10`}
             animate={isOpenCreate ? 'open' : 'closed'}
             initial="closed"
             variants={SideBarVariants}
