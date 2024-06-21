@@ -2,12 +2,12 @@ import { usePlayerHolder, usePresetState } from '../../Contexts/PlayerHolderProv
 import { argMin, loadNewVideo } from '../../utils/utils';
 
 export const useLoadVideoInLongestPausedPlayer = () => {
-    const playerHolder = usePlayerHolder();
+    const { holders: playerHolder } = usePlayerHolder();
     const { presetState, presetDispatch } = usePresetState();
 
     return (url: string) => {
         // Check if players array is empty
-        if (presetState.players.length === 0) {
+        if (!presetState.players || presetState.players.length === 0) {
             console.error('No players available.');
             return;
         }
@@ -22,7 +22,7 @@ export const useLoadVideoInLongestPausedPlayer = () => {
         }
 
         // Retrieve the player using the index
-        const holder = playerHolder.holders[longestPausedIndex];
+        const holder = playerHolder[longestPausedIndex];
 
         if (holder && holder.player) {
             // Load the video into the player

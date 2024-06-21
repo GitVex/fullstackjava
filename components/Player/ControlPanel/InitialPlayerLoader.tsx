@@ -8,22 +8,21 @@ interface InitialPlayerLoaderProps {
 }
 
 function InitialPlayerLoader({ onLoaded }: InitialPlayerLoaderProps) {
-
     const {
         presetState,
         presetDispatch,
         localVolumesDispatch,
     } = usePlayerControls();
 
-    const playerHolder = usePlayerHolder();
+    const { holders: playerHolder } = usePlayerHolder();
     const [allPlayersReady, setAllPlayersReady] = useState(false);
 
-    const allReady = useCallback(() => playerHolder.holders.every(holder => holder.isReady), [playerHolder.holders]);
+    const allHoldersReady = useCallback(() => playerHolder.every(holder => holder.isReady), [playerHolder]);
 
     const checkAllPlayersReady = useCallback(() => {
-        if (allReady() && !allPlayersReady) {
+        if (allHoldersReady() && !allPlayersReady) {
             setAllPlayersReady(true);
-            playerHolder.holders.forEach((holder, idx) => {
+            playerHolder.forEach((holder, idx) => {
                 if (holder.player) {
                     localVolumesDispatch({
                         type: 'setVolume',
@@ -38,9 +37,9 @@ function InitialPlayerLoader({ onLoaded }: InitialPlayerLoaderProps) {
             setTimeout(() => onLoaded(), 100);
         }
     }, [
-        allReady,
+        allHoldersReady,
         allPlayersReady,
-        playerHolder.holders,
+        playerHolder,
         presetDispatch,
         localVolumesDispatch,
         presetState.players,
@@ -48,7 +47,7 @@ function InitialPlayerLoader({ onLoaded }: InitialPlayerLoaderProps) {
     ]);
 
     useEffect(() => {
-        const intervalId = setInterval(checkAllPlayersReady, 1000); // Increased interval to 1000ms (1 second)
+        const intervalId = setInterval(checkAllPlayersReady, 1000);
 
         return () => {
             clearInterval(intervalId);

@@ -25,6 +25,9 @@ interface PlayerControlsProviderType {
     presetState: PresetState;
     presetDispatch: React.Dispatch<PlayerStateAction>;
     debouncedPresetDispatch: any;
+    disablePersistPreset: boolean;
+    setDisablePersistPreset: React.Dispatch<React.SetStateAction<boolean>>;
+    clearPersistPreset: () => void;
     localVolumes: LocalVolumesState;
     localVolumesDispatch: React.Dispatch<LocalVolumesAction>;
     masterVolume: number;
@@ -38,8 +41,13 @@ interface PlayerControlsProviderType {
 const PlayerControlsContext = createContext<PlayerControlsProviderType | null>(null);
 
 export const PlayerControlsProvider = ({ children }: { children: ReactNode }) => {
-    const presetControls = usePresetState();
-    const { presetState, presetDispatch } = presetControls;
+    const {
+        presetState,
+        presetDispatch,
+        disablePersistPreset,
+        setDisablePersistPreset,
+        clearPersistPreset,
+    } = usePresetState();
     const debouncedPresetDispatch = useDebounceCallback(presetDispatch, 1000);
 
     const [localVolumes, localVolumesDispatch] = useReducer(localVolumesReducer, initialVolumes);
@@ -57,6 +65,9 @@ export const PlayerControlsProvider = ({ children }: { children: ReactNode }) =>
             presetState,
             presetDispatch,
             debouncedPresetDispatch,
+            disablePersistPreset,
+            setDisablePersistPreset,
+            clearPersistPreset,
             localVolumes,
             localVolumesDispatch,
             masterVolume,

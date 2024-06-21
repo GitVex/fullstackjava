@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
 import { usePlayerHolder } from '../../Contexts/PlayerHolderProvider';
 import IFPlayer from '../types/IFPlayer';
 import { fadeIn, fadeOut } from '../fadeFunctions';
 import { usePlayerControls } from '../Contexts/PlayerControlsProvider';
+import ControlPanelButton from './utils/ControlPanelButton';
 
 function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | null)[]) {
 
@@ -61,16 +61,11 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
     };
 }
 
-function GroupFadeControl({ initialLoadDone }: { initialLoadDone: boolean }) {
-    const [disable, setDisable] = useState(true);
-    const playerHolder = usePlayerHolder();
-    const framedPlayers = playerHolder.holders.map(holder => holder.player);
 
-    useEffect(() => {
-        if (initialLoadDone) return;
-        const allReady = playerHolder.holders.every(holder => holder.isReady);
-        setDisable(!allReady);
-    }, [playerHolder.holders, initialLoadDone]);
+function GroupFadeControl({ initialLoadDone }: { initialLoadDone: boolean }) {
+    const { holders } = usePlayerHolder();
+    const disable = !initialLoadDone;
+    const framedPlayers = holders.map(holder => holder.player);
 
     const handleGroupFadeIn = useHandleGroupFade('in', framedPlayers);
     const handleGroupFadeOut = useHandleGroupFade('out', framedPlayers);
@@ -78,20 +73,13 @@ function GroupFadeControl({ initialLoadDone }: { initialLoadDone: boolean }) {
     return (
         <div>
             <div className="flex flex-row gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-2">
-                <button
-                    className="w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50"
-                    onClick={() => handleGroupFadeIn()}
-                    disabled={disable}
-                >
+                <ControlPanelButton onClick={() => handleGroupFadeIn} disabled={disable}>
                     Fade In
-                </button>
-                <button
-                    className="w-fit rounded border-2 border-darknavy-700 bg-darknavy-500 px-2 py-1 disabled:opacity-50"
-                    onClick={() => handleGroupFadeOut()}
-                    disabled={disable}
-                >
+                </ControlPanelButton>
+
+                <ControlPanelButton onClick={() => handleGroupFadeOut()} disabled={disable}>
                     Fade Out
-                </button>
+                </ControlPanelButton>
             </div>
         </div>
     );

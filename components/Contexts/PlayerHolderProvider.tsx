@@ -24,14 +24,17 @@ const maxPlayers = 8;
 
 // ----------------- CONTEXT DECLARATION -----------------
 
-// Create a custom hook to handle the initialization of multiple youtubte iframe players on a page
-// This is a workaround for the fact that the youtube iframe api only allows one player per page
+// Create a custom hook to handle the initialization of multiple YouTube iframe players on a page
+// This is a workaround for the fact that the YouTube iframe api only allows one player per api call
 const PlayerHolderContext = React.createContext({} as PlayerHolderState);
 
 const PresetStateContext = React.createContext(
     {} as {
         presetState: PresetState;
         presetDispatch: React.Dispatch<PlayerStateAction>;
+        disablePersistPreset: boolean;
+        setDisablePersistPreset: React.Dispatch<React.SetStateAction<boolean>>;
+        clearPersistPreset: () => void;
     },
 );
 
@@ -60,6 +63,7 @@ const initialPlayerHolderState: PlayerHolderState = {
             player: null,
             isReady: false,
         })),
+    firstLoadDone: false,
 };
 
 // ----------------- HOOKS -----------------
@@ -97,6 +101,7 @@ export function usePlayerHolderById(id: number) {
 function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
     // ------- PRESET STATE PERSISTENCE -------
+
     const loadPersistPreset = (): PresetState => {
         const savedState = localStorage.getItem('presetState');
         if (savedState) return JSON.parse(savedState);
@@ -105,8 +110,14 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
     const savePersistPreset = (state: PresetState) => {
         localStorage.setItem('presetState', JSON.stringify(state));
     };
+    const clearPersistPreset = () => {
+        if (localStorage.getItem('presetState') === null) return;
+        console.log('clearing preset');
+        localStorage.removeItem('presetState');
+    };
 
     const [presetState, presetDispatch] = useReducer(playerStateReducer, initialPresetState);
+    const [disablePersistPreset, setDisablePersistPreset] = useState(GLOBAL_DISABLE_SAVE_PRESET);
 
     useEffect(() => {
         presetDispatch({
@@ -117,12 +128,12 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
     const handleBeforeUnload = useCallback(
         (e: BeforeUnloadEvent) => {
-            if (GLOBAL_DISABLE_SAVE_PRESET /* || disablePreset */) return;
+            if (disablePersistPreset) return;
             savePersistPreset(presetState);
             e.preventDefault();
             e.returnValue = '';
         },
-        [presetState],
+        [disablePersistPreset, presetState],
     );
 
     useEffect(() => {
@@ -147,12 +158,11 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
     const [playerHolder, dispatchPlayerHolder] = useReducer(playerHolderReducer, initialPlayerHolderState);
     const { windowHeight, windowWidth } = useWindowSize();
-    const [firstLoadDone, setFirstLoadDone] = useState(false);
 
     useEffect(() => {
 
         if (typeof window === 'undefined') return;
-        if (firstLoadDone) return;
+        if (playerHolder.firstLoadDone) return;
 
         let playerHolderTemp = [] as {
             id: number;
@@ -247,16 +257,14 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
 
             dispatchPlayerHolder({
                 type: 'init',
-                payload: { holders: playerHolderTemp },
+                payload: { holders: playerHolderTemp, firstLoadDone: true },
             });
-
-            setFirstLoadDone(true);
         };
 
         return () => {
             document.body.removeChild(container);
         };
-    }, [firstLoadDone, windowHeight, windowWidth]);
+    }, [playerHolder.firstLoadDone, windowHeight, windowWidth]);
 
     // ------- LISTENERS -------
 
@@ -269,8 +277,20 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
     }, [playerHolder]); */
 
     return (
-        <PresetStateContext.Provider value={{ presetState, presetDispatch }}>
-            <PlayerHolderContext.Provider value={playerHolder}>{children}</PlayerHolderContext.Provider>
+        <PresetStateContext.Provider
+            value={{
+                presetState,
+                presetDispatch,
+                disablePersistPreset,
+                setDisablePersistPreset,
+                clearPersistPreset,
+            }}>
+            <PlayerHolderContext.Provider value={{
+                holders: playerHolder.holders,
+                firstLoadDone: playerHolder.firstLoadDone,
+            }}>
+                {children}
+            </PlayerHolderContext.Provider>
         </PresetStateContext.Provider>
     );
 }
