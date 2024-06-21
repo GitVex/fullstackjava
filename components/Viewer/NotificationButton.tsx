@@ -56,7 +56,7 @@ const NotificationButton: React.FC<NotificationButtonProps> = ({
 							type: 'spring',
 							mass: 0.8,
 						}}
-						className='absolute h-5 w-full text-red-600'
+						className='absolute z-50 h-5 w-full text-red-600'
 					>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'

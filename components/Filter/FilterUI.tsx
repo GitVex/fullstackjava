@@ -5,6 +5,22 @@ import useTags from './hooks/useTags';
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingAnim from '../utils/LoadingAnimDismount';
 
+// Define the sorting function
+function sortTags(a: string, b: string, filter: string[]): number {
+    const aInFilter = filter.includes(a);
+    const bInFilter = filter.includes(b);
+
+    if (aInFilter && bInFilter) {
+        return 0;
+    } else if (aInFilter) {
+        return -1;
+    } else if (bInFilter) {
+        return 1;
+    } else {
+        return a.localeCompare(b);
+    }
+}
+
 function FilterUI() {
     const { filter, setFilter } = useFilter();
     const { tags, isLoading, isError } = useTags();
@@ -25,28 +41,26 @@ function FilterUI() {
     };
 
     return (
-        <div className="s flex h-full w-full flex-col gap-2 p-6">
-            <div className="h-full w-full rounded bg-blue-800/25 p-6">
-                <div className="flex max-h-full w-full flex-row flex-wrap gap-2 overflow-scroll">
-                    <div className="h-1/6 w-full">
-                        <input
-                            type="text"
-                            className="h-full w-full rounded bg-indigo-800/25 p-2"
-                            placeholder="Search..."
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                            }}
-                        />
-                    </div>
+        <div className="h-full w-full  p-6">
+            <div className="flex flex-col gap-2 h-full w-full rounded bg-blue-800/25 p-2">
+                <input
+                    type="text"
+                    className="w-full rounded bg-indigo-800/25 p-2"
+                    placeholder="Search..."
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                    }}
+                />
+                <div className="flex max-h-full w-full flex-row flex-wrap gap-2 overflow-y-auto">
                     <AnimatePresence mode="wait">
                         {isLoading && (
-                            <motion.div key="loader" className="self-center">
+                            <div key="loader" className="flex justify-center items-center w-full min-h-64">
                                 <LoadingAnim />
-                            </motion.div>
+                            </div>
                         )}
                         {isError && <div>Error loading tags.</div>}
                         {tags &&
-                            (tags.sort().map((tag: string, index: number) => {
+                            (tags.sort((a: string, b: string) => sortTags(a, b, filter)).map((tag: string, index: number) => {
                                 return (
                                     (tag.includes(search) ||
                                         search === '' ||
