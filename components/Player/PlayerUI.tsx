@@ -1,7 +1,7 @@
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import VolumeSlider from './VolumeSlider';
 import ControlPanel from './ControlPanel/ControlPanel';
-import PlayerComponent from './PlayerComponent';
+import PlayerComponent from './PlayerComponentRefit';
 import { PlayerLocalControlsProvider } from './Contexts/PlayerLocalControlsProvider';
 import { usePlayerControls } from './Contexts/PlayerControlsProvider';
 
