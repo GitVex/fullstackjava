@@ -43,7 +43,7 @@ function PlayerTopMenu() {
     return windowWidth !== null && windowWidth >= breakpoints.lg ? (
         <>
             <motion.div
-                className="relative z-20 flex justify-center"
+                className="relative z-30 flex justify-center"
                 onClick={() => setIsOpenPlayer(prevIsOpenPlayer => !prevIsOpenPlayer)}
                 variants={buttonVariants}
                 animate={isOpenPlayer ? 'open' : 'closed'}
