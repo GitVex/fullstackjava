@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
-import { DEFAULT_ISOPENPLAYER_STATE } from '../utils/DEFAULTS';
+import { DEFAULT_IS_OPEN_PLAYER_STATE } from '../utils/DEFAULTS';
 import PlayerUI from './PlayerUI';
 
 import { PlayerControlsProvider } from './Contexts/PlayerControlsProvider';
@@ -17,7 +17,7 @@ function PlayerTopMenu() {
         };
     }, []);
 
-    const [isOpenPlayer, setIsOpenPlayer] = useState(DEFAULT_ISOPENPLAYER_STATE);
+    const [isOpenPlayer, setIsOpenPlayer] = useState(DEFAULT_IS_OPEN_PLAYER_STATE);
     const yInit = windowHeight ? windowHeight * -1 : -1000;
 
     // create a listener that listens for the space bar keypress

@@ -131,10 +131,14 @@ export const playerStateReducer = (state: PresetState, action: PlayerStateAction
 // ------------------- PLAYER HOLDER REDUCER -------------------
 
 export interface PlayerHolderState {
-    holders: { player: IFPlayer | null; isReady: boolean }[];
+    holders: {
+        player: IFPlayer | null;
+        isReady: boolean
+    }[],
+    firstLoadDone: boolean;
 }
 
-export type PlayerHolderAction = SetPlayerAction | SetReadyAction | InitHolderAction;
+export type PlayerHolderAction = SetPlayerAction | SetReadyAction | InitHolderAction | SetFirstLoadDoneAction;
 
 interface InitHolderAction {
     type: 'init';
@@ -150,6 +154,10 @@ interface SetPlayerAction {
 interface SetReadyAction {
     index: number;
     type: 'setReady';
+}
+
+interface SetFirstLoadDoneAction {
+    type: 'setFirstLoadDone';
 }
 
 export const playerHolderReducer = (state: PlayerHolderState, action: PlayerHolderAction): PlayerHolderState => {
@@ -174,14 +182,12 @@ export const playerHolderReducer = (state: PlayerHolderState, action: PlayerHold
             };
         case 'init':
             return action.payload;
+        case 'setFirstLoadDone':
+            return {
+                ...state,
+                firstLoadDone: true,
+            };
         default:
             throw new Error();
     }
 };
-
-// ------------------- CONTROL STATES -------------------
-
-export interface presetControlType {
-    presetState: PresetState;
-    presetDispatch: React.Dispatch<PlayerStateAction>;
-}
