@@ -34,7 +34,8 @@ function CreateSideMenu() {
                     </div>
                     <motion.div
                         className={`absolute z-10 top-0`}
-                        animate={isOpenFilter ? { y: 0 } : { y: -windowHeight }}
+                        initial={{ y: -windowHeight - 100 }}
+                        animate={isOpenFilter ? { y: 0 } : { y: -windowHeight - 100 }}
                     >
                         <div className={'relative backdrop-blur-md h-screen w-screen'}
                         >
