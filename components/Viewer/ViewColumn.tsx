@@ -40,7 +40,7 @@ export function ViewColumn({ type = 'list' }: ViewColumnProps) {
                                 item.artist.toLowerCase().includes(search.toLowerCase()),
                             )}
                             itemContent={(index, item) => <ListItem item={item} />}
-                            style={{ position:'relative', zIndex: '0' , height: '100%', width: '100%' }}
+                            style={{ height: '100%', width: '100%' }}
                         />
                     </div>
                 )}

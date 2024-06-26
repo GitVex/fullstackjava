@@ -4,19 +4,29 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import { ViewColumn } from './ViewColumn';
+import ViewColumnMobile from './mobile/ViewColumnMobile';
 
-const ViewColumnWrapper = ({ widthClass, type, windowHeight }: { widthClass: string, type: string, windowHeight: number | null }) => (
-    <div
-        key={type}
-        className={`${widthClass} flex flex-col gap-2 overflow-x-hidden`}
-        style={{ height: (windowHeight ?? 0) - 4 * 20 }}
-    >
-        <p className="w-full rounded bg-indigo-900/25 text-center capitalize">{type}</p>
-        <div className="h-full scroll-smooth rounded bg-indigo-900/25 p-2">
-            <ViewColumn type={type} />
-        </div>
-    </div>
-);
+interface IViewColumnWrapperProps {
+    widthClass: string;
+    type: string;
+}
+
+const ViewColumnWrapper = ({ widthClass, type }: IViewColumnWrapperProps) => {
+        const { isMobile, windowHeight } = useWindowSize();
+        return (
+            <div
+                key={type}
+                className={`${widthClass} flex flex-col gap-2 overflow-x-hidden`}
+                style={{ height: (windowHeight ?? 0) - 4 * 20 }}
+            >
+                {!isMobile && <p className="w-full rounded bg-indigo-900/25 text-center capitalize">{type}</p>}
+                <div className="h-full scroll-smooth rounded bg-indigo-900/25 p-1">
+                    {!isMobile ? <ViewColumn type={type} /> : <ViewColumnMobile />}
+                </div>
+            </div>
+        );
+    }
+;
 
 export function Viewer() {
     const { windowWidth, windowHeight } = useWindowSize();
@@ -47,7 +57,6 @@ export function Viewer() {
                         key={type}
                         widthClass={columns.widthClass}
                         type={type}
-                        windowHeight={windowHeight}
                     />
                 ))}
             </QueryClientProvider>
