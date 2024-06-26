@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
-import { breakpoints } from '../utils/breakpoints';
 import { DEFAULT_IS_OPEN_PLAYER_STATE } from '../utils/DEFAULTS';
 import PlayerUI from './PlayerUI';
 
 import { PlayerControlsProvider } from './Contexts/PlayerControlsProvider';
 
 function PlayerTopMenu() {
-    const { windowWidth, windowHeight } = useWindowSize();
+    const { isMobile, windowHeight } = useWindowSize();
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
@@ -40,7 +39,7 @@ function PlayerTopMenu() {
         },
     };
 
-    return windowWidth !== null && windowWidth >= breakpoints.lg ? (
+    return !isMobile ? (
         <>
             <motion.div
                 className="relative z-30 flex justify-center"

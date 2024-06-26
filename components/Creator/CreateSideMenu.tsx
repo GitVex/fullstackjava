@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
-import { breakpoints } from '../utils/breakpoints';
 import CreateUI from './CreateUI';
 
 const menuWidth = 500;
@@ -26,25 +25,9 @@ const PlusVariants = {
 
 function CreateSideMenu() {
     const [isOpenCreate, setIsOpenCreate] = useState(false);
-    const [render, setRender] = useState(true);
+    const { isMobile } = useWindowSize();
 
-    const { windowWidth } = useWindowSize();
-
-    useEffect(() => {
-        if (windowWidth === null) return;
-
-        if (windowWidth <= breakpoints.sm) {
-            setRender(false);
-        }
-
-    }, [windowWidth]);
-
-    // Ensure the component renders consistently even if windowWidth is initially null
-    if (windowWidth === null || !render) {
-        return <></>;
-    }
-
-    return (
+    return !isMobile ? (
         <motion.div
             className={`relative z-10`}
             animate={isOpenCreate ? 'open' : 'closed'}
@@ -83,6 +66,8 @@ function CreateSideMenu() {
                 </svg>
             </motion.div>
         </motion.div>
+    ) : (
+        <></>
     );
 }
 

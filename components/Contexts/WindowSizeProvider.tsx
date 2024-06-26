@@ -1,13 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { breakpoints } from '../utils/breakpoints';
 
 interface WindowSizeContextType {
     windowWidth: number | null;
     windowHeight: number | null;
+    isMobile: boolean;
 }
 
 const WindowSizeContext = createContext<WindowSizeContextType>({
     windowWidth: null,
     windowHeight: null,
+    isMobile: false,
 });
 
 interface WindowSizeProviderProps {
@@ -17,11 +20,15 @@ interface WindowSizeProviderProps {
 export const WindowSizeProvider: React.FC<WindowSizeProviderProps> = ({ children }) => {
     const [windowWidth, setWindowWidth] = useState<number | null>(null);
     const [windowHeight, setWindowHeight] = useState<number | null>(null);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
 
     useEffect(() => {
         const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setWindowHeight(window.innerHeight);
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            setWindowWidth(width);
+            setWindowHeight(height);
+            setIsMobile(width < breakpoints.lg);
         };
 
         handleResize(); // Set initial values on mount
@@ -33,7 +40,11 @@ export const WindowSizeProvider: React.FC<WindowSizeProviderProps> = ({ children
         };
     }, []);
 
-    return <WindowSizeContext.Provider value={{ windowWidth, windowHeight }}>{children}</WindowSizeContext.Provider>;
+    return (
+        <WindowSizeContext.Provider value={{ windowWidth, windowHeight, isMobile }}>
+            {children}
+        </WindowSizeContext.Provider>
+    );
 };
 
 export const useWindowSize = (): WindowSizeContextType => {

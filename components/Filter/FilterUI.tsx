@@ -42,7 +42,7 @@ function FilterUI() {
 
     return (
         <div className="h-full w-full  p-6">
-            <div className="flex flex-col gap-2 h-full w-full rounded bg-blue-800/25 p-2">
+            <div className="flex flex-col gap-2 h-full w-full rounded bg-indigo-800/25 p-2">
                 <input
                     type="text"
                     className="w-full rounded bg-indigo-800/25 p-2"

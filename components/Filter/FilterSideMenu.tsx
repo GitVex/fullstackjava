@@ -75,3 +75,4 @@ export default function FilterSideMenu() {
         </motion.div>
     );
 }
+
