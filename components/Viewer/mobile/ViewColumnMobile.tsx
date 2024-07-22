@@ -1,4 +1,4 @@
-import { ViewColumn } from '../ViewColumn';
+import ViewColumn from '../ViewColumn';
 import { useFilter } from '../../Contexts/FilterStateProvider';
 
 function ViewColumnMobile() {
