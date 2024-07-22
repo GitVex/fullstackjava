@@ -11,7 +11,7 @@ interface ViewColumnProps {
     type?: string;
 }
 
-export function ViewColumn({ type = 'list' }: ViewColumnProps) {
+export default function ViewColumn({ type = 'list' }: ViewColumnProps) {
     const [search, setSearch] = useState('');
     const { data: items, isError, isLoading } = useItems(type);
 
@@ -39,8 +39,13 @@ export function ViewColumn({ type = 'list' }: ViewColumnProps) {
                                 item.title.toLowerCase().includes(search.toLowerCase()) ||
                                 item.artist.toLowerCase().includes(search.toLowerCase()),
                             )}
-                            itemContent={(index, item) => <ListItem item={item} />}
+                            itemContent={(_, item) => <ListItem item={item} />}
                             style={{ height: '100%', width: '100%' }}
+                            onKeyDown={(e) => {
+                                if (e.key === ' ') {
+                                    e.preventDefault();
+                                }
+                            }}
                         />
                     </div>
                 )}
