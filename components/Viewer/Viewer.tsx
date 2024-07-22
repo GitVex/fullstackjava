@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
-import { ViewColumn } from './ViewColumn';
+import ViewColumn from './ViewColumn';
 import ViewColumnMobile from './mobile/ViewColumnMobile';
 
 interface IViewColumnWrapperProps {
@@ -29,10 +29,10 @@ const ViewColumnWrapper = ({ widthClass, type }: IViewColumnWrapperProps) => {
 ;
 
 export function Viewer() {
-    const { windowWidth, windowHeight } = useWindowSize();
+    const { windowWidth } = useWindowSize();
 
     const columns = useMemo(() => {
-        if (windowWidth === null || windowHeight === null) {
+        if (windowWidth === null) {
             return null;
         }
 
@@ -45,12 +45,12 @@ export function Viewer() {
         } else {
             return { widthClass: 'w-full', types: ['new'] };
         }
-    }, [windowWidth, windowHeight]);
+    }, [windowWidth]);
 
     if (!columns) return null;
 
     return (
-        <div className="flex flex-1 flex-row gap-4 h-full">
+        <div className="flex flex-1 flex-row gap-4">
             <QueryClientProvider client={new QueryClient()}>
                 {columns.types.map((type) => (
                     <ViewColumnWrapper
