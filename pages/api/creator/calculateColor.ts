@@ -78,57 +78,6 @@ export async function getAverageColor(url: string, global_url?: boolean): Promis
     return { 'color': averageColorHex, 'luminance': luminosity };
 }
 
-//@ts-ignore
-export async function getDominantColor(url: string, global_url?: boolean): Promise<Jimp.RGBA> {
-
-
-    let thumbnailUrl = url;
-    if (global_url) {
-        const oembedUrl = `https://www.youtube.com/oembed?url=${url}&format=json`;
-        const oembedResponse = await fetch(oembedUrl);
-        const oembedJson = await oembedResponse.json();
-        thumbnailUrl = oembedJson.thumbnail_url;
-    }
-
-    const image = await Jimp.read(thumbnailUrl);
-
-    const colorCount: Record<string, number> = {};
-    let dominantColor;
-    const threshold = 10;
-    let dominantColor_rgba = { r: 0, g: 0, b: 0, a: 0 };
-    let maxCount = 0;
-
-    image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
-        const red = image.bitmap.data[idx];
-        const green = image.bitmap.data[idx + 1];
-        const blue = image.bitmap.data[idx + 2];
-        const alpha = image.bitmap.data[idx + 3];
-
-        if (red + green + blue < threshold) {
-            // Ignore this color
-            return;
-        }
-
-        const colorKey = `${red},${green},${blue},${alpha}`;
-
-        if (colorCount[colorKey]) {
-            colorCount[colorKey]++;
-        } else {
-            colorCount[colorKey] = 1;
-        }
-
-        if (colorCount[colorKey] > maxCount) {
-            maxCount = colorCount[colorKey];
-            dominantColor_rgba = { r: red, g: green, b: blue, a: alpha };
-        }
-    });
-
-    dominantColor = rgbToHex(dominantColor_rgba);
-    console.log(url, dominantColor);
-
-    return dominantColor;
-}
-
 export default async function handle(
     req: NextApiRequest,
     res: NextApiResponse,
@@ -166,7 +115,7 @@ export default async function handle(
         tracksWithColors.map(async (track) => {
             return prisma.track.update({
                 where: {
-                    id: track.id,
+                    track_id: track.track_id,
                 },
                 data: {
                     color: track.color,

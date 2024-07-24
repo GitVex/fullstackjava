@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import CreateUI from './CreateUI';
 

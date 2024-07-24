@@ -19,15 +19,16 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     // Query the database with pagination, excluding already sent IDs
     const result = await prisma.track.findMany({
         where: {
-            id: {
+            track_id: {
                 notIn: excludeIdsArray,
             },
         },
         orderBy: {
-            createdAt: 'desc',
+            created_at: 'desc',
         },
         include: {
             tags: true,
+            artist: true,
         },
         skip: pageNumber * pageSizeNumber,
         take: pageSizeNumber,

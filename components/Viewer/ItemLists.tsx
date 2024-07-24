@@ -44,7 +44,7 @@ export function ItemsList(props: IItemsListProps) {
                 <Virtuoso
                     data={items.filter((item: TItem) =>
                         item.title?.toLowerCase().includes(search.toLowerCase()) ||
-                        item.artist?.toLowerCase().includes(search.toLowerCase()),
+                        item.artist?.name.toLowerCase().includes(search.toLowerCase()),
                     )}
                     itemContent={(_, item) => <ListItem item={item} />}
                     style={{ height: '100%', width: '100%' }}

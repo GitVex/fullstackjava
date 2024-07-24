@@ -18,10 +18,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         skip: skip,
         take: pageSizeNumber,
         orderBy: {
-            createdAt: 'desc',
+            created_at: 'desc',
         },
         include: {
             tags: true,
+            artist: true,
         },
     });
 

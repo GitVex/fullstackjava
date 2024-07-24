@@ -18,7 +18,3 @@ export default function App({ Component, pageProps }: AppProps) {
 		</>
 	);
 }
-
-export function reportWebVitals(metric: NextWebVitalsMetric) {
-	console.log(metric);
-}

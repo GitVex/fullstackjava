@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useFilter } from '../Contexts/FilterStateProvider';
 import TagItem from './TagItem';
 import useTags from './hooks/useTags';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import LoadingAnim from '../utils/LoadingAnimDismount';
 
 // Define the sorting function

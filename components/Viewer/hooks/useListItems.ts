@@ -10,7 +10,7 @@ export function useListItems(pageSize: number = 10) {
         if (previousPageData && !previousPageData.data.length) return null;
 
         if (previousPageData) {
-            previousPageData.data.forEach(item => excludeIds.push(item.id));
+            previousPageData.data.forEach(item => excludeIds.push(item.track_id));
         }
 
         return `/api/viewer/list?page=${pageIndex}&pageSize=${pageSize}&excludeIds=${excludeIds.toString()}`;

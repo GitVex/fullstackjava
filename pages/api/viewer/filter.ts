@@ -26,6 +26,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         where: where,
         include: {
             tags: true,
+            artist: true,
         },
     });
 

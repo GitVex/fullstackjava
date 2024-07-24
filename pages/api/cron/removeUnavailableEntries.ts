@@ -9,7 +9,7 @@ export default async function handler(
     // first get all track urls
     const allTracks = await prisma.track.findMany({
         select: {
-            id: true,
+            track_id: true,
             url: true,
         },
     });
@@ -68,7 +68,7 @@ export default async function handler(
         tracksToBeDeleted.map(async (entry) => {
             prisma.track.delete({
                 where: {
-                    id: entry.id,
+                    track_id: entry.id,
                 },
             });
         }),

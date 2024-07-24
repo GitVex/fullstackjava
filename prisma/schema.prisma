@@ -1,46 +1,42 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider          = "postgresql"
-  url               = env("DATABASE_URL")
+  url               = "postgres://postgres.txyydnthsuzhsirhgoxe:wNAc5Ateh2dxt3tJ@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+  directUrl         = "postgres://postgres.txyydnthsuzhsirhgoxe:wNAc5Ateh2dxt3tJ@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
 }
 
 model track {
-  id              Int      @id @default(autoincrement())
-  title           String
-  artist          String
-  url             String   @unique
-  secondsDuration Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  platform        String
-  color           String   @default("#000000")
-  luminance       Float    @default(0)
-  tags            tag[]
-  presets         preset[]
+  track_id   Int      @id @default(autoincrement())
+  title      String
+  url        String   @unique
+  created_at DateTime @default(now())
+  platform   String
+  color      String   @default("#000000")
+  luminance  Float    @default(0)
+  artist_id  Int
+  artist     artist   @relation(fields: [artist_id], references: [artist_id])
+  presets    preset[] @relation("preset_to_track")
+  tags       tag[]    @relation("tag_to_track")
 }
 
 model tag {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tracks    track[]
+  tag_id     Int      @id @default(autoincrement())
+  name       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  tracks     track[]  @relation("tag_to_track")
 }
 
 model preset {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tracks    track[]
+  id         Int      @id @default(autoincrement())
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  tracks     track[]  @relation("preset_to_track")
 }
 
 model log {
@@ -49,4 +45,10 @@ model log {
   type    String
   message String
   history String[]
+}
+
+model artist {
+  artist_id Int     @id @default(autoincrement())
+  name      String  @db.VarChar(256) @unique
+  tracks    track[]
 }

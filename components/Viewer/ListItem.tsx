@@ -33,7 +33,7 @@ function ListItem({ item }: ListItemProps) {
                             transition={{ duration: 0.5 }}
                         >
                             <p className="truncate text-slate-600">
-                                <em>{item.artist}</em>
+                                <em>{item.artist.name}</em>
                             </p>
                         </motion.div>)
                     }
@@ -54,7 +54,7 @@ function ListItem({ item }: ListItemProps) {
                 </div>
             </div>
             <NotificationButton
-                id={item.id}
+                id={item.track_id}
                 color={item.color}
                 luminance={item.luminance}
                 onClick={() => navigator.clipboard.writeText(item.url)}
@@ -62,7 +62,7 @@ function ListItem({ item }: ListItemProps) {
                 Copy
             </NotificationButton>
             <NotificationButton
-                id={item.id}
+                id={item.track_id}
                 color={item.color}
                 luminance={item.luminance}
                 onClick={() => loadVideo(item.url)}

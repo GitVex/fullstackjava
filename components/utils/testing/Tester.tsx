@@ -6,7 +6,7 @@ function Tester() {
 
     const radius = 24;
     const circumference = 2 * Math.PI * radius;
-    const distance = 1 * circumference;
+    const distance = circumference;
     const rotation = (distance / circumference) * 360;
 
     return (

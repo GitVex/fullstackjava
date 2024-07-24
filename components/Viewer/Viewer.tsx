@@ -5,10 +5,11 @@ import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import { breakpoints } from '../utils/breakpoints';
 import ViewColumn from './ViewColumn';
 import ViewColumnMobile from './mobile/ViewColumnMobile';
+import TListType from './types/TListType';
 
 interface IViewColumnWrapperProps {
     widthClass: string;
-    type: string;
+    type: TListType;
 }
 
 const ViewColumnWrapper = ({ widthClass, type }: IViewColumnWrapperProps) => {
@@ -56,7 +57,7 @@ export function Viewer() {
                     <ViewColumnWrapper
                         key={type}
                         widthClass={columns.widthClass}
-                        type={type}
+                        type={type as TListType}
                     />
                 ))}
             </QueryClientProvider>
