@@ -1,7 +1,8 @@
 // ViewColumn.tsx
 import React, { useState } from 'react';
-import { FilterItemsList, ListItems, NewItemsList } from './ItemLists';
+import { FilterItemsList, ListItems, NewItemsList, SearchItemsList } from './ItemLists';
 import TListType from './types/TListType';
+import { useSearchItems } from './hooks/useSearchItems';
 
 interface ViewColumnProps {
     type?: TListType;
@@ -9,6 +10,7 @@ interface ViewColumnProps {
 
 export default function ViewColumn({ type = 'list' }: ViewColumnProps) {
     const [search, setSearch] = useState('');
+    const searchHook = useSearchItems(search, 30);
 
     return (
         <div className="h-full">
@@ -21,13 +23,12 @@ export default function ViewColumn({ type = 'list' }: ViewColumnProps) {
                         setSearch(e.target.value);
                     }}
                 />
-                {type === 'list' && <ListItems search={search} />}
-                {type === 'new' && <NewItemsList search={search} />}
-                {type === 'filter' && <FilterItemsList search={search} />}
-                {type === 'owned' && <ListItems search={search} />}
-                {type === 'trend' && <ListItems search={search} />}
-
-
+                {search !== '' && (<SearchItemsList hook={searchHook} />)}
+                {type === 'list' && <ListItems />}
+                {type === 'new' && <NewItemsList />}
+                {type === 'filter' && <FilterItemsList />}
+                {type === 'owned' && <ListItems />}
+                {type === 'trend' && <ListItems />}
             </div>
         </div>
     )
