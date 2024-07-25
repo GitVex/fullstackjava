@@ -70,7 +70,6 @@ export function ItemsList(props: IItemsListProps) {
     );
 }
 
-
 export function NewItemsList() {
     return (
         <ItemsList hook={useNewItems(30)} />

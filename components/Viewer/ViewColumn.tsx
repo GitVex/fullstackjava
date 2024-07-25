@@ -23,12 +23,12 @@ export default function ViewColumn({ type = 'list' }: ViewColumnProps) {
                         setSearch(e.target.value);
                     }}
                 />
-                {search !== '' && (<SearchItemsList hook={searchHook} />)}
-                {type === 'list' && <ListItems />}
-                {type === 'new' && <NewItemsList />}
-                {type === 'filter' && <FilterItemsList />}
-                {type === 'owned' && <ListItems />}
-                {type === 'trend' && <ListItems />}
+                {search && (<SearchItemsList hook={searchHook} />)}
+                {!search && type === 'list' && <ListItems />}
+                {!search && type === 'new' && <NewItemsList />}
+                {!search && type === 'filter' && <FilterItemsList />}
+                {!search && type === 'owned' && <ListItems />}
+                {!search && type === 'trend' && <ListItems />}
             </div>
         </div>
     )
