@@ -5,6 +5,7 @@ import TItem from '../../../components/Viewer/types/TItem';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
     const { page = 0, pageSize = 10 } = req.query;
+    const search = req.query.search as string;
 
     // Convert page and pageSize to numbers
     const pageNumber = parseInt(page as string, 10);
@@ -17,8 +18,33 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const result = await prisma.track.findMany({
         skip: skip,
         take: pageSizeNumber,
-        orderBy: {
-            created_at: 'desc',
+        where: {
+            OR: [
+                {
+                    title: {
+                        contains: search,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    artist: {
+                        name: {
+                            contains: search,
+                            mode: 'insensitive',
+                        },
+                    },
+                },
+                {
+                    tags: {
+                        some: {
+                            name: {
+                                contains: search,
+                                mode: 'insensitive',
+                            },
+                        },
+                    },
+                },
+            ],
         },
         include: {
             tags: true,

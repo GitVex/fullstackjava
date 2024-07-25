@@ -2,9 +2,15 @@ import { prisma } from '../../../utils/prismaClientProvider';
 import { buildQuery } from '../../../utils/seperateTags';
 import { getAverageColor } from './calculateColor';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { IVideoData } from '../../../components/Creator/types/IVideoData';
+
+type track_data = IVideoData & {
+    tags: string;
+    url: string;
+}
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-    const { title, author_name, url, provider_url, tags, thumbnail_url } = req.body;
+    const { title, author_name, url, provider_url, tags, thumbnail_url } = req.body as track_data;
 
     const connectOrCreateQuery = buildQuery(tags);
     let track_color = '#000000';
@@ -20,7 +26,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const createTrack = await prisma.track.create({
         data: {
             title: title,
-            artist: author_name,
             url: url,
             platform: provider_url,
             luminance: luminance,
@@ -28,9 +33,20 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             tags: {
                 connectOrCreate: connectOrCreateQuery,
             },
+            artist: {
+                connectOrCreate: {
+                    where: {
+                        name: author_name,
+                    },
+                    create: {
+                        name: author_name,
+                    },
+                },
+            },
         },
         include: {
             tags: true,
+            artist: true,
         },
     });
 

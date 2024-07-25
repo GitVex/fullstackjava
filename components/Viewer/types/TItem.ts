@@ -1,5 +1,5 @@
-import { track, tag } from '@prisma/client';
+import { artist, tag, track } from '@prisma/client';
 
-type TItem = track & { tags: tag[] }
+type TItem = track & { artist: artist, tags: tag[] }
 
 export default TItem;
