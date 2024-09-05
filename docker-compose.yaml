@@ -2,7 +2,7 @@ version: '3'
 
 services:
   bardicInspiration_dev:
-    image: ghcr.io/GitVex/bardicInspiration_dev:latest
+    image: ghcr.io/gitvex/bardicinspiration_dev:latest
 
     environment:
       - DATABASE_URL=${DATABASE_URL}
