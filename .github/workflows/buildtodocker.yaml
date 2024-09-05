@@ -6,6 +6,10 @@ on:
     branches:
       - devvv
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
