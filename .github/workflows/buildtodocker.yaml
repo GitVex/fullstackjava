@@ -36,10 +36,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build . -t ghcr.io/gitvex/bardicinspirationdev:latest 
+        run: docker build . -t ghcr.io/gitvex/bardicinspiration_dev:latest 
 
       - name: Push Docker image to GitHub Container Registry
-        run: docker push ghcr.io/gitvex/bardicinspirationdev:latest
+        run: docker push ghcr.io/gitvex/bardicinspiration_dev:latest
 
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -51,6 +51,7 @@ jobs:
           port: 22
           script: |
             cd /home/bardicInspiration_dev/BardicInspiration
-            docker pull ghcr.io/gitvex/bardicinspirationdev:latest
+            
+            docker pull ghcr.io/gitvex/bardicinspiration_dev:latest
             docker compose down
             docker compose up -d
