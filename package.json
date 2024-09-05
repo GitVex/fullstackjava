@@ -19,7 +19,6 @@
     "@types/youtube": "^0.0.50",
     "@vercel/analytics": "^0.1.8",
     "@vercel/speed-insights": "^1.0.10",
-    "canvas": "^2.11.2",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
     "framer-motion": "^7.10.0",
