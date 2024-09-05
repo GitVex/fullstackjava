@@ -32,7 +32,19 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/nextjs-app:latest .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/bardicInspiration_dev:latest .
 
       - name: Push Docker image to GitHub Container Registry
-        run: docker push ghcr.io/${{ github.repository_owner }}/nextjs-app:latest
+        run: docker push ghcr.io/${{ github.repository_owner }}/bardicInspiration_dev:latest
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          port: 22
+          script: |
+            docker pull ghcr.io/${{ github.repository_owner }}/bardicInspiration_dev:latest
+            docker-compose down
+            docker-compose up -d
