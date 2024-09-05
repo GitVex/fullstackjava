@@ -55,14 +55,14 @@ export default async function handler(
     const tracksToBeDeleted = blockedTracks;
 
     // create new log entry to document the deletion
-    await prisma.log.create({
+    /*await prisma.log.create({
         data: {
             time: new Date(),
             type: 'cron',
             message: `Deleted ${tracksToBeDeleted.length} entry(s)`,
             history: JSON.stringify(tracksToBeDeleted),
         },
-    });
+    });*/
 
     const deletedTracks = await Promise.all(
         tracksToBeDeleted.map(async (entry) => {

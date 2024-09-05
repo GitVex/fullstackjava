@@ -74,7 +74,7 @@ export async function getAverageColor(url: string, global_url?: boolean): Promis
     const averageColorHex = rgbToHex({ r: averageRed, g: averageGreen, b: averageBlue });
     const luminosity = (0.2126 * averageRed + 0.7152 * averageGreen + 0.0722 * averageBlue) / 255;
 
-    console.log(url, averageColorHex, luminosity);
+    // console.log(url, averageColorHex, luminosity);
     return { 'color': averageColorHex, 'luminance': luminosity };
 }
 
@@ -125,16 +125,6 @@ export default async function handle(
         }),
     );
 
-    /* log the update of the tracks */
-    await prisma.log.create({
-        data: {
-            time: new Date(),
-            type: 'update',
-            message: `Updated ${updatedTracks.length} tracks with dominant color`,
-            history: JSON.stringify(updatedTracks),
-        },
-    });
-
-    console.log(`updated ${updatedTracks.length} tracks`);
+    // console.log(`updated ${updatedTracks.length} tracks`);
     res.json(updatedTracks);
 }
