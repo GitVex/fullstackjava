@@ -9,6 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
     steps:
       - name: checkout code
         uses: actions/checkout@v3
@@ -38,8 +43,9 @@ jobs:
         run: docker push ghcr.io/${{ github.repository_owner }}/bardicInspiration_dev:latest
 
       - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@v1.0.3
         with:
+          envs: DATABASE_URL, DIRECT_URL, YOUTUBE_API_KEY
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
