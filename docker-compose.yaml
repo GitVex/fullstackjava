@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   bardicInspiration_dev:
     image: ghcr.io/gitvex/bardicinspiration_dev:latest
