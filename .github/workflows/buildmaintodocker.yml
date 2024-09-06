@@ -58,5 +58,5 @@ jobs:
           script: |
             cd /home/bardicInspiration_prod/BardicInspiration
             docker pull ghcr.io/gitvex/bardicinspiration_prod:latest
-            docker compose down
-            docker compose up -d
+            docker compose -f ./docker/docker-prod-compose.yaml down
+            docker compose -f ./docker/docker-prod-compose.yaml up -d

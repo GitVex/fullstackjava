@@ -16,7 +16,7 @@ COPY . .
 # Step 6: Build the Next.js application
 RUN npm run build
 
-ENV NODE_ENV development
+ENV NODE_ENV production
 
 # Step 7: Expose the port the app runs on
 EXPOSE 3000
