@@ -57,6 +57,7 @@ jobs:
           port: 22
           script: |
             cd /home/bardicInspiration_dev/BardicInspiration
+            git pull origin
             docker pull ghcr.io/gitvex/bardicinspiration_dev:latest
             docker compose -f ./docker/docker-dev-compose.yaml down
             docker compose -f ./docker/docker-dev-compose.yaml up -d
