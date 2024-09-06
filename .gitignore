@@ -38,10 +38,6 @@ next-env.d.ts
 certificates
 
 # Docker
-Dockerfile
-docker-compose.yml
-docker-compose.debug.yml
-.dockerignore
 launch.json
 tasks.json
 # Million Lint
