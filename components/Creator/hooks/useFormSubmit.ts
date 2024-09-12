@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { IVideoData } from '../types/IVideoData';
 import { validateUrl } from './utils';
-import { mutate } from 'swr'
+import { useNewItems } from '../../Viewer/hooks/useNewItems';
 
 const useFormSubmit = (url: string, tags: string, focussedVideo: IVideoData | null, isPresent: boolean) => {
     const [isSubmittable, setIsSubmittable] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const { invalidateNewItemsCache } = useNewItems();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -12,6 +14,8 @@ const useFormSubmit = (url: string, tags: string, focussedVideo: IVideoData | nu
         if (!url || !validateUrl(url)) {
             return;
         }
+
+        setIsLoading(true);
 
         try {
             await fetch('/api/creator/create', {
@@ -26,18 +30,21 @@ const useFormSubmit = (url: string, tags: string, focussedVideo: IVideoData | nu
                 }),
             });
 
-            // Assuming you have a way to check presence status after submit
-            await mutate('/api/viewer/new')
+            invalidateNewItemsCache();
         } catch (error) {
             console.error('Failed to submit:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
+
     useEffect(() => {
         setIsSubmittable(!!(url && tags && !isPresent));
     }, [url, tags, isPresent]);
 
     return {
         isSubmittable,
+        isLoading,
         handleSubmit,
     };
 };
