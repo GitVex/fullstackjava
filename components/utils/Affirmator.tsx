@@ -1,33 +1,122 @@
-/* Create a react component with framer that display a plus or a hook sign for a short duration when recieving a signal */
-import React from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
-const Affirmator = (props: { affirmState: any, setAffirmState: any}) => {
+const CircleVariants = {
+    done: {
+        opacity: 0,
+        pathLength: 0,
+    },
+    loading: {
+        opacity: 1,
+        pathLength: .9,
+        rotate: 360,
+    },
+};
 
-    const { affirmState, setAffirmState } = props
-    const debug = false
+const CheckVariants = {
+    loading: {
+        opacity: 0,
+        pathLength: 0,
+    },
+    done: {
+        opacity: 1,
+        pathLength: 1,
+        transition: {
+            duration: 1,
+            ease: 'easeOut',
+        },
+    },
+};
 
-    React.useEffect(() => {
-        if (affirmState) {
-            setTimeout(() => {
-                setAffirmState(false)
-            }, 1500)
-        } else if (debug && !affirmState) {
-            setTimeout(() => {
-                setAffirmState(true)
-            }, 1500)
-        }
-    }, [affirmState])
-
-    return (
-        <motion.div
-            animate={affirmState ? { scale: 1.5, opacity: 1} : { scale: 0, opacity: 0}}
-            transition={{ duration: 0.5, type: 'spring'  }}
-            className='x-5 w-5 h-5 bg-green-500 rounded-full flex text-justify justify-center items-center text-white text-sm font-bold origin-center'
-        > 
-            <p className='translate-y-[-0.1rem]'>+</p>
-        </motion.div>
-    )
+interface AffirmatorProps {
+    isLoading: boolean;
 }
 
-export default Affirmator
+function Affirmator({ isLoading }: AffirmatorProps) {
+    const [show, setShow] = useState(false);
+    const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        if (isLoading) {
+            if (currentTimeout) {
+                clearTimeout(currentTimeout);
+            }
+
+            setShow(true);
+        } else {
+            setCurrentTimeout(setTimeout(() => {
+                setShow(false);
+            }, 2000));
+        }
+    }, [currentTimeout, isLoading]);
+
+    return (
+        <div className={'flex w-full items-center justify-center text-white'}>
+            <AnimatePresence>
+                {show &&
+                    (<motion.div
+                        className={'relative flex h-20 w-full items-center justify-center'}
+                        initial={{ x: -100, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 100, opacity: 0 }}
+                        transition={{
+                            duration: 1,
+                            ease: 'easeInOut',
+                        }}
+                    >
+                        <motion.svg className={'absolute'}
+                                    width="80"
+                                    height="80"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    initial={{ rotate: 0 }}
+                                    animate={{ rotate: isLoading ? 360 : 0 }}
+                                    transition={{
+                                        repeat: isLoading ? Infinity : 0,
+                                        repeatType: 'loop',
+                                        duration: 1,
+                                        ease: 'linear',
+                                    }}>
+
+                            <motion.circle cx="12"
+                                           cy="12"
+                                           r="10"
+                                           strokeWidth="2"
+                                           strokeLinecap="round"
+                                           strokeLinejoin="round"
+                                           initial={{ pathLength: 0, opacity: 0 }}
+                                           variants={CircleVariants}
+                                           animate={isLoading ? 'loading' : 'done'}
+                            />
+                        </motion.svg>
+
+                        <motion.svg className={'absolute'}
+                                    width="80"
+                                    height="80"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                        >
+                            <motion.path
+                                d="M6 12l4 4L18 8"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                variants={CheckVariants}
+                                animate={isLoading ? 'loading' : 'done'}
+                                transition={{
+                                    duration: 1,
+                                    ease: 'easeOut',
+                                }}
+                            />
+                        </motion.svg>
+                    </motion.div>)
+                }
+            </AnimatePresence>
+        </div>
+    )
+        ;
+}
+
+export default Affirmator;

@@ -2,12 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useVideoInfo } from './hooks/useVideoInfo';
 import { useTags } from './hooks/useTags';
+import Affirmator from '../utils/Affirmator';
 import useFormSubmit from './hooks/useFormSubmit';
 
 function CreateUI() {
     const { url, focussedVideo, isPresent, fetchAndSetVideoInfo } = useVideoInfo();
     const { tags, setTagsFromInput } = useTags();
-    const { isSubmittable, handleSubmit } = useFormSubmit(url, tags, focussedVideo, isPresent);
+    const { isSubmittable, isLoading, handleSubmit } = useFormSubmit(url, tags, focussedVideo, isPresent);
+    const [toggleLoading, setToggleLoading] = React.useState(false);
 
     const onBlurUrlFieldHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
         const url = e.target.value;
@@ -23,7 +25,7 @@ function CreateUI() {
         <main className="flex h-full w-full flex-col gap-2 p-6">
             <section className="h-1/3 w-full rounded bg-indigo-500/5">
                 <div className="h-full w-full p-2">
-                    <form className="flex h-full w-full flex-col items-start gap-2" onSubmit={handleSubmit}>
+                    <form className="flex h-full w-full flex-col items-start gap-4" onSubmit={handleSubmit}>
                         <span className="place-self-center text-center text-2xl font-bold">Creator</span>
                         <fieldset className="grid h-fit w-full grid-cols-[1fr,7fr] grid-rows-2 gap-2">
                             <label htmlFor="url" className="text-center align-middle">
@@ -55,6 +57,7 @@ function CreateUI() {
                         >
                             Submit
                         </motion.button>
+                        <Affirmator isLoading={isLoading || toggleLoading} />
                     </form>
                 </div>
             </section>
@@ -69,10 +72,17 @@ function CreateUI() {
                             dangerouslySetInnerHTML={{ __html: focussedVideo.html }}
                         />
                     )}
+                    <button className="rounded p-1 bg-indigo-800/50" onClick={() => setToggleLoading(!toggleLoading)}>
+                        {toggleLoading ? 'Stop' : 'Start'}
+                    </button>
                 </div>
                 <span className="text-md w-full flex-grow truncate text-center text-red-600">
-                    {isPresent && '... It\'s already in here!'}
+                    {isPresent && '... It\'s already in here!' || ''}
                 </span>
+            </section>
+            <section className="h-1/3 w-full rounded bg-indigo-500/5">
+
+
             </section>
         </main>
     );
