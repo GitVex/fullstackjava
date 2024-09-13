@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const CircleVariants = {
@@ -34,21 +34,27 @@ interface AffirmatorProps {
 
 function Affirmator({ isLoading }: AffirmatorProps) {
     const [show, setShow] = useState(false);
-    const [currentTimeout, setCurrentTimeout] = useState<NodeJS.Timeout | null>(null);
+    const currentTimeout = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (isLoading) {
-            if (currentTimeout) {
-                clearTimeout(currentTimeout);
+            if (currentTimeout.current) {
+                clearTimeout(currentTimeout.current);
             }
 
             setShow(true);
         } else {
-            setCurrentTimeout(setTimeout(() => {
+            currentTimeout.current = setTimeout(() => {
                 setShow(false);
-            }, 2000));
+            }, 2000);
         }
-    }, [currentTimeout, isLoading]);
+
+        return () => {
+            if (currentTimeout.current) {
+                clearTimeout(currentTimeout.current);
+            }
+        };
+    }, [isLoading]);
 
     return (
         <div className={'flex w-full items-center justify-center text-white'}>
