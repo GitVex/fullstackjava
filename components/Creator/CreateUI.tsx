@@ -9,7 +9,6 @@ function CreateUI() {
     const { url, focussedVideo, isPresent, fetchAndSetVideoInfo } = useVideoInfo();
     const { tags, setTagsFromInput } = useTags();
     const { isSubmittable, isLoading, handleSubmit } = useFormSubmit(url, tags, focussedVideo, isPresent);
-    const [toggleLoading, setToggleLoading] = React.useState(false);
 
     const onBlurUrlFieldHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
         const url = e.target.value;
@@ -57,7 +56,7 @@ function CreateUI() {
                         >
                             Submit
                         </motion.button>
-                        <Affirmator isLoading={isLoading || toggleLoading} />
+                        <Affirmator isLoading={isLoading} />
                     </form>
                 </div>
             </section>
@@ -72,9 +71,6 @@ function CreateUI() {
                             dangerouslySetInnerHTML={{ __html: focussedVideo.html }}
                         />
                     )}
-                    <button className="rounded p-1 bg-indigo-800/50" onClick={() => setToggleLoading(!toggleLoading)}>
-                        {toggleLoading ? 'Stop' : 'Start'}
-                    </button>
                 </div>
                 <span className="text-md w-full flex-grow truncate text-center text-red-600">
                     {isPresent && '... It\'s already in here!' || ''}
