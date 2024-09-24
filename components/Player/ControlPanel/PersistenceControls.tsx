@@ -1,5 +1,5 @@
 import ControlPanelButton from './utils/ControlPanelButton';
-import { usePlayerControls } from '../Contexts/PlayerControlsProvider';
+import { useStackControls } from '../Contexts/StackControlsProvider';
 
 interface PersistenceControlsProps {
     initialLoadDone: boolean;
@@ -7,7 +7,7 @@ interface PersistenceControlsProps {
 
 function PersistenceControls({ initialLoadDone }: PersistenceControlsProps) {
 
-    const { disablePersistPreset, setDisablePersistPreset, clearPersistPreset } = usePlayerControls();
+    const { disablePersistPreset, setDisablePersistPreset, clearPersistPreset } = useStackControls();
     const disable = !initialLoadDone;
 
     const switchPersistPreset = () => {

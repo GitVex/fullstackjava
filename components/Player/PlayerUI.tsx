@@ -1,13 +1,13 @@
 import { useWindowSize } from '../Contexts/WindowSizeProvider';
 import VolumeSlider from './VolumeSlider';
 import ControlPanel from './ControlPanel/ControlPanel';
-import PlayerComponent from './PlayerComponentRefit';
-import { PlayerLocalControlsProvider } from './Contexts/PlayerLocalControlsProvider';
-import { usePlayerControls } from './Contexts/PlayerControlsProvider';
+import PlayerComponent from './PlayerComponent';
+import { PlayerControlsProvider } from './Contexts/PlayerControlsProvider';
+import { useStackControls } from './Contexts/StackControlsProvider';
 
 function PlayerUI() {
     const { windowHeight, windowWidth } = useWindowSize();
-    const { masterVolume, setMasterVolume } = usePlayerControls();
+    const { masterVolume, setMasterVolume } = useStackControls();
 
     return (
         <div
@@ -19,9 +19,9 @@ function PlayerUI() {
                 <div className="flex w-full flex-col items-center">
                     <div className="grid grid-cols-2 grid-rows-4 gap-2">
                         {[0, 1, 2, 3, 4, 5, 6, 7].map(id => (
-                            <PlayerLocalControlsProvider playerId={id} key={id}>
+                            <PlayerControlsProvider playerId={id} key={id}>
                                 <PlayerComponent />
-                            </PlayerLocalControlsProvider>
+                            </PlayerControlsProvider>
                         ))}
                     </div>
                 </div>

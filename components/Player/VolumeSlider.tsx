@@ -2,7 +2,7 @@ import Slider from '@mui/material/Slider';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { localVolumeControlEndType } from './types/states';
+import { LocalVolumeControlEndType } from './types/states';
 import styles from './VolumeSlider.module.css';
 
 const theme = createTheme({
@@ -34,7 +34,7 @@ const theme = createTheme({
 });
 
 interface VolumeSliderProps {
-    volumeControl: localVolumeControlEndType;
+    volumeControl: LocalVolumeControlEndType;
     className?: string;
     textBgColor?: string;
     height?: number | string;

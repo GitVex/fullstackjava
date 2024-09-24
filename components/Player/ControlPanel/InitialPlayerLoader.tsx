@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { usePlayerHolder } from '../../Contexts/PlayerHolderProvider';
 import { loadNewVideo } from '../../utils/utils';
-import { usePlayerControls } from '../Contexts/PlayerControlsProvider';
+import { useStackControls } from '../Contexts/StackControlsProvider';
 
 interface InitialPlayerLoaderProps {
     onLoaded: () => void;
@@ -12,7 +12,7 @@ function InitialPlayerLoader({ onLoaded }: InitialPlayerLoaderProps) {
         presetState,
         presetDispatch,
         localVolumesDispatch,
-    } = usePlayerControls();
+    } = useStackControls();
 
     const { holders: playerHolder } = usePlayerHolder();
     const [allPlayersReady, setAllPlayersReady] = useState(false);
