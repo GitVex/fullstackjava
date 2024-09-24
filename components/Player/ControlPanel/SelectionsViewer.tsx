@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import React from 'react';
-import { usePlayerControls } from '../Contexts/PlayerControlsProvider';
+import { useStackControls } from '../Contexts/StackControlsProvider';
 
 function SelectionsViewer() {
-    const { presetState: preset, presetDispatch: dispatch } = usePlayerControls();
+    const { presetState: preset, presetDispatch: dispatch } = useStackControls();
     const players = preset.players;
 
     return (

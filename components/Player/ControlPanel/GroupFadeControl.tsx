@@ -1,7 +1,7 @@
 import { usePlayerHolder } from '../../Contexts/PlayerHolderProvider';
 import IFPlayer from '../types/IFPlayer';
 import { fadeIn, fadeOut } from '../fadeFunctions';
-import { usePlayerControls } from '../Contexts/PlayerControlsProvider';
+import { useStackControls } from '../Contexts/StackControlsProvider';
 import ControlPanelButton from './utils/ControlPanelButton';
 
 function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | null)[]) {
@@ -12,9 +12,9 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
         presetDispatch,
         localVolumes,
         localVolumesDispatch,
-        fadeIntervals,
-        fadeIntervalDispatch,
-    } = usePlayerControls();
+        fadeAnimations,
+        fadeAnimationsDispatch,
+    } = useStackControls();
 
     return () => {
 
@@ -31,9 +31,11 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
             const setVolume = (vol: number) => {
                 localVolumesDispatch({ type: 'setVolume', index: idx, payload: vol });
             };
-            const setCurrentFadeInterval = (interval: NodeJS.Timeout | null) => {
-                fadeIntervalDispatch({
-                    type: 'setCurrentFadeInterval',
+
+            const fadeAnimationHandle = fadeAnimations.fadeAnimationHandles[idx];
+            const setFadeAnimationHandle = (interval: number | null) => {
+                fadeAnimationsDispatch({
+                    type: 'setFadeAnimationHandle',
                     index: idx,
                     payload: interval,
                 });
@@ -49,9 +51,9 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
             fadeAction({
                 framePlayer: framedPlayers[idx],
                 localVolumeControl: { localVolume: localVolumes.volume[idx], setLocalVolume: setVolume },
-                fadeIntervalControl: {
-                    currentFadeInterval: fadeIntervals.fadeIntervals[idx],
-                    setCurrentFadeInterval,
+                fadeAnimationControl: {
+                    fadeAnimationHandle,
+                    setFadeAnimationHandle,
                 },
                 savedVolumeControl: { savedVolume: player.savedVolume, setSavedVolume },
                 pLimit: targetVolume,

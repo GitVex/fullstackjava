@@ -7,8 +7,10 @@ export const DEFAULT_FADE_INTERVAL = 75;
 
 export const DEFAULT_FADE_STEP = 1;
 
-export const DEFAULT_EASE = (x: number, limit: number) => limit * (1 - Math.cos(((x / limit) * Math.PI) / 2));
+export const DEFAULT_EASE = (t: number): number => 1 - Math.cos((t * Math.PI) / 2);
 
 export const GLOBAL_DISABLE_SAVE_PRESET = true;
 
-export const DEFAULT_IS_OPEN_PLAYER_STATE = false; //process.env.NODE_ENV === 'development';
+export const DEFAULT_IS_OPEN_PLAYER_STATE = true; //process.env.NODE_ENV === 'development';
+
+export const DEFAULT_FADE_DURATION = 5000

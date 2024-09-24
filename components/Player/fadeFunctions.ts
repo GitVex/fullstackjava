@@ -1,11 +1,12 @@
 import IFPlayer from './types/IFPlayer';
-import { DEFAULT_EASE, DEFAULT_FADE_INTERVAL, DEFAULT_FADE_STEP } from '../utils/DEFAULTS';
-import { fadeIntervalControlEndType, localVolumeControlEndType } from './types/states';
+import { DEFAULT_EASE, DEFAULT_FADE_DURATION } from '../utils/DEFAULTS';
+import { FadeAnimationControlEndType, LocalVolumeControlEndType } from './types/states';
+import React from 'react';
 
 export interface FadeOptions {
     framePlayer: IFPlayer | null;
-    localVolumeControl: localVolumeControlEndType;
-    fadeIntervalControl: fadeIntervalControlEndType;
+    localVolumeControl: LocalVolumeControlEndType;
+    fadeAnimationControl: FadeAnimationControlEndType;
     pLimit?: number;
     inverse?: boolean;
     savedVolumeControl?: {
@@ -17,7 +18,7 @@ export interface FadeOptions {
 function fade({
                   framePlayer,
                   localVolumeControl,
-                  fadeIntervalControl,
+                  fadeAnimationControl,
                   pLimit,
                   inverse = false,
                   savedVolumeControl,
@@ -25,62 +26,95 @@ function fade({
     if (!framePlayer) return;
 
     const { localVolume: volume, setLocalVolume: setVolume } = localVolumeControl;
-    const { currentFadeInterval, setCurrentFadeInterval } = fadeIntervalControl;
+    const { fadeAnimationHandle, setFadeAnimationHandle } = fadeAnimationControl;
     const { savedVolume, setSavedVolume } = savedVolumeControl ?? {};
 
     // Clear any existing interval
-    if (currentFadeInterval) {
-        clearInterval(currentFadeInterval);
-        setCurrentFadeInterval(null);
+    if (fadeAnimationHandle) {
+        cancelAnimationFrame(fadeAnimationHandle);
+        setFadeAnimationHandle(null);
     }
 
-    // Define the limit for volume change
-    let limit = savedVolume?.hasSaved ? savedVolume.prevVol : pLimit ?? (volume === 0 ? 50 : volume);
-    console.log('Fading', inverse ? 'out' : 'in', inverse ? 'from' : 'to', limit);
+    // Determine the target volume (limit)
+    let limit = 50; // Default limit
+    if (savedVolume?.hasSaved) {
+        limit = savedVolume.prevVol;
+    } else if (pLimit !== undefined) {
+        limit = pLimit;
+    } else if (volume !== 0) {
+        limit = volume;
+    }
 
-    // Initialize starting based on fading direction
-    const startVolume = inverse ? volume : 1;
+    // Define start and end volumes based on fade direction
+    const startVolume = inverse ? volume : 0;
+    const endVolume = inverse ? 0 : limit;
+
+    console.debug('Breakpoint 1', startVolume);
 
     // Play video if not fading out
     if (!inverse) {
         framePlayer.playVideo();
     }
 
-    const x = { hasSaved: true, prevVol: startVolume };
     // Save the current volume if fading out
-    if (inverse) {
-        console.log(setSavedVolume);
-        setSavedVolume?.(x);
-        console.log('saving Volume:', x);
+    if (inverse && setSavedVolume) {
+        setSavedVolume({ hasSaved: true, prevVol: startVolume });
     }
 
     function endFade(finalVolume: number) {
         setVolume(finalVolume);
         if (finalVolume === 0) framePlayer?.pauseVideo();
-        clearInterval(intervalId);
-        setCurrentFadeInterval(null);
+        cancelAnimationFrame(animFrameId);
+        setFadeAnimationHandle(null);
     }
 
-    let runner = startVolume;
+    let currentVolume = startVolume;
+    const volumeChange = endVolume - startVolume;
+    const duration = DEFAULT_FADE_DURATION;
+    const startTime = performance.now();
 
-    function step() {
-        // Calculate next volume based on direction
-        let nextVolume = inverse
-            ? Math.floor(DEFAULT_EASE(runner, startVolume))
-            : Math.floor(DEFAULT_EASE(runner, limit));
+    let iter = 0;
 
-        // Update volume and adjust runner based on fade direction
-        setVolume(nextVolume);
-        runner += inverse ? -DEFAULT_FADE_STEP : DEFAULT_FADE_STEP;
+    function step(currentTime: number) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = DEFAULT_EASE(progress);
 
-        // Check if the runner has reached or passed its limit
-        if ((inverse && runner <= 0) || (!inverse && runner >= limit)) {
-            endFade(inverse ? 0 : limit);
+        console.debug(
+            'Breakpoint 2 iter.',
+            iter,
+            ' | elapsed: ',
+            elapsed,
+            ' | progress: ',
+            progress,
+            ' | easedProgress: ',
+            easedProgress
+        );
+
+        currentVolume = startVolume + volumeChange * easedProgress;
+        console.debug(
+            'Breakpoint 3 iter.',
+            iter,
+            ' | startVolume: ',
+            startVolume,
+            ' | volumeChange: ',
+            volumeChange,
+            ' | easedProgress: ',
+            easedProgress
+        );
+        setVolume(Math.floor(currentVolume));
+
+        if (progress < 1) {
+            animFrameId = requestAnimationFrame(step);
+        } else {
+            endFade(endVolume);
         }
+
+        iter++;
     }
 
-    const intervalId = setInterval(step, DEFAULT_FADE_INTERVAL);
-    setCurrentFadeInterval(intervalId);
+    let animFrameId = requestAnimationFrame(step);
+    setFadeAnimationHandle(animFrameId);
 }
 
 export function fadeIn(options: FadeOptions) {
@@ -91,43 +125,87 @@ export function fadeOut(options: FadeOptions) {
     fade({ ...options, inverse: true });
 }
 
-export function fadeTo({ framePlayer, localVolumeControl, fadeIntervalControl, pLimit = 50 }: FadeOptions) {
+export function fadeTo({ framePlayer, localVolumeControl, fadeAnimationControl, pLimit = 50 }: FadeOptions) {
     if (!framePlayer) return;
 
     const { localVolume: volume, setLocalVolume: setVolume } = localVolumeControl;
-    const { currentFadeInterval, setCurrentFadeInterval } = fadeIntervalControl;
+    const { fadeAnimationHandle, setFadeAnimationHandle } = fadeAnimationControl;
 
-    // Clear any existing interval
-    if (currentFadeInterval) {
-        clearInterval(currentFadeInterval);
-        setCurrentFadeInterval(null);
+    // Clear any existing animation frame
+    if (fadeAnimationHandle !== null) {
+        cancelAnimationFrame(fadeAnimationHandle);
+        setFadeAnimationHandle(null);
     }
 
-    let currentVolume = volume;
+    const startVolume = volume;
+    const endVolume = pLimit;
+    const volumeChange = endVolume - startVolume;
+    const duration = 75 * Math.abs(volumeChange); // Duration in milliseconds
+    const startTime = performance.now();
 
-    let intervalId = setInterval(() => {
-        try {
-            if (currentVolume > pLimit) {
-                currentVolume -= DEFAULT_FADE_STEP;
-                setVolume(currentVolume);
-            } else if (currentVolume < pLimit) {
-                currentVolume += DEFAULT_FADE_STEP;
-                setVolume(currentVolume);
-            } else {
-                endFade(pLimit);
-            }
-        } catch (error) {
-            clearInterval(intervalId);
+    console.log('Breakpoint 1', startVolume);
+
+    function endFade(finalVolume: number) {
+        setVolume(finalVolume);
+        setFadeAnimationHandle(null);
+    }
+
+    let iter = 0;
+
+    function step(currentTime: number) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        console.log('Breakpoint 2 iter.', iter, ' | elapsed: ', elapsed);
+        iter++;
+
+        const currentVolume = startVolume + volumeChange * progress;
+        setVolume(Math.floor(currentVolume));
+
+        if (progress < 1) {
+            animationFrameId = requestAnimationFrame(step);
+            setFadeAnimationHandle(animationFrameId);
+        } else {
+            endFade(endVolume);
         }
-    }, DEFAULT_FADE_INTERVAL);
-
-    setCurrentFadeInterval(intervalId);
-
-    function endFade(volume: number) {
-        setVolume(volume);
-        clearInterval(intervalId);
-        setCurrentFadeInterval(null);
     }
+
+    let animationFrameId = requestAnimationFrame(step);
+    setFadeAnimationHandle(animationFrameId);
+}
+
+export function fadeInputHandler(
+    e: React.KeyboardEvent<HTMLInputElement>,
+    { framePlayer, localVolumeControl, savedVolumeControl, fadeAnimationControl }: FadeOptions,
+) {
+    // Early return if no framePlayer or if the event key is not 'Enter'
+    if (!framePlayer || e.key !== 'Enter') return;
+
+    const inputValue = parseInt(e.currentTarget.value);
+    if (isNaN(inputValue)) return;
+
+    const targetVolume = inputValue > 100 ? 100 : inputValue; // check input to not go over 100
+
+    let fadeAction;
+    if (framePlayer.getPlayerState() !== 1 && targetVolume > 0) {
+        fadeAction = fadeIn
+    } else if (framePlayer.getPlayerState() == 1 && targetVolume > 0) {
+        fadeAction = fadeTo
+    } else if (framePlayer.getPlayerState() == 1 && targetVolume == 0) {
+        fadeAction = fadeOut
+    } else {
+        return;
+    }
+
+    // Execute the fading action with the provided parameters
+    fadeAction({
+        framePlayer,
+        localVolumeControl,
+        savedVolumeControl,
+        fadeAnimationControl: fadeAnimationControl,
+        pLimit: targetVolume,
+    });
 }
 
 /* TO BE IMPLEMTNED: Crossfade two framePlayers */
+
