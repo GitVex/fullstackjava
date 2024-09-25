@@ -9,6 +9,7 @@ export interface FadeOptions {
     fadeAnimationControl: FadeAnimationControlEndType;
     pLimit?: number;
     inverse?: boolean;
+    sync?: boolean;
     savedVolumeControl?: {
         savedVolume: { hasSaved: boolean; prevVol: number };
         setSavedVolume: (savedVolume: { hasSaved: boolean; prevVol: number }) => void;
@@ -20,6 +21,7 @@ function fade({
                   localVolumeControl,
                   fadeAnimationControl,
                   pLimit,
+                  sync = false,
                   inverse = false,
                   savedVolumeControl,
               }: FadeOptions) {
@@ -37,12 +39,12 @@ function fade({
 
     // Determine the target volume (limit)
     let limit = 50; // Default limit
-    if (savedVolume?.hasSaved) {
-        limit = savedVolume.prevVol;
-    } else if (pLimit !== undefined) {
+    if (pLimit !== undefined) {
         limit = pLimit;
     } else if (volume !== 0) {
         limit = volume;
+    } else if (savedVolume?.hasSaved) {
+        limit = savedVolume.prevVol;
     }
 
     // Define start and end volumes based on fade direction
@@ -70,38 +72,17 @@ function fade({
 
     let currentVolume = startVolume;
     const volumeChange = endVolume - startVolume;
-    const duration = DEFAULT_FADE_DURATION;
+    const duration = sync ? 4000 : DEFAULT_FADE_DURATION(volumeChange);
     const startTime = performance.now();
 
-    let iter = 0;
+    const easeFunc = inverse ? (t: number) => 1 - DEFAULT_EASE(1 - t) : DEFAULT_EASE;
 
     function step(currentTime: number) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = DEFAULT_EASE(progress);
-
-        console.debug(
-            'Breakpoint 2 iter.',
-            iter,
-            ' | elapsed: ',
-            elapsed,
-            ' | progress: ',
-            progress,
-            ' | easedProgress: ',
-            easedProgress
-        );
+        const easedProgress = easeFunc(progress);
 
         currentVolume = startVolume + volumeChange * easedProgress;
-        console.debug(
-            'Breakpoint 3 iter.',
-            iter,
-            ' | startVolume: ',
-            startVolume,
-            ' | volumeChange: ',
-            volumeChange,
-            ' | easedProgress: ',
-            easedProgress
-        );
         setVolume(Math.floor(currentVolume));
 
         if (progress < 1) {
@@ -109,8 +90,6 @@ function fade({
         } else {
             endFade(endVolume);
         }
-
-        iter++;
     }
 
     let animFrameId = requestAnimationFrame(step);
@@ -140,7 +119,7 @@ export function fadeTo({ framePlayer, localVolumeControl, fadeAnimationControl, 
     const startVolume = volume;
     const endVolume = pLimit;
     const volumeChange = endVolume - startVolume;
-    const duration = 75 * Math.abs(volumeChange); // Duration in milliseconds
+    const duration = DEFAULT_FADE_DURATION(volumeChange);
     const startTime = performance.now();
 
     console.log('Breakpoint 1', startVolume);
@@ -150,14 +129,9 @@ export function fadeTo({ framePlayer, localVolumeControl, fadeAnimationControl, 
         setFadeAnimationHandle(null);
     }
 
-    let iter = 0;
-
     function step(currentTime: number) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-
-        console.log('Breakpoint 2 iter.', iter, ' | elapsed: ', elapsed);
-        iter++;
 
         const currentVolume = startVolume + volumeChange * progress;
         setVolume(Math.floor(currentVolume));
@@ -188,11 +162,11 @@ export function fadeInputHandler(
 
     let fadeAction;
     if (framePlayer.getPlayerState() !== 1 && targetVolume > 0) {
-        fadeAction = fadeIn
+        fadeAction = fadeIn;
     } else if (framePlayer.getPlayerState() == 1 && targetVolume > 0) {
-        fadeAction = fadeTo
+        fadeAction = fadeTo;
     } else if (framePlayer.getPlayerState() == 1 && targetVolume == 0) {
-        fadeAction = fadeOut
+        fadeAction = fadeOut;
     } else {
         return;
     }

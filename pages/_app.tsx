@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import type { AppProps, NextWebVitalsMetric } from "next/app";
+import type { AppProps } from "next/app";
 import { WindowSizeProvider } from "../components/Contexts/WindowSizeProvider";
 
 if (process.env.NODE_ENV !== "development") {

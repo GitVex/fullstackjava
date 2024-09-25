@@ -3,10 +3,13 @@ import IFPlayer from '../types/IFPlayer';
 import { fadeIn, fadeOut } from '../fadeFunctions';
 import { useStackControls } from '../Contexts/StackControlsProvider';
 import ControlPanelButton from './utils/ControlPanelButton';
+import React from 'react';
 
-function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | null)[]) {
-
-    // collect all attributes from context
+function createGroupFadeHandler(
+    direction: 'in' | 'out',
+    framedPlayers: IFPlayer[],
+    controls: ReturnType<typeof useStackControls>
+) {
     const {
         presetState,
         presetDispatch,
@@ -14,20 +17,19 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
         localVolumesDispatch,
         fadeAnimations,
         fadeAnimationsDispatch,
-    } = useStackControls();
+    } = controls;
 
     return () => {
-
-        // Early exit if any framedPlayers are null
-        if (framedPlayers.some(framePlayer => framePlayer === null)) return;
-
         // Determine the fade action based on the direction
         const fadeAction = direction === 'in' ? fadeIn : fadeOut;
 
         presetState.players.forEach((player, idx) => {
-            if (!player.selected || !framedPlayers[idx]) return;
+            const framePlayer = framedPlayers[idx];
+            if (!player.selected || !framePlayer) return;
 
             const targetVolume = direction === 'in' ? localVolumes.volume[idx] : 0;
+
+            // Functions to update state
             const setVolume = (vol: number) => {
                 localVolumesDispatch({ type: 'setVolume', index: idx, payload: vol });
             };
@@ -40,6 +42,7 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
                     payload: interval,
                 });
             };
+
             const setSavedVolume = (savedVolume: { hasSaved: boolean; prevVol: number }) => {
                 presetDispatch({
                     type: 'setSavedVolume',
@@ -49,37 +52,56 @@ function useHandleGroupFade(direction: 'in' | 'out', framedPlayers: (IFPlayer | 
             };
 
             fadeAction({
-                framePlayer: framedPlayers[idx],
-                localVolumeControl: { localVolume: localVolumes.volume[idx], setLocalVolume: setVolume },
+                framePlayer,
+                localVolumeControl: {
+                    localVolume: localVolumes.volume[idx],
+                    setLocalVolume: setVolume,
+                },
                 fadeAnimationControl: {
                     fadeAnimationHandle,
                     setFadeAnimationHandle,
                 },
-                savedVolumeControl: { savedVolume: player.savedVolume, setSavedVolume },
+                savedVolumeControl: {
+                    savedVolume: player.savedVolume,
+                    setSavedVolume,
+                },
                 pLimit: targetVolume,
                 inverse: direction === 'out',
+                sync: true
             });
         });
     };
 }
 
-
 function GroupFadeControl({ initialLoadDone }: { initialLoadDone: boolean }) {
     const { holders } = usePlayerHolder();
     const disable = !initialLoadDone;
-    const framedPlayers = holders.map(holder => holder.player);
 
-    const handleGroupFadeIn = useHandleGroupFade('in', framedPlayers);
-    const handleGroupFadeOut = useHandleGroupFade('out', framedPlayers);
+    // Filter out null framedPlayers early
+    const framedPlayers = holders
+        .map(holder => holder.player)
+        .filter((player): player is IFPlayer => player !== null);
+
+    const controls = useStackControls();
+
+    const handleGroupFadeIn = React.useCallback(
+        createGroupFadeHandler('in', framedPlayers, controls),
+        [framedPlayers, controls]
+    );
+
+    const handleGroupFadeOut = React.useCallback(
+        createGroupFadeHandler('out', framedPlayers, controls),
+        [framedPlayers, controls]
+    );
 
     return (
         <div>
             <div className="flex flex-row gap-2 rounded border-2 border-darknavy-700 bg-darknavy-500 p-2">
-                <ControlPanelButton onClick={() => handleGroupFadeIn} disabled={disable}>
+                <ControlPanelButton onClick={handleGroupFadeIn} disabled={disable}>
                     Fade In
                 </ControlPanelButton>
 
-                <ControlPanelButton onClick={() => handleGroupFadeOut()} disabled={disable}>
+                <ControlPanelButton onClick={handleGroupFadeOut} disabled={disable}>
                     Fade Out
                 </ControlPanelButton>
             </div>

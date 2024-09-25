@@ -23,10 +23,6 @@ function findExtremeIndex(
 	return extremeIndex;
 }
 
-export function argMax(array: number[]): number {
-	return findExtremeIndex(array, (a, b) => a > b);
-}
-
 export function argMin(array: number[]): number {
 	return findExtremeIndex(array, (a, b) => a < b);
 }
