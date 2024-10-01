@@ -112,7 +112,7 @@ function PlayerHolderProvider({ children }: { children: React.ReactNode }) {
     };
     const clearPersistPreset = () => {
         if (localStorage.getItem('presetState') === null) return;
-        console.log('clearing preset');
+        // console.log('clearing preset');
         localStorage.removeItem('presetState');
     };
 
