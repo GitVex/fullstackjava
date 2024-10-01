@@ -4,7 +4,7 @@ export function separateTags(tags: string) {
 }
 
 export function buildQuery(tags: string) {
-    const qTags = separateTags(tags);
+    const qTags = separateTags(tags).filter((element) => element);
 
     return qTags.map((tag: string) => {
         return {

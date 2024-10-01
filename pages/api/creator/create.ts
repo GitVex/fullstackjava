@@ -11,7 +11,7 @@ type track_data = IVideoData & {
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
     const { title, author_name, url, provider_url, tags, thumbnail_url } = req.body as track_data;
-    console.log(`title: ${title}\n author_name: ${author_name}\n url: ${url}\n provider_url: ${provider_url}\n tags: ${tags}\n thumbnail_url: ${thumbnail_url}`);
+    // console.log(`title: ${title}\n author_name: ${author_name}\n url: ${url}\n provider_url: ${provider_url}\n tags: ${tags}\n thumbnail_url: ${thumbnail_url}`);
 
     const connectOrCreateQuery = buildQuery(tags);
     let track_color = '#000000';
