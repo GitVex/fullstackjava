@@ -27,7 +27,16 @@ function createGroupFadeHandler(
             const framePlayer = framedPlayers[idx];
             if (!player.selected || !framePlayer) return;
 
-            const targetVolume = direction === 'in' ? localVolumes.volume[idx] : 0;
+            let targetVolume
+            if (direction == 'in') {
+                if (player.savedVolume) {
+                    targetVolume = player.savedVolume.prevVol
+                } else {
+                    targetVolume = localVolumes.volume[idx]
+                }
+            } else {
+                targetVolume = 0
+            }
 
             // Functions to update state
             const setVolume = (vol: number) => {
@@ -84,11 +93,13 @@ function GroupFadeControl({ initialLoadDone }: { initialLoadDone: boolean }) {
 
     const controls = useStackControls();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleGroupFadeIn = React.useCallback(
         createGroupFadeHandler('in', framedPlayers, controls),
         [framedPlayers, controls]
     );
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleGroupFadeOut = React.useCallback(
         createGroupFadeHandler('out', framedPlayers, controls),
         [framedPlayers, controls]
