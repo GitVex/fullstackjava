@@ -1,12 +1,21 @@
+name: prod_bardic
 services:
-  bardicInspiration_prod:
+  app:
     image: ghcr.io/gitvex/bardicinspiration_prod:latest
-
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - DIRECT_URL=${DIRECT_URL}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-
-    ports:
-      - "8080:3000"
+    # ports:
+    #   - "8080:3000"
     restart: always
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.prod_bardicinspiration.rule=Host(`www.bardicinspiration.cc`) || Host(`bardicinspiration.cc`)'
+      - 'traefik.http.services.prod_bardicinspiration.loadbalancer.server.port=3000'
+    networks:
+      - traefik_web
+
+networks:
+  traefik_web:
+    external: true
